@@ -49,7 +49,7 @@ namespace FalloutRPG
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
             .AddSingleton<InteractiveService>()
-            .AddSingleton<BotContext>()
+            .AddSingleton<RpgContext>()
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .BuildServiceProvider();
 

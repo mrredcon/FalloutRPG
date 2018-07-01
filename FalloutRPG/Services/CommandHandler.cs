@@ -11,6 +11,8 @@ namespace FalloutRPG.Services
 {
     public class CommandHandler
     {
+        private ulong[] ExperienceEnabledChannels;
+
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly ExperienceService _expService;
@@ -31,13 +33,15 @@ namespace FalloutRPG.Services
             _expService = expService;
             _charService = charService;
             _services = services;
-            _config = config;
+            _config = config;       
         }
 
         public async Task InstallCommandsAsync()
         {
             await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
             _client.MessageReceived += HandleCommandAsync;
+
+            LoadExperienceEnabledChannels();
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
@@ -82,17 +86,27 @@ namespace FalloutRPG.Services
 
         private bool IsInExperienceChannel(ulong channelId)
         {
-            var channelsArray = _config
-                .GetSection("roleplay:exp-channels")
-                .GetChildren()
-                .Select(x => x.Value)
-                .ToArray();
-
-            foreach (var channel in channelsArray)
-                if (channelId == UInt64.Parse(channel))
+            foreach (var channel in ExperienceEnabledChannels)
+                if (channelId == channel)
                     return true;
 
             return false;
+        }
+
+        private void LoadExperienceEnabledChannels()
+        {
+            try
+            {
+                ExperienceEnabledChannels = _config
+                    .GetSection("roleplay:exp-channels")
+                    .GetChildren()
+                    .Select(x => UInt64.Parse(x.Value))
+                    .ToArray();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("You have not specified any experience enabled channels in Config.json");
+            }
         }
     }
 }

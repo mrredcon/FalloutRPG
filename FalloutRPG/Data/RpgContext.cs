@@ -5,22 +5,15 @@ using System;
 
 namespace FalloutRPG.Data
 {
-    public class BotContext : DbContext
+    public class RpgContext : DbContext
     {
         public DbSet<Character> Characters { get; set; }
 
-        private readonly IConfiguration _config;
-
-        public BotContext(IConfiguration config)
-        {
-            _config = config;
-        }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = _config["connection-string"];
+            var connectionString = "";
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new Exception("Please enter a valid SQL-SERVER connection string in Config.json");
+               throw new Exception("Please enter a valid SQL-SERVER connection string in /Data/RpgContext.cs");
 
             optionsBuilder.UseSqlServer(@connectionString);
         }

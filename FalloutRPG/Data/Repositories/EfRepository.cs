@@ -8,9 +8,9 @@ namespace FalloutRPG.Data.Repositories
 {
     public class EfRepository<T> : IRepository<T> where T : BaseModel, new()
     {
-        private readonly BotContext _context;
+        private readonly RpgContext _context;
 
-        public EfRepository(BotContext context)
+        public EfRepository(RpgContext context)
         {
             _context = context;
         }
