@@ -18,11 +18,17 @@ namespace FalloutRPG.Services
             _repository = repository;
         }
 
+        /// <summary>
+        /// Gets a character from the repository by Discord ID.
+        /// </summary>
         public Character GetCharacter(ulong discordId)
         {
             return _repository.Query.Where(x => x.DiscordId == discordId).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Creates a new character.
+        /// </summary>
         public async Task<Character> CreateCharacterAsync(ulong discordId, string firstName, string lastName)
         {
             if (GetCharacter(discordId) != null)
@@ -75,12 +81,18 @@ namespace FalloutRPG.Services
             return character;
         }
 
+        /// <summary>
+        /// Gets the top 10 characters with the most experience.
+        /// </summary>
         public async Task<List<Character>> GetHighScoresAsync()
         {
             var characters = await _repository.FetchAllAsync();
             return characters.OrderByDescending(x => x.Experience).Take(10).ToList();
         }
 
+        /// <summary>
+        /// Saves a character.
+        /// </summary>
         public async Task SaveCharacterAsync(Character character)
         {
             await _repository.SaveAsync(character);

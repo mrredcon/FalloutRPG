@@ -20,6 +20,10 @@ namespace FalloutRPG.Services
             _config = config;
         }
 
+        /// <summary>
+        /// Loads the Discord Bot token from the configuration
+        /// file and attempts to login to Discord and start up.
+        /// </summary>
         public async Task StartAsync()
         {
             string discordToken = _config["tokens:discord"];

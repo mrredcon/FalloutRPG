@@ -22,6 +22,9 @@ namespace FalloutRPG.Services
             _charService = charService;
         }
 
+        /// <summary>
+        /// Gives a fixed amount of experience.
+        /// </summary>
         public async Task<bool> GiveExperienceAsync(Character character, int experience = DEFAULT_EXP_GAIN)
         {
             if (character == null) return false;
@@ -42,6 +45,10 @@ namespace FalloutRPG.Services
             return levelUp;
         }
 
+        /// <summary>
+        /// Gives a random amount of experience between
+        /// a range of two numbers.
+        /// </summary>
         public async Task<bool> GiveRandomExperienceAsync(Character character, int rangeFrom, int rangeTo)
         {
             if (character == null) return false;
@@ -64,6 +71,9 @@ namespace FalloutRPG.Services
             return levelUp;
         }
 
+        /// <summary>
+        /// Adds a user's Discord ID to the cooldowns.
+        /// </summary>
         public void AddToCooldown(ulong discordId)
         {
             var timer = new Timer();
@@ -72,9 +82,11 @@ namespace FalloutRPG.Services
             timer.Enabled = true;
 
             CooldownTimers.Add(discordId, timer);
-            Console.WriteLine($"Added {discordId} to cooldowns.");
         }
 
+        /// <summary>
+        /// Called when a cooldown has finished.
+        /// </summary>
         private void OnCooldownElapsed(object sender, ElapsedEventArgs e, ulong discordId)
         {
             var timer = CooldownTimers[discordId];
@@ -82,21 +94,31 @@ namespace FalloutRPG.Services
             timer.Dispose();
 
             CooldownTimers.Remove(discordId);
-            Console.WriteLine($"Removed {discordId} from cooldowns.");
         }
 
+        /// <summary>
+        /// Calculate the experience required for a level.
+        /// </summary>
         public int CalculateExperienceForLevel(int level)
         {
             if (level < 1 || level > 1000) return -1;
             return (level * (level - 1) / 2) * 1000;
         }
 
+        /// <summary>
+        /// Calculates experience between the beginning of
+        /// one level and the next.
+        /// </summary>
         public int CalculateExperienceToNextLevel(int level)
         {
             if (level < 1 || level > 1000) return -1;
             return 50 + (150 * level);
         }
 
+        /// <summary>
+        /// Calculates the remaining experience required
+        /// to get to the next level.
+        /// </summary>
         public int CalculateRemainingExperienceToNextLevel(int experience)
         {
             var nextLevel = (CalculateLevelForExperience(experience) + 1);
@@ -104,22 +126,28 @@ namespace FalloutRPG.Services
             return (nextLevelExp - experience);
         }
 
+        /// <summary>
+        /// Calculates the level depending on the experience.
+        /// </summary>
         public int CalculateLevelForExperience(int experience)
         {
             if (experience == 0) return 1;
             return Convert.ToInt32((Math.Sqrt(experience + 125) / (10 * Math.Sqrt(5))));
         }
 
+        /// <summary>
+        /// Checks if adding the experience will result in a level up.
+        /// </summary>
         private bool WillLevelUp(Character character, int expToAdd)
         {
             int nextLevelExp = CalculateExperienceForLevel(CalculateLevelForExperience(character.Experience) + 1);
 
-            if ((character.Experience + expToAdd) >= nextLevelExp)
-                return true;
-
-            return false;
+            return (character.Experience + expToAdd) >= nextLevelExp;
         }
 
+        /// <summary>
+        /// Called when a character levels up.
+        /// </summary>
         private async Task OnLevelUpAsync(Character character)
         {
             // Give points to spend

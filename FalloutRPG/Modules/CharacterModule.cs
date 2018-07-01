@@ -53,11 +53,14 @@ namespace FalloutRPG.Modules
         public async Task ShowCharacterAsync(IUser targetUser = null)
         {
             var userInfo = Context.User;
-            var character = targetUser == null ? _charService.GetCharacter(userInfo.Id) : _charService.GetCharacter(targetUser.Id);
+            var character = targetUser == null 
+                ? _charService.GetCharacter(userInfo.Id) 
+                : _charService.GetCharacter(targetUser.Id);
 
             if (character == null)
             {
-                await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                await Context.Channel.SendMessageAsync(
+                    string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                 return;
             }
 
@@ -73,26 +76,6 @@ namespace FalloutRPG.Modules
             await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
         }
 
-        [Command("test")]
-        public async Task TestAsync()
-        {
-            var one = new Emoji("1⃣");
-            var two = new Emoji("2⃣");
-
-            var embed = new EmbedBuilder()
-                .WithTitle("Choose one")
-                .AddField(one.Name, "Beer", true)
-                .AddField(two.Name, "Drink", true)
-                .Build();
-
-            //This message does not expire after a single
-            //it will not allow a user to react more than once
-            //it allows more than one user to react
-            await InlineReactionReplyAsync(new ReactionCallbackData("text", embed, false, true)
-                .WithCallback(one, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :beer:"))
-                .WithCallback(two, (c, r) => c.Channel.SendMessageAsync($"{r.User.Value.Mention} Here you go :tropical_drink:")), true);
-        }
-
         [Command("create")]
         [Alias("new")]
         [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
@@ -103,7 +86,8 @@ namespace FalloutRPG.Modules
             try
             {
                 await _charService.CreateCharacterAsync(userInfo.Id, firstName, lastName);
-                await Context.Channel.SendMessageAsync(string.Format(Messages.CHAR_CREATED_SUCCESS, userInfo.Mention));
+                await Context.Channel.SendMessageAsync(
+                    string.Format(Messages.CHAR_CREATED_SUCCESS, userInfo.Mention));
             }
             catch (CharacterException ex)
             {
@@ -165,7 +149,8 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -198,17 +183,21 @@ namespace FalloutRPG.Modules
             public async Task ShowCharacterStoryAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
-                var character = targetUser == null ? _charService.GetCharacter(userInfo.Id) : _charService.GetCharacter(targetUser.Id);
+                var character = targetUser == null 
+                    ? _charService.GetCharacter(userInfo.Id) 
+                    : _charService.GetCharacter(targetUser.Id);
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (character.Story == null || character.Story.Equals(""))
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_STORY_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_STORY_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -230,14 +219,16 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 character.Story = story;
 
                 await _charService.SaveCharacterAsync(character);
-                await Context.Channel.SendMessageAsync(string.Format(Messages.CHAR_STORY_SUCCESS, userInfo.Mention));
+                await Context.Channel.SendMessageAsync(
+                    string.Format(Messages.CHAR_STORY_SUCCESS, userInfo.Mention));
             }
         }
 
@@ -258,17 +249,21 @@ namespace FalloutRPG.Modules
             public async Task ShowCharacterDescriptionAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
-                var character = targetUser == null ? _charService.GetCharacter(userInfo.Id) : _charService.GetCharacter(targetUser.Id);
+                var character = targetUser == null 
+                    ? _charService.GetCharacter(userInfo.Id) 
+                    : _charService.GetCharacter(targetUser.Id);
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (character.Description == null || character.Description.Equals(""))
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_DESC_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_DESC_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -290,14 +285,16 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 character.Description = description;
 
                 await _charService.SaveCharacterAsync(character);
-                await Context.Channel.SendMessageAsync(string.Format(Messages.CHAR_DESC_SUCCESS, userInfo.Mention));
+                await Context.Channel.SendMessageAsync(
+                    string.Format(Messages.CHAR_DESC_SUCCESS, userInfo.Mention));
             }
         }
     }

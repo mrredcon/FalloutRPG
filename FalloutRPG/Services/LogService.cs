@@ -20,6 +20,10 @@ namespace FalloutRPG.Services
             _commands.Log += OnLogAsync;
         }
 
+        /// <summary>
+        /// Prints DiscordSocketClient and CommandService logs
+        /// to the console.
+        /// </summary>
         private Task OnLogAsync(LogMessage msg)
         {
             return Console.Out.WriteLineAsync(msg.ToString());

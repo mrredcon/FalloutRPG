@@ -4,9 +4,14 @@ namespace FalloutRPG.Util
 {
     public class EmbedTool
     {
+        /// <summary>
+        /// Builds a simple Embed with a title and content.
+        /// </summary>
+        /// <remarks>
+        /// The embed description has a max of 2048 characters.
+        /// </remarks>
         public static Embed BuildBasicEmbed(string title, string content)
         {
-            // The embed description has a max of 2048 characters
             content = StringTool.Truncate(content, 2048);
 
             var builder = new EmbedBuilder()
