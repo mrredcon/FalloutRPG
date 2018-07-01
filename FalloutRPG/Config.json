@@ -1,9 +1,9 @@
 ﻿{
   "prefix": "!",
   "tokens": {
-    "discord": "[DISCORD TOKEN]"
+    "discord": "NDU3MTk3NTgxMDE0MTM4ODgw.DhqI6Q.V-E7-qJLuo8afpB1lbAQpViAR_M"
   },
   "roleplay": {
-    "exp-channels": [ "[EXP CHANNELS]", "[ANOTHER EXP CHANNEL]" ]
+    "exp-channels": [ "462324889584664596", "462324906710007810" ]
   }
 }
