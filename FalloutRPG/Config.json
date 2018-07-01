@@ -1,9 +1,9 @@
 ﻿{
   "prefix": "!",
   "tokens": {
-    "discord": "[DISCORD TOKEN]"
+    "discord": ""
   },
   "roleplay": {
-    "exp-channels": [ "[EXP CHANNELS]", "[ANOTHER EXP CHANNEL]" ]
+    "exp-channels": [ "", "" ]
   }
 }
