@@ -1,0 +1,10 @@
+﻿{
+  "prefix": "!",
+  "connection-string": "Server=WINDOWS-T6JSDAS;Database=VaultBoyDB;Trusted_Connection=True;",
+  "tokens": {
+    "discord": "NDU3MTk3NTgxMDE0MTM4ODgw.Dg5p-Q.KfACjGUBN7yL_HSMpHsSv7DvhDU"
+  },
+  "roleplay": {
+    "exp-channels": [ "462324889584664596", "462324906710007810" ]
+  }
+}
