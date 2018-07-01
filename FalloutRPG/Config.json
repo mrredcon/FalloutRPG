@@ -1,9 +1,10 @@
 ﻿{
   "prefix": "!",
+  "connection-string": "Server=[SERVER];Database=[DATABASE];Trusted_Connection=True;",
   "tokens": {
-    "discord": ""
+    "discord": "[DISCORD TOKEN]"
   },
   "roleplay": {
-    "exp-channels": [ "", "" ]
+    "exp-channels": [ "[EXP CHANNELS]", "[ANOTHER EXP CHANNEL]" ]
   }
 }
