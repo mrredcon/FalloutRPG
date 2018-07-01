@@ -1,6 +1,5 @@
 ﻿{
   "prefix": "!",
-  "connection-string": "Server=[SERVER];Database=[DATABASE];Trusted_Connection=True;",
   "tokens": {
     "discord": "[DISCORD TOKEN]"
   },
