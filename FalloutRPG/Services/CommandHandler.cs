@@ -86,7 +86,9 @@ namespace FalloutRPG.Services
 
             if (character == null) return;
 
-            if (await _expService.GiveRandomExperienceAsync(character, 50, 150))
+            var expToGive = _expService.GetRandomExperience();
+
+            if (await _expService.GiveExperienceAsync(character, expToGive))
             {
                 var level = _expService.CalculateLevelForExperience(character.Experience);
                 await context.Channel.SendMessageAsync(

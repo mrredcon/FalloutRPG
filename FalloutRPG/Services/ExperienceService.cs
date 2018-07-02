@@ -14,6 +14,8 @@ namespace FalloutRPG.Services
         private List<ulong> ExperienceEnabledChannels;
 
         private const int DEFAULT_EXP_GAIN = 100;
+        private const int DEFAULT_EXP_RANGE_FROM = 50;
+        private const int DEFAULT_EXP_RANGE_TO = 150;
         private const int COOLDOWN_INTERVAL = 30000;
 
         private readonly CharacterService _charService;
@@ -29,7 +31,7 @@ namespace FalloutRPG.Services
         }
 
         /// <summary>
-        /// Gives a fixed amount of experience.
+        /// Gives experience to a character.
         /// </summary>
         public async Task<bool> GiveExperienceAsync(Character character, int experience = DEFAULT_EXP_GAIN)
         {
@@ -52,29 +54,15 @@ namespace FalloutRPG.Services
         }
 
         /// <summary>
-        /// Gives a random amount of experience between
-        /// a range of two numbers.
+        /// Gets a random amount of experience to give
+        /// between a range of two numbers.
         /// </summary>
-        public async Task<bool> GiveRandomExperienceAsync(Character character, int rangeFrom, int rangeTo)
+        public int GetRandomExperience(
+            int rangeFrom = DEFAULT_EXP_RANGE_FROM,
+            int rangeTo = DEFAULT_EXP_RANGE_TO)
         {
-            if (character == null) return false;
-            if (CooldownTimers.ContainsKey(character.DiscordId)) return false;
-
             var random = new Random();
-            var experience = random.Next(rangeFrom, rangeTo);
-            var levelUp = false;
-
-            if (WillLevelUp(character, experience))
-            {
-                await OnLevelUpAsync(character);
-                levelUp = true;
-            }
-
-            character.Experience += experience;
-            await _charService.SaveCharacterAsync(character);
-
-            AddToCooldown(character.DiscordId);
-            return levelUp;
+            return random.Next(rangeFrom, rangeTo);
         }
 
         /// <summary>
