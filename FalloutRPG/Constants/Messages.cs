@@ -21,5 +21,13 @@ namespace FalloutRPG.Constants
         public const String EXC_DISCORDID_EXISTS = "\u274C You already have a character. ({0})";
         public const String EXC_NAMES_NOT_LETTERS = "\u274C Both names must only consist of letters. ({0})";
         public const String EXC_NAMES_LENGTH = "\u274C Both names must be between 2-24 letters each. ({0})";
+
+        // Fallout Character Message
+        public const String CHAR_SPECIAL_SUCCESS = "\uD83D\uDC4D S.P.E.C.I.A.L. set successfully. ({0})";
+
+        // Fallout Character Error Message
+        public const String ERR_SPECIAL_EXISTS = "\u274C You already have a S.P.E.C.I.A.L. set. ({0})";
+        public const String ERR_SPECIAL_INVALID = "\u274C Did not receive a valid S.P.E.C.I.A.L.. ({0})";
+        public const String ERR_SPECIAL_PARSE = "\u274C Could not parse given S.P.E.C.I.A.L. input. ({0})";
     }
 }

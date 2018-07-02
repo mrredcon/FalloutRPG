@@ -48,9 +48,11 @@ namespace FalloutRPG
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
+            .AddSingleton<FalloutService>()
             .AddSingleton<InteractiveService>()
             .AddSingleton<RpgContext>()
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
+            .AddTransient<IRepository<Special>, EfRepository<Special>>()
             .BuildServiceProvider();
 
         private IConfiguration BuildConfig() => new ConfigurationBuilder()
