@@ -33,17 +33,26 @@ namespace FalloutRPG.Services
             _expService = expService;
             _charService = charService;
             _services = services;
-            _config = config;       
-        }
-
-        public async Task InstallCommandsAsync()
-        {
-            await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(), services: _services);
-            _client.MessageReceived += HandleCommandAsync;
-
+            _config = config;
+            
             LoadExperienceEnabledChannels();
         }
 
+        /// <summary>
+        /// Installs the commands and subscribes to MessageReceived event.
+        /// </summary>
+        public async Task InstallCommandsAsync()
+        {
+            await _commands.AddModulesAsync(
+                assembly: Assembly.GetEntryAssembly(),
+                services: _services);
+            _client.MessageReceived += HandleCommandAsync;
+        }
+
+        /// <summary>
+        /// Handles incoming commands if it begins with specified prefix.
+        /// If there is no prefix, it will process experience.
+        /// </summary>
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
             SocketCommandContext context = null;
@@ -68,6 +77,10 @@ namespace FalloutRPG.Services
                 services: _services);
         }
 
+        /// <summary>
+        /// Processes experience to give if channel is an experience
+        /// enabled channel.
+        /// </summary>
         private async Task ProcessExperienceAsync(SocketCommandContext context)
         {
             if (!IsInExperienceChannel(context.Channel.Id)) return;
@@ -80,10 +93,15 @@ namespace FalloutRPG.Services
             if (await _expService.GiveRandomExperienceAsync(character, 50, 150))
             {
                 var level = _expService.CalculateLevelForExperience(character.Experience);
-                await context.Channel.SendMessageAsync(string.Format(Messages.EXP_LEVEL_UP, userInfo.Mention, level));
+                await context.Channel.SendMessageAsync(
+                    string.Format(Messages.EXP_LEVEL_UP, userInfo.Mention, level));
             }
         }
 
+        /// <summary>
+        /// Checks if the input Channel ID is an experience
+        /// enabled channel.
+        /// </summary>
         private bool IsInExperienceChannel(ulong channelId)
         {
             foreach (var channel in ExperienceEnabledChannels)
@@ -93,6 +111,10 @@ namespace FalloutRPG.Services
             return false;
         }
 
+        /// <summary>
+        /// Loads the experience enabled channels from the
+        /// configuration file.
+        /// </summary>
         private void LoadExperienceEnabledChannels()
         {
             try

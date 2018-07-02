@@ -16,9 +16,19 @@ namespace FalloutRPG
 {
     public class Program
     {
+        /// <summary>
+        /// The entry point of the program.
+        /// </summary>
         public static void Main(string[] args)
                 => new Program().MainAsync().GetAwaiter().GetResult();
 
+        /// <summary>
+        /// Initializes the services from the service provider.
+        /// </summary>
+        /// <remarks>
+        /// await Task.Delay(-1) is required or else the program
+        /// will end.
+        /// </remarks>
         public async Task MainAsync()
         {
             var services = BuildServiceProvider();
@@ -30,6 +40,9 @@ namespace FalloutRPG
             await Task.Delay(-1);
         }
 
+        /// <summary>
+        /// Builds the service provider for dependency injection.
+        /// </summary>
         private IServiceProvider BuildServiceProvider() => new ServiceCollection()
             .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {
@@ -55,6 +68,9 @@ namespace FalloutRPG
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
             .BuildServiceProvider();
 
+        /// <summary>
+        /// Builds the configuration from the Config.json file.
+        /// </summary>
         private IConfiguration BuildConfig() => new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("Config.json")

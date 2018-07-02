@@ -1,4 +1,9 @@
-﻿using Discord;
+﻿/*
+ * Author: Joe4evr
+ * Repo: https://github.com/Joe4evr/Discord.Addons/tree/master/src/Discord.Addons.Preconditions
+ */
+
+using Discord;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
