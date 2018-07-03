@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Models;
@@ -59,7 +60,7 @@ namespace FalloutRPG.Modules
 
             foreach (var prop in typeof(Special).GetProperties())
             {
-                if (prop.Name.Equals("CharacterId"))
+                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
                     continue;
                 result.Append(prop.Name + ": " + prop.GetValue(c.Special) + "\n");
             }
@@ -77,12 +78,12 @@ namespace FalloutRPG.Modules
 
             foreach (var prop in typeof(SkillSheet).GetProperties())
             {
-                if (prop.Name.Equals("CharacterId"))
+                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
                     continue;
                 result.Append(prop.Name + ": " + prop.GetValue(c.Skills) + "\n");
             }
 
-            var embed = Util.EmbedTool.BuildBasicEmbed("S.P.E.C.I.A.L. stats for " + Context.User.Username, result.ToString());
+            var embed = Util.EmbedTool.BuildBasicEmbed("Skills for " + Context.User.Username, result.ToString());
 
             await ReplyAsync(embed: embed);
         }
@@ -165,6 +166,25 @@ namespace FalloutRPG.Modules
 
             await _charService.SaveCharacterAsync(character);
             await ReplyAsync(String.Format(Messages.CHAR_SKILLS_SETSUCCESS, user.Mention));
+        }
+    }
+    [Group("roll")]
+    [Alias("r")]
+    public class FalloutRollModule : ModuleBase<SocketCommandContext>
+    {
+        public FalloutService _falloutService { get; set; }
+        public CharacterService _charService { get; set; }
+
+        [Command("strength")]
+        public async Task RollStrength()
+        {
+            var character = _charService.GetCharacter(Context.User.Id);
+            if (character == null)
+            {
+                await ReplyAsync(Messages.ERR_CHAR_NOT_FOUND);
+                return;
+            }
+            await ReplyAsync(_falloutService.GetSpecialRollResult("Strength", character));
         }
     }
 }
