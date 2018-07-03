@@ -45,7 +45,7 @@ namespace FalloutRPG.Modules
                 .AddField("Users", Context.Client.Guilds.Sum(g => g.Users.Count));
             var embed = builder.Build();
 
-            await Context.Channel.SendMessageAsync("Here you go 😱", embed: embed).ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync(string.Empty, embed: embed).ConfigureAwait(false);
         }
 
         private static string GetUptime() => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");

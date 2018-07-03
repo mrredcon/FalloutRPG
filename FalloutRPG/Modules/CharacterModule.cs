@@ -70,10 +70,9 @@ namespace FalloutRPG.Modules
                 $"**Description:** {character.Description}\n" +
                 $"**Story:** {character.Story}\n" +
                 $"**Experience:** {character.Experience}\n" +
-                $"**Level:** {level}\n" +
-                $"Requested by {userInfo.Mention}");
+                $"**Level:** {level}");
 
-            await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
+            await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }
 
         [Command("create")]
@@ -114,14 +113,12 @@ namespace FalloutRPG.Modules
                     $"**{i + 1}:** {charList[i].FirstName} {charList[i].LastName}" +
                     $" - Level: {level}" +
                     $" - Experience: {charList[i].Experience}" +
-                    $" - User: {user.Username}\n\n");
+                    $" - User: {user.Username}");
             }
-
-            strBuilder.Append($"Requested by {userInfo.Mention}");
 
             var embed = EmbedTool.BuildBasicEmbed("!command highscores", strBuilder.ToString());
 
-            await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
+            await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }
 
         [Group("stats")]
@@ -163,7 +160,7 @@ namespace FalloutRPG.Modules
                     $"**Experience:** {character.Experience}\n" +
                     $"**To Next Level:** {expToNextLevel}");
 
-                await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
+                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
             }
         }
 
@@ -203,10 +200,9 @@ namespace FalloutRPG.Modules
 
                 var embed = EmbedTool.BuildBasicEmbed("Command: !character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
-                    $"**Story:** {character.Story}\n" +
-                    $"Requested by {userInfo.Mention}");
+                    $"**Story:** {character.Story}");
 
-                await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
+                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
             }
 
             [Command("update")]
@@ -269,10 +265,9 @@ namespace FalloutRPG.Modules
 
                 var embed = EmbedTool.BuildBasicEmbed("Command: !character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
-                    $"**Description:** {character.Description}\n" +
-                    $"Requested by {userInfo.Mention}");
+                    $"**Description:** {character.Description}");
 
-                await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
+                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
             }
 
             [Command("update")]

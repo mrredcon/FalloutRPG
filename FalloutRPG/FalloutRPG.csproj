@@ -12,6 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Migrations\20180702180057_CharIdForeignKeyMigration.cs" />
+    <Compile Include="Migrations\20180702180057_CharIdForeignKeyMigration.Designer.cs" />
+    <Compile Include="Migrations\20180702180612_TestMigration.cs" />
+    <Compile Include="Migrations\20180702180612_TestMigration.Designer.cs" />
+    <Compile Include="Migrations\RpgContextModelSnapshot.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Discord.Addons.PassiveInteractive" Version="2.0.3-Beta" />
     <PackageReference Include="Discord.Net" Version="2.0.0-beta2-00970" />
     <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="2.1.1" />

@@ -11,11 +11,18 @@ namespace FalloutRPG.Services
 {
     public class CharacterService
     {
-        private readonly IRepository<Character> _repository;
+        private readonly IRepository<Character> _charRepository;
+        private readonly IRepository<SkillSheet> _skillRepository;
+        private readonly IRepository<Special> _specialRepository;
 
-        public CharacterService(IRepository<Character> repository)
+        public CharacterService(
+            IRepository<Character> charRepository,
+            IRepository<SkillSheet> skillRepository,
+            IRepository<Special> specialRepository)
         {
-            _repository = repository;
+            _charRepository = charRepository;
+            _skillRepository = skillRepository;
+            _specialRepository = specialRepository;
         }
 
         /// <summary>
@@ -23,7 +30,14 @@ namespace FalloutRPG.Services
         /// </summary>
         public Character GetCharacter(ulong discordId)
         {
-            return _repository.Query.Where(x => x.DiscordId == discordId).FirstOrDefault();
+            var character = _charRepository.Query.Where(x => x.DiscordId == discordId).FirstOrDefault();
+
+            if (character == null) return null;
+
+            character.Special = _specialRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefault();
+            character.Skills = _skillRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefault();
+
+            return character;
         }
 
         /// <summary>
@@ -76,7 +90,7 @@ namespace FalloutRPG.Services
                 }
             };
 
-            await _repository.AddAsync(character);
+            await _charRepository.AddAsync(character);
 
             return character;
         }
@@ -86,7 +100,7 @@ namespace FalloutRPG.Services
         /// </summary>
         public async Task<List<Character>> GetHighScoresAsync()
         {
-            var characters = await _repository.FetchAllAsync();
+            var characters = await _charRepository.FetchAllAsync();
             return characters.OrderByDescending(x => x.Experience).Take(10).ToList();
         }
 
@@ -95,7 +109,7 @@ namespace FalloutRPG.Services
         /// </summary>
         public async Task SaveCharacterAsync(Character character)
         {
-            await _repository.SaveAsync(character);
+            await _charRepository.SaveAsync(character);
         }
     }
 }

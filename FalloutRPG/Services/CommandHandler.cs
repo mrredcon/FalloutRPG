@@ -11,8 +11,6 @@ namespace FalloutRPG.Services
 {
     public class CommandHandler
     {
-        private ulong[] ExperienceEnabledChannels;
-
         private readonly DiscordSocketClient _client;
         private readonly CommandService _commands;
         private readonly ExperienceService _expService;
@@ -34,8 +32,6 @@ namespace FalloutRPG.Services
             _charService = charService;
             _services = services;
             _config = config;
-            
-            LoadExperienceEnabledChannels();
         }
 
         /// <summary>
@@ -83,51 +79,20 @@ namespace FalloutRPG.Services
         /// </summary>
         private async Task ProcessExperienceAsync(SocketCommandContext context)
         {
-            if (!IsInExperienceChannel(context.Channel.Id)) return;
+            if (!_expService.IsInExperienceEnabledChannel(context.Channel.Id)) return;
 
             var userInfo = context.User;
             var character = _charService.GetCharacter(userInfo.Id);
 
             if (character == null) return;
 
-            if (await _expService.GiveRandomExperienceAsync(character, 50, 150))
+            var expToGive = _expService.GetRandomExperience();
+
+            if (await _expService.GiveExperienceAsync(character, expToGive))
             {
                 var level = _expService.CalculateLevelForExperience(character.Experience);
                 await context.Channel.SendMessageAsync(
                     string.Format(Messages.EXP_LEVEL_UP, userInfo.Mention, level));
-            }
-        }
-
-        /// <summary>
-        /// Checks if the input Channel ID is an experience
-        /// enabled channel.
-        /// </summary>
-        private bool IsInExperienceChannel(ulong channelId)
-        {
-            foreach (var channel in ExperienceEnabledChannels)
-                if (channelId == channel)
-                    return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Loads the experience enabled channels from the
-        /// configuration file.
-        /// </summary>
-        private void LoadExperienceEnabledChannels()
-        {
-            try
-            {
-                ExperienceEnabledChannels = _config
-                    .GetSection("roleplay:exp-channels")
-                    .GetChildren()
-                    .Select(x => UInt64.Parse(x.Value))
-                    .ToArray();
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("You have not specified any experience enabled channels in Config.json");
             }
         }
     }
