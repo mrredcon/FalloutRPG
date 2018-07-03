@@ -4,6 +4,7 @@ using FalloutRPG.Constants;
 using FalloutRPG.Models;
 using FalloutRPG.Services;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules
@@ -50,11 +51,40 @@ namespace FalloutRPG.Modules
         }
 
         [Command("viewspecial")]
-        public async Task ViewSpecial()
+        public async Task ViewSpecialAsync()
         {
-            var character = _charService.GetCharacter(Context.User.Id);
+            var c = _charService.GetCharacter(Context.User.Id);
 
-            await ReplyAsync("Strength: " + character.Special.Strength);
+            StringBuilder result = new StringBuilder();
+
+            foreach (var prop in typeof(Special).GetProperties())
+            {
+                if (prop.Name.Equals("CharacterId"))
+                    continue;
+                result.Append(prop.Name + ": " + prop.GetValue(c.Special) + "\n");
+            }
+
+            var embed = Util.EmbedTool.BuildBasicEmbed("S.P.E.C.I.A.L. stats for " + Context.User.Username, result.ToString());
+
+            await ReplyAsync(embed: embed);
+        }
+        [Command("viewskills")]
+        public async Task ViewSkillsAsync()
+        {
+            var c = _charService.GetCharacter(Context.User.Id);
+
+            StringBuilder result = new StringBuilder();
+
+            foreach (var prop in typeof(SkillSheet).GetProperties())
+            {
+                if (prop.Name.Equals("CharacterId"))
+                    continue;
+                result.Append(prop.Name + ": " + prop.GetValue(c.Skills) + "\n");
+            }
+
+            var embed = Util.EmbedTool.BuildBasicEmbed("S.P.E.C.I.A.L. stats for " + Context.User.Username, result.ToString());
+
+            await ReplyAsync(embed: embed);
         }
 
         [Command("setspecial")]
@@ -133,6 +163,7 @@ namespace FalloutRPG.Modules
                 return;
             }
 
+            await _charService.SaveCharacterAsync(character);
             await ReplyAsync(String.Format(Messages.CHAR_SKILLS_SETSUCCESS, user.Mention));
         }
     }
