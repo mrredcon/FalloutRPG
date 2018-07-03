@@ -182,19 +182,18 @@ namespace FalloutRPG.Services
             int skillValue = (int)skillProp.GetValue(charSkills);
 
             // RNG influenced by character luck except when its 5
-            int rngResult = (int)Math.Round((rand.Next(1, 101) * (special.Luck / 10.0 - .5 + 1.0)));
+            int rngResult = (int)Math.Round((rand.Next(1, 101) * (1.0 - (special.Luck / 10.0 - .5))));
 
             // compares your roll with your skills, and how much better you did than the bare minimum
-            double successPercent = (double)(skillValue - rngResult) / skillValue;
-            successPercent = Math.Round(successPercent, 2) * 100;
-            // says much you failed in percent (sometimes gets to 300% and higher o-o )
-            double failurePercent = (double)rngResult / skillValue - 1;
-            failurePercent = Math.Round(failurePercent, 2) * 100;
+            double resultPercent = (double)(skillValue - rngResult) / skillValue;
+            resultPercent = Math.Round(resultPercent, 2) * 100;
 
-            if (rngResult <= successPercent)
-                return GetRollMessage(character.FirstName, skill, true, (int)successPercent);
+            //Console.WriteLine("RNG: " + rngResult + " SKILL: " + skillValue + " SP: " + resultPercent);
+
+            if (rngResult <= resultPercent)
+                return GetRollMessage(character.FirstName, skill, true, (int)resultPercent);
             else
-                return GetRollMessage(character.FirstName, skill, false, (int)failurePercent);
+                return GetRollMessage(character.FirstName, skill, false, (int)resultPercent*-1);
         }
         private String GetRollMessage(String charName, string roll, bool success, int percent)
         {
@@ -285,24 +284,23 @@ namespace FalloutRPG.Services
             Random rand = new Random();
             //var skills = CharacterUtilityService.GetCharacterSkills(user);
             var charSpecial = character.Special;
-            //if (charSpecial == null) return null;
+            if (charSpecial.Strength == 0) return null;
 
             // RNG influenced by character luck except when its 5
-            int rngResult = (int)Math.Round((rand.Next(1, 11) * (charSpecial.Luck / 10.0 - .5 + 1.0))),
+            int rngResult = (int)Math.Round((rand.Next(1, 11) * (1.0 - (charSpecial.Luck / 10.0 - .5)))),
                 specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
 
             int difference = specialValue - rngResult;
             // compares your roll with your skills, and how much better you did than the bare minimum
             double successPercent = (double)difference / specialValue;
             successPercent = Math.Round(successPercent, 2) * 100;
-            // says much you failed in percent (sometimes gets to 300% and higher o.o )
-            double failurePercent = (double)rngResult / specialValue;
-            failurePercent = Math.Round(failurePercent, 2) * 100;
 
+            //Console.WriteLine("RNG: " + rngResult + " SPECIAL: " + specialValue + " SP: " + successPercent);
+            // TODO: maybe tell user what they rolled? (needed specialValue, rolled rngResult)
             if (rngResult <= successPercent)
                 return GetRollMessage(character.FirstName, rollSpecial, true, (int)successPercent);
             else
-                return GetRollMessage(character.FirstName, rollSpecial, false, (int)failurePercent);
+                return GetRollMessage(character.FirstName, rollSpecial, false, (int)successPercent*-1);
         }
     }
 }

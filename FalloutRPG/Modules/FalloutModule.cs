@@ -51,7 +51,8 @@ namespace FalloutRPG.Modules
             _falloutService = falloutService;
         }
 
-        [Command("viewspecial")]
+        [Command("special view")]
+        [Alias("sp view")]
         public async Task ViewSpecialAsync()
         {
             var c = _charService.GetCharacter(Context.User.Id);
@@ -69,7 +70,8 @@ namespace FalloutRPG.Modules
 
             await ReplyAsync(embed: embed);
         }
-        [Command("viewskills")]
+        [Command("skills view")]
+        [Alias("sk view")]
         public async Task ViewSkillsAsync()
         {
             var c = _charService.GetCharacter(Context.User.Id);
@@ -88,8 +90,8 @@ namespace FalloutRPG.Modules
             await ReplyAsync(embed: embed);
         }
 
-        [Command("setspecial")]
-        [Alias("setsp")]
+        [Command("special set")]
+        [Alias("sp set")]
         [Summary("Set a new character's S.P.E.C.I.A.L.")]
         public async Task SetCharacterSpecial(string newSpecial)
         {
@@ -128,8 +130,8 @@ namespace FalloutRPG.Modules
                 // did not parse properly
                 await ReplyAsync(String.Format(Messages.ERR_SPECIAL_PARSE, userInfo.Mention));
         }
-        [Command("setskills")]
-        [Alias("setsk")]
+        [Command("skills set")]
+        [Alias("sk set")]
         [Summary("Set a new character's Skills based on SPECIAL and Tag!")]
         public async Task SetCharacterSkills(string tag1, string tag2, string tag3)
         {
@@ -168,6 +170,7 @@ namespace FalloutRPG.Modules
             await ReplyAsync(String.Format(Messages.CHAR_SKILLS_SETSUCCESS, user.Mention));
         }
     }
+
     [Group("roll")]
     [Alias("r")]
     public class FalloutRollModule : ModuleBase<SocketCommandContext>
@@ -176,15 +179,80 @@ namespace FalloutRPG.Modules
         public CharacterService _charService { get; set; }
 
         [Command("strength")]
-        public async Task RollStrength()
+        public async Task RollStrength() { await ReplyAsync(GetSpRoll(Context.User, "Strength")); }
+        [Command("perception")]
+        public async Task RollPerception() { await ReplyAsync(GetSpRoll(Context.User, "Perception")); }
+        [Command("endurance")]
+        public async Task RollEndurance() { await ReplyAsync(GetSpRoll(Context.User, "Endurance")); }
+        [Command("charisma")]
+        public async Task RollCharisma() { await ReplyAsync(GetSpRoll(Context.User, "Charisma")); }
+        [Command("intelligence")]
+        public async Task RollIntelligence() { await ReplyAsync(GetSpRoll(Context.User, "Intelligence")); }
+        [Command("agility")]
+        public async Task RollAgility() { await ReplyAsync(GetSpRoll(Context.User, "Agility")); }
+        [Command("luck")]
+        public async Task RollLuck() { await ReplyAsync(GetSpRoll(Context.User, "Luck")); }
+
+        [Command("barter")]
+        public async Task RollBarter() { await ReplyAsync(GetSkillRoll(Context.User, "Barter")); }
+        [Command("energy weapons")]
+        [Alias("energyweapons")]
+        public async Task RollEnergyWeapons() { await ReplyAsync(GetSkillRoll(Context.User, "EnergyWeapons")); }
+        [Command("explosives")]
+        public async Task RollExplosives() { await ReplyAsync(GetSkillRoll(Context.User, "Explosives")); }
+        [Command("guns")]
+        public async Task RollGuns() { await ReplyAsync(GetSkillRoll(Context.User, "Guns")); }
+        [Command("lockpick")]
+        public async Task RollLockpick() { await ReplyAsync(GetSkillRoll(Context.User, "Lockpick")); }
+        [Command("medicine")]
+        public async Task RollMedicine() { await ReplyAsync(GetSkillRoll(Context.User, "Medicine")); }
+        [Command("meleeweapons")]
+        [Alias("melee weapons")]
+        public async Task RollMeleeWeapons() { await ReplyAsync(GetSkillRoll(Context.User, "MeleeWeapons")); }
+        [Command("repair")]
+        public async Task RollRepair() { await ReplyAsync(GetSkillRoll(Context.User, "Repair")); }
+        [Command("science")]
+        public async Task RollScience() { await ReplyAsync(GetSkillRoll(Context.User, "Science")); }
+        [Command("sneak")]
+        public async Task RollSneak() { await ReplyAsync(GetSkillRoll(Context.User, "Sneak")); }
+        [Command("speech")]
+        public async Task RollSpeech() { await ReplyAsync(GetSkillRoll(Context.User, "Speech")); }
+        [Command("survival")]
+        public async Task RollSurvival() { await ReplyAsync(GetSkillRoll(Context.User, "Survival")); }
+        [Command("unarmed")]
+        public async Task RollUnarmed() { await ReplyAsync(GetSkillRoll(Context.User, "Unarmed")); }
+
+        private string GetSpRoll(IUser user, String specialToRoll)
         {
-            var character = _charService.GetCharacter(Context.User.Id);
+            var character = _charService.GetCharacter(user.Id);
+
             if (character == null)
             {
-                await ReplyAsync(Messages.ERR_CHAR_NOT_FOUND);
-                return;
+                return String.Format(Messages.ERR_CHAR_NOT_FOUND, user.Mention);
             }
-            await ReplyAsync(_falloutService.GetSpecialRollResult("Strength", character));
+            if (!_falloutService.IsValidSpecial(character.Special))
+            {
+                return String.Format(Messages.ERR_SPECIAL_INVALID, user.Mention);
+            }
+            return _falloutService.GetSpecialRollResult(specialToRoll, character);
+        }
+        private string GetSkillRoll(IUser user, String skillToRoll)
+        {
+            var character = _charService.GetCharacter(user.Id);
+
+            if (character == null)
+            {
+                return String.Format(Messages.ERR_CHAR_NOT_FOUND, user.Mention);
+            }
+            if (!_falloutService.IsValidSpecial(character.Special))
+            {
+                return String.Format(Messages.ERR_SPECIAL_INVALID, user.Mention);
+            }
+            if (character.Skills.Barter == 0)
+            {
+                return String.Format(Messages.ERR_SKILLS_NOTSET, user.Mention);
+            }
+            return _falloutService.GetSkillRollResult(skillToRoll, character);
         }
     }
 }

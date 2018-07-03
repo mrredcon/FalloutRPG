@@ -31,6 +31,7 @@ namespace FalloutRPG.Constants
         public const String ERR_SPECIAL_INVALID = "\u274C S.P.E.C.I.A.L. was invalid. (Is it in range or set?) ({0})";
         public const String ERR_SPECIAL_PARSE = "\u274C Could not parse given S.P.E.C.I.A.L. input. ({0})";
         public const String ERR_SKILLS_ALREADYSET = "\u274C Your skills are already set! ({0})";
+        public const String ERR_SKILLS_NOTSET = "\u274C Your skills are not set! ({0})";
 
         // Fallout Character Exception Message
         public const String EXC_SKILLS_TAGSNOTUNIQUE = "\u274C All tagged skills must be unique. ({0})";
