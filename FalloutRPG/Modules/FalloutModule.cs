@@ -40,187 +40,134 @@ namespace FalloutRPG.Modules
     [Alias("char")]
     public class FalloutCharacterModule : ModuleBase<SocketCommandContext>
     {
-        [Group("special")]
-        [Alias("sp")]
-        public class FalloutCharacterSpecialModule : ModuleBase<SocketCommandContext>
+        private readonly CharacterService _charService;
+        private readonly FalloutService _falloutService;
+
+        public FalloutCharacterModule(
+            CharacterService charService,
+            FalloutService falloutService)
         {
-            private readonly CharacterService _charService;
-            private readonly FalloutService _falloutService;
+            _charService = charService;
+            _falloutService = falloutService;
+        }
 
-            public FalloutCharacterSpecialModule(
-                CharacterService charService,
-                FalloutService falloutService)
+        [Command("special view")]
+        [Alias("sp view")]
+        public async Task ViewSpecialAsync()
+        {
+            var c = _charService.GetCharacter(Context.User.Id);
+
+            StringBuilder result = new StringBuilder();
+
+            foreach (var prop in typeof(Special).GetProperties())
             {
-                _charService = charService;
-                _falloutService = falloutService;
+                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
+                    continue;
+                result.Append(prop.Name + ": " + prop.GetValue(c.Special) + "\n");
             }
 
-            [Command("view")]
-            [Alias("view")]
-            public async Task ViewSpecialAsync()
+            var embed = Util.EmbedTool.BuildBasicEmbed("S.P.E.C.I.A.L. stats for " + Context.User.Username, result.ToString());
+
+            await ReplyAsync(embed: embed);
+        }
+        [Command("skills view")]
+        [Alias("sk view")]
+        public async Task ViewSkillsAsync()
+        {
+            var c = _charService.GetCharacter(Context.User.Id);
+
+            StringBuilder result = new StringBuilder();
+
+            foreach (var prop in typeof(SkillSheet).GetProperties())
             {
-                var c = _charService.GetCharacter(Context.User.Id);
-
-                StringBuilder result = new StringBuilder();
-
-                foreach (var prop in typeof(Special).GetProperties())
-                {
-                    if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
-                        continue;
-                    result.Append(prop.Name + ": " + prop.GetValue(c.Special) + "\n");
-                }
-
-                var embed = Util.EmbedTool.BuildBasicEmbed("S.P.E.C.I.A.L. stats for " + Context.User.Username, result.ToString());
-
-                await ReplyAsync(embed: embed);
+                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
+                    continue;
+                result.Append(prop.Name + ": " + prop.GetValue(c.Skills) + "\n");
             }
-            [Command("set")]
-            [Alias("set")]
-            [Summary("Set a new character's S.P.E.C.I.A.L.")]
-            public async Task SetCharacterSpecial(string newSpecial)
+
+            var embed = Util.EmbedTool.BuildBasicEmbed("Skills for " + Context.User.Username, result.ToString());
+
+            await ReplyAsync(embed: embed);
+        }
+
+        [Command("special set")]
+        [Alias("sp set")]
+        [Summary("Set a new character's S.P.E.C.I.A.L.")]
+        public async Task SetCharacterSpecial(string newSpecial)
+        {
+            var userInfo = Context.User;
+            var character = _charService.GetCharacter(userInfo.Id);
+
+            if (character == null)
             {
-                var userInfo = Context.User;
-                var character = _charService.GetCharacter(userInfo.Id);
+                await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                return;
+            }
+            // default should be all 0s which is is not a valid special, so a valid one means a special has been set.
+            if (_falloutService.IsValidSpecial(character.Special))
+            {
+                await ReplyAsync(String.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
+                return;
+            }
 
-                if (character == null)
-                {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
-                    return;
-                }
-                // default should be all 0s which is is not a valid special, so a valid one means a special has been set.
-                if (_falloutService.IsValidSpecial(character.Special))
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
-                    return;
-                }
+            Special special = _falloutService.ParseSpecialString(newSpecial);
 
-                Special special = _falloutService.ParseSpecialString(newSpecial);
-
-                // parsed properly
-                if (special != null)
+            // parsed properly
+            if (special != null) 
+            {
+                // Success condition
+                if (_falloutService.IsValidSpecial(special, newChar: true))
                 {
-                    // Success condition
-                    if (_falloutService.IsValidSpecial(special, newChar: true))
-                    {
-                        character.Special = special;
-                        await _charService.SaveCharacterAsync(character);
-                        await ReplyAsync(String.Format(Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
-                    }
-                    else
-                        // parsed special was not in range
-                        await ReplyAsync(String.Format(Messages.ERR_SPECIAL_INVALID, userInfo.Mention));
+                    character.Special = special;
+                    await _charService.SaveCharacterAsync(character);
+                    await ReplyAsync(String.Format(Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
                 }
                 else
-                    // did not parse properly
-                    await ReplyAsync(String.Format(Messages.ERR_SPECIAL_PARSE, userInfo.Mention));
+                    // parsed special was not in range
+                    await ReplyAsync(String.Format(Messages.ERR_SPECIAL_INVALID, userInfo.Mention));
             }
+            else
+                // did not parse properly
+                await ReplyAsync(String.Format(Messages.ERR_SPECIAL_PARSE, userInfo.Mention));
         }
-        [Group("skills")]
-        [Alias("sk")]
-        public class FalloutCharacterSkillsModule : ModuleBase<SocketCommandContext>
+        [Command("skills set")]
+        [Alias("sk set")]
+        [Summary("Set a new character's Skills based on SPECIAL and Tag!")]
+        public async Task SetCharacterSkills(string tag1, string tag2, string tag3)
         {
-            private readonly CharacterService _charService;
-            private readonly FalloutService _falloutService;
+            var user = Context.User;
+            var character = _charService.GetCharacter(user.Id);
 
-            public FalloutCharacterSkillsModule(
-                CharacterService charService,
-                FalloutService falloutService)
+            if (character == null)
             {
-                _charService = charService;
-                _falloutService = falloutService;
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, user.Mention));
+                return;
+            }
+            if (character.Skills.Barter != 0) // check Barter if its zero, if it is, then they haven't set a special...
+            {
+                await ReplyAsync(String.Format(Messages.ERR_SKILLS_ALREADYSET, user.Mention));
+                return;
+            }
+            if (!_falloutService.IsValidSpecial(character.Special))
+            {
+                await ReplyAsync(String.Format(Messages.ERR_SPECIAL_INVALID, user.Mention));
+                return;
             }
 
-            [Command("view")]
-            [Alias("view")]
-            public async Task ViewSkillsAsync()
+            character.Skills = _falloutService.CalculateInitialSkills(character.Special, character);
+
+            try
             {
-                var c = _charService.GetCharacter(Context.User.Id);
-
-                StringBuilder result = new StringBuilder();
-
-                foreach (var prop in typeof(SkillSheet).GetProperties())
-                {
-                    if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
-                        continue;
-                    result.Append(prop.Name + ": " + prop.GetValue(c.Skills) + "\n");
-                }
-
-                var embed = Util.EmbedTool.BuildBasicEmbed("Skills for " + Context.User.Username, result.ToString());
-
-                await ReplyAsync(embed: embed);
+                character.Skills = _falloutService.TagSkills(character.Skills, tag1, tag2, tag3);
+            }
+            catch (ArgumentException e)
+            {
+                await ReplyAsync(String.Format(e.Message, user.Mention));
+                return;
             }
 
-
-            [Command("set")]
-            [Alias("set")]
-            [Summary("Set a new character's Skills based on SPECIAL and Tag!")]
-            public async Task SetSkillsAsync(string tag1, string tag2, string tag3)
-            {
-                var user = Context.User;
-                var character = _charService.GetCharacter(user.Id);
-
-                if (character == null)
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, user.Mention));
-                    return;
-                }
-                if (character.Skills.Barter != 0) // check Barter if its zero, if it is, then they haven't set a special...
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_SKILLS_ALREADYSET, user.Mention));
-                    return;
-                }
-                if (!_falloutService.IsValidSpecial(character.Special))
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_SPECIAL_INVALID, user.Mention));
-                    return;
-                }
-
-                character.Skills = _falloutService.CalculateInitialSkills(character.Special, character);
-
-                try
-                {
-                    character.Skills = _falloutService.TagSkills(character.Skills, tag1, tag2, tag3);
-                }
-                catch (ArgumentException e)
-                {
-                    await ReplyAsync(String.Format(e.Message, user.Mention));
-                    return;
-                }
-
-                await _charService.SaveCharacterAsync(character);
-                await ReplyAsync(String.Format(Messages.CHAR_SKILLS_SETSUCCESS, user.Mention));
-            }
-            [Command("add")]
-            public async Task AddSkillPointsAsync(string skillName, int points)
-            {
-                var character = _charService.GetCharacter(Context.User.Id);
-
-                if (character == null)
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
-                    return;
-                }
-                if (character.Skills.Barter == 0)
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_SKILLS_NOTSET, Context.User.Mention));
-                    return;
-                }
-                if (character.SkillPoints < points)
-                {
-                    await ReplyAsync(String.Format(Messages.ERR_SKILLS_NOTENOUGH, Context.User.Mention));
-                    return;
-                }
-
-                foreach (var prop in typeof(SkillSheet).GetProperties())
-                {
-                    if (prop.Name.Equals("CharacterId"))
-                        continue;
-                    if (prop.Name.ToLower().Equals(skillName.ToLower())) // case insensitivity
-                    {
-                        prop.SetValue(character.Skills, (int)prop.GetValue(character.Skills) + points);
-                    }
-                }
-            }
+            await _charService.SaveCharacterAsync(character);
+            await ReplyAsync(String.Format(Messages.CHAR_SKILLS_SETSUCCESS, user.Mention));
         }
     }
 
@@ -232,25 +179,18 @@ namespace FalloutRPG.Modules
         public CharacterService _charService { get; set; }
 
         [Command("strength")]
-        [Alias("str")]
         public async Task RollStrength() { await ReplyAsync(GetSpRoll(Context.User, "Strength")); }
         [Command("perception")]
-        [Alias("per")]
         public async Task RollPerception() { await ReplyAsync(GetSpRoll(Context.User, "Perception")); }
         [Command("endurance")]
-        [Alias("end")]
         public async Task RollEndurance() { await ReplyAsync(GetSpRoll(Context.User, "Endurance")); }
         [Command("charisma")]
-        [Alias("cha")]
         public async Task RollCharisma() { await ReplyAsync(GetSpRoll(Context.User, "Charisma")); }
         [Command("intelligence")]
-        [Alias("int")]
         public async Task RollIntelligence() { await ReplyAsync(GetSpRoll(Context.User, "Intelligence")); }
         [Command("agility")]
-        [Alias("agl")]
         public async Task RollAgility() { await ReplyAsync(GetSpRoll(Context.User, "Agility")); }
         [Command("luck")]
-        [Alias("luc")]
         public async Task RollLuck() { await ReplyAsync(GetSpRoll(Context.User, "Luck")); }
 
         [Command("barter")]

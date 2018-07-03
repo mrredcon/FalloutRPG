@@ -12,9 +12,6 @@ namespace FalloutRPG.Constants
         // Experience Messages
         public const String EXP_LEVEL_UP = "\u2B50 Congratulations {0}, you have just advanced to level {1}!";
 
-        // Experience Error Messages
-        public const String ERR_LEVEL_SKILLS = "\u274C Failed to add the correct amount of skill points! {0}";
-
         // Character Error Messages
         public const String ERR_CHAR_NOT_FOUND = "\u274C Unable to find character. ({0})";
         public const String ERR_STORY_NOT_FOUND = "\u274C Unable to find character story. ({0})";
@@ -35,7 +32,6 @@ namespace FalloutRPG.Constants
         public const String ERR_SPECIAL_PARSE = "\u274C Could not parse given S.P.E.C.I.A.L. input. ({0})";
         public const String ERR_SKILLS_ALREADYSET = "\u274C Your skills are already set! ({0})";
         public const String ERR_SKILLS_NOTSET = "\u274C Your skills are not set! ({0})";
-        public const String ERR_SKILLS_NOTENOUGH = "\u274C You don't have enough skill points! ({0})";
 
         // Fallout Character Exception Message
         public const String EXC_SKILLS_TAGSNOTUNIQUE = "\u274C All tagged skills must be unique. ({0})";
