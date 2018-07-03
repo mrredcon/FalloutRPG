@@ -65,6 +65,7 @@ namespace FalloutRPG
             .AddSingleton<InteractiveService>()
             .AddSingleton<RpgContext>()
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
+            .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
             .BuildServiceProvider();
 

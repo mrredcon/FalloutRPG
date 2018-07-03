@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using FalloutRPG.Addons;
+using FalloutRPG.Constants;
 using FalloutRPG.Models;
 using FalloutRPG.Services;
 using System;
@@ -66,33 +67,73 @@ namespace FalloutRPG.Modules
 
             if (character == null)
             {
-                await Context.Channel.SendMessageAsync(string.Format(Constants.Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                 return;
             }
-
-            if (character.Special != null)
+            // default should be all 0s which is is not a valid special, so a valid one means a special has been set.
+            if (_falloutService.IsValidSpecial(character.Special))
             {
-                await ReplyAsync(String.Format(Constants.Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
+                await ReplyAsync(String.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
                 return;
             }
 
             Special special = _falloutService.ParseSpecialString(newSpecial);
 
-            if (special != null)
+            // parsed properly
+            if (special != null) 
             {
                 // Success condition
                 if (_falloutService.IsValidSpecial(special, newChar: true))
                 {
                     character.Special = special;
-                    await _falloutService.SaveSpecial(character, special);
                     await _charService.SaveCharacterAsync(character);
-                    await ReplyAsync(String.Format(Constants.Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
+                    await ReplyAsync(String.Format(Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
                 }
                 else
-                    await ReplyAsync(String.Format(Constants.Messages.ERR_SPECIAL_INVALID, userInfo.Mention));
+                    // parsed special was not in range
+                    await ReplyAsync(String.Format(Messages.ERR_SPECIAL_INVALID, userInfo.Mention));
             }
             else
-                await ReplyAsync(String.Format(Constants.Messages.ERR_SPECIAL_PARSE, userInfo.Mention));
+                // did not parse properly
+                await ReplyAsync(String.Format(Messages.ERR_SPECIAL_PARSE, userInfo.Mention));
+        }
+        [Command("setskills")]
+        [Alias("setsk")]
+        [Summary("Set a new character's Skills based on SPECIAL and Tag!")]
+        public async Task SetCharacterSkills(string tag1, string tag2, string tag3)
+        {
+            var user = Context.User;
+            var character = _charService.GetCharacter(user.Id);
+
+            if (character == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, user.Mention));
+                return;
+            }
+            if (character.Skills.Barter != 0) // check Barter if its zero, if it is, then they haven't set a special...
+            {
+                await ReplyAsync(String.Format(Messages.ERR_SKILLS_ALREADYSET, user.Mention));
+                return;
+            }
+            if (!_falloutService.IsValidSpecial(character.Special))
+            {
+                await ReplyAsync(String.Format(Messages.ERR_SPECIAL_INVALID, user.Mention));
+                return;
+            }
+
+            character.Skills = _falloutService.CalculateInitialSkills(character.Special, character);
+
+            try
+            {
+                character.Skills = _falloutService.TagSkills(character.Skills, tag1, tag2, tag3);
+            }
+            catch (ArgumentException e)
+            {
+                await ReplyAsync(String.Format(e.Message, user.Mention));
+                return;
+            }
+
+            await ReplyAsync(String.Format(Messages.CHAR_SKILLS_SETSUCCESS, user.Mention));
         }
     }
 }
