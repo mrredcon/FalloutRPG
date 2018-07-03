@@ -1,4 +1,5 @@
-﻿using FalloutRPG.Models;
+﻿using Discord.WebSocket;
+using FalloutRPG.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,13 @@ namespace FalloutRPG.Services
 
         private readonly CharacterService _charService;
         private readonly IConfiguration _config;
+        private readonly DiscordSocketClient _client;
 
-        public ExperienceService(CharacterService charService, IConfiguration config)
+        public ExperienceService(CharacterService charService, IConfiguration config, DiscordSocketClient client)
         {
             _charService = charService;
             _config = config;
+            _client = client;
 
             CooldownTimers = new Dictionary<ulong, Timer>();
             LoadExperienceEnabledChannels();
@@ -165,8 +168,24 @@ namespace FalloutRPG.Services
         /// </summary>
         private async Task OnLevelUpAsync(Character character)
         {
-            // Give points to spend
+            int pointsToAdd = 0;
 
+            // Give points to spend
+            if (character.Special.Intelligence == 0)
+            {
+                var user = _client.GetUser(character.DiscordId);
+                var dmChannel = await user.GetOrCreateDMChannelAsync();
+                await dmChannel.SendMessageAsync(String.Format(
+                    Constants.Messages.ERR_LEVEL_SKILLS, String.Format(Constants.Messages.ERR_SPECIAL_INVALID, user.Mention)));
+            }
+
+            if (character.Special.Intelligence % 2 == 1)
+                if (CalculateLevelForExperience(character.Experience) + 1 % 2 == 0)
+                    pointsToAdd++;
+
+            pointsToAdd += (10 + character.Special.Intelligence / 2);
+
+            character.SkillPoints += pointsToAdd;
             await _charService.SaveCharacterAsync(character);
         }
 
