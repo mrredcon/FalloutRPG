@@ -188,9 +188,9 @@ namespace FalloutRPG.Services
             double resultPercent = (double)(skillValue - rngResult) / skillValue;
             resultPercent = Math.Round(resultPercent, 2) * 100;
 
-            //Console.WriteLine("RNG: " + rngResult + " SKILL: " + skillValue + " SP: " + resultPercent);
+            Console.WriteLine("RNG: " + rngResult + " SKILL: " + skillValue + " SP: " + resultPercent);
 
-            if (rngResult <= resultPercent)
+            if (rngResult <= resultPercent || rngResult <= skillValue)
                 return GetRollMessage(character.FirstName, skill, true, (int)resultPercent);
             else
                 return GetRollMessage(character.FirstName, skill, false, (int)resultPercent*-1);
@@ -295,9 +295,10 @@ namespace FalloutRPG.Services
             double successPercent = (double)difference / specialValue;
             successPercent = Math.Round(successPercent, 2) * 100;
 
-            //Console.WriteLine("RNG: " + rngResult + " SPECIAL: " + specialValue + " SP: " + successPercent);
+            Console.WriteLine("RNG: " + rngResult + " SPECIAL: " + specialValue + " SP: " + successPercent);
+
             // TODO: maybe tell user what they rolled? (needed specialValue, rolled rngResult)
-            if (rngResult <= successPercent)
+            if (rngResult <= successPercent || rngResult <= specialValue)
                 return GetRollMessage(character.FirstName, rollSpecial, true, (int)successPercent);
             else
                 return GetRollMessage(character.FirstName, rollSpecial, false, (int)successPercent*-1);
