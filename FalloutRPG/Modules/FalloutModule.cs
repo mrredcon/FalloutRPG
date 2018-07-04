@@ -1,4 +1,4 @@
-﻿using Discord;
+﻿/*using Discord;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
@@ -55,39 +55,56 @@ namespace FalloutRPG.Modules
         [Alias("sp view")]
         public async Task ViewSpecialAsync()
         {
-            var c = _charService.GetCharacter(Context.User.Id);
+            var userInfo = Context.User;
+            var character = _charService.GetCharacter(Context.User.Id);
 
-            StringBuilder result = new StringBuilder();
+            if (character == null)
+            {
+                await Context.Channel.SendMessageAsync(
+                    string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                return;
+            }
+
+            var result = new StringBuilder();
 
             foreach (var prop in typeof(Special).GetProperties())
             {
                 if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
                     continue;
-                result.Append(prop.Name + ": " + prop.GetValue(c.Special) + "\n");
+
+                result.Append($"{prop.Name}: {prop.GetValue(character.Special)}\n");
             }
 
-            var embed = Util.EmbedTool.BuildBasicEmbed("S.P.E.C.I.A.L. stats for " + Context.User.Username, result.ToString());
+            var embed = Util.EmbedTool.BuildBasicEmbed($"S.P.E.C.I.A.L. stats for {Context.User.Username}", result.ToString());
 
-            await ReplyAsync(embed: embed);
+            await ReplyAsync(userInfo.Mention, embed: embed);
         }
+
         [Command("skills view")]
         [Alias("sk view")]
         public async Task ViewSkillsAsync()
         {
-            var c = _charService.GetCharacter(Context.User.Id);
+            var character = _charService.GetCharacter(Context.User.Id);
 
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
 
             foreach (var prop in typeof(SkillSheet).GetProperties())
             {
                 if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
                     continue;
-                result.Append(prop.Name + ": " + prop.GetValue(c.Skills) + "\n");
+
+                result.Append($"{prop.Name}: {prop.GetValue(character.Skills)}\n");
             }
 
-            var embed = Util.EmbedTool.BuildBasicEmbed("Skills for " + Context.User.Username, result.ToString());
+            var embed = Util.EmbedTool.BuildBasicEmbed($"Skills for {Context.User.Username}", result.ToString());
 
-            await ReplyAsync(embed: embed);
+            await ReplyAsync(Context.User.Mention, embed: embed);
+        }
+
+
+
+            // Check if special already set
+
         }
 
         [Command("special set")]
@@ -103,6 +120,7 @@ namespace FalloutRPG.Modules
                 await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                 return;
             }
+
             // default should be all 0s which is is not a valid special, so a valid one means a special has been set.
             if (_falloutService.IsValidSpecial(character.Special))
             {
@@ -110,7 +128,7 @@ namespace FalloutRPG.Modules
                 return;
             }
 
-            Special special = _falloutService.ParseSpecialString(newSpecial);
+            var special = _falloutService.ParseSpecialString(newSpecial);
 
             // parsed properly
             if (special != null) 
@@ -130,6 +148,7 @@ namespace FalloutRPG.Modules
                 // did not parse properly
                 await ReplyAsync(String.Format(Messages.ERR_SPECIAL_PARSE, userInfo.Mention));
         }
+
         [Command("skills set")]
         [Alias("sk set")]
         [Summary("Set a new character's Skills based on SPECIAL and Tag!")]
@@ -236,6 +255,7 @@ namespace FalloutRPG.Modules
             }
             return _falloutService.GetSpecialRollResult(specialToRoll, character);
         }
+
         private string GetSkillRoll(IUser user, String skillToRoll)
         {
             var character = _charService.GetCharacter(user.Id);
@@ -256,3 +276,4 @@ namespace FalloutRPG.Modules
         }
     }
 }
+*/

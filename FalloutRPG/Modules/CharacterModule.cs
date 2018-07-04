@@ -6,6 +6,7 @@ using FalloutRPG.Constants;
 using FalloutRPG.Exceptions;
 using FalloutRPG.Services;
 using FalloutRPG.Util;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -53,8 +54,8 @@ namespace FalloutRPG.Modules
         public async Task ShowCharacterAsync(IUser targetUser = null)
         {
             var userInfo = Context.User;
-            var character = targetUser == null 
-                ? _charService.GetCharacter(userInfo.Id) 
+            var character = targetUser == null
+                ? _charService.GetCharacter(userInfo.Id)
                 : _charService.GetCharacter(targetUser.Id);
 
             if (character == null)
@@ -180,8 +181,8 @@ namespace FalloutRPG.Modules
             public async Task ShowCharacterStoryAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
-                var character = targetUser == null 
-                    ? _charService.GetCharacter(userInfo.Id) 
+                var character = targetUser == null
+                    ? _charService.GetCharacter(userInfo.Id)
                     : _charService.GetCharacter(targetUser.Id);
 
                 if (character == null)
@@ -245,8 +246,8 @@ namespace FalloutRPG.Modules
             public async Task ShowCharacterDescriptionAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
-                var character = targetUser == null 
-                    ? _charService.GetCharacter(userInfo.Id) 
+                var character = targetUser == null
+                    ? _charService.GetCharacter(userInfo.Id)
                     : _charService.GetCharacter(targetUser.Id);
 
                 if (character == null)
@@ -290,6 +291,84 @@ namespace FalloutRPG.Modules
                 await _charService.SaveCharacterAsync(character);
                 await Context.Channel.SendMessageAsync(
                     string.Format(Messages.CHAR_DESC_SUCCESS, userInfo.Mention));
+            }
+        }
+
+        [Group("special")]
+        public class CharacterSpecialModule : ModuleBase<SocketCommandContext>
+        {
+            private readonly CharacterService _charService;
+
+            public CharacterSpecialModule(CharacterService service)
+            {
+                _charService = service;
+            }
+
+            [Command]
+            [Alias("show")]
+            public async Task ShowSpecialAsync(IUser targetUser = null)
+            {
+                var userInfo = Context.User;
+                var character = targetUser == null
+                    ? _charService.GetCharacter(userInfo.Id)
+                    : _charService.GetCharacter(targetUser.Id);
+
+                if (character == null)
+                {
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                if (!_charService.DoesHaveSpecial(character))
+                {
+                    await Context.Channel.SendMessageAsync(
+                        string.Format(Messages.ERR_DESC_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                var embed = EmbedTool.BuildBasicEmbed("Command: !character special",
+                    $"**Name:** {character.FirstName} {character.LastName}\n" +
+                    $"**STR:** {character.Special.Strength}\n" +
+                    $"**PER:** {character.Special.Perception}\n" +
+                    $"**END:** {character.Special.Endurance}\n" +
+                    $"**CHA:** {character.Special.Charisma}\n" +
+                    $"**INT:** {character.Special.Intelligence}\n" +
+                    $"**AGI:** {character.Special.Agility}\n" +
+                    $"**LUC:** {character.Special.Luck}\n");
+
+                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+            }
+
+            [Command("set")]
+            public async Task SetSpecialAsync(int str, int per, int end, int cha, int inte, int agi, int luc)
+            {
+                var userInfo = Context.User;
+                var character = _charService.GetCharacter(userInfo.Id);
+                var special = new int[] { str, per, end, cha, inte, agi, luc };
+
+                if (character == null)
+                {
+                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                if (_charService.DoesHaveSpecial(character))
+                {
+                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
+                    return;
+                }
+
+                try
+                {
+                    await _charService.SetInitialSpecialAsync(character, special);
+                    await Context.Channel.SendMessageAsync("Special set successfully.");
+                }
+                catch (Exception e)
+                {
+                    await Context.Channel.SendMessageAsync(e.Message);
+                }
+               
             }
         }
     }

@@ -3,6 +3,7 @@ using FalloutRPG.Data.Repositories;
 using FalloutRPG.Exceptions;
 using FalloutRPG.Models;
 using FalloutRPG.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -110,6 +111,38 @@ namespace FalloutRPG.Services
         public async Task SaveCharacterAsync(Character character)
         {
             await _charRepository.SaveAsync(character);
+        }
+
+        public bool DoesHaveSpecial(Character character)
+        {
+            var properties = character.Special.GetType().GetProperties();
+
+            foreach (var prop in properties)
+            {
+                var value = Convert.ToInt32(prop.GetValue(character.Special));
+                if (value == 0) return false;
+            }
+
+            return true;
+        }
+
+        public async Task SetInitialSpecialAsync(Character character, int[] special)
+        {
+            if (special.Length != 7)
+                throw new ArgumentException("Special is not correct. Panic please.");
+
+            if (special.Sum() != 40)
+                throw new ArgumentException("Special does not add up to 40.");
+
+            character.Special.Strength = special[0];
+            character.Special.Perception = special[1];
+            character.Special.Endurance = special[2];
+            character.Special.Charisma = special[3];
+            character.Special.Intelligence = special[4];
+            character.Special.Agility = special[5];
+            character.Special.Luck = special[6];
+
+            await SaveCharacterAsync(character);
         }
     }
 }

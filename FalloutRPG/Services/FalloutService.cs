@@ -11,7 +11,7 @@ namespace FalloutRPG.Services
 {
     public class FalloutService
     {
-        private const int _specialPoints = 40;
+        private const int DEFAULT_SPECIAL_POINTS = 40;
 
         /// <summary>
         /// Attempts to parse the given string into a Special
@@ -23,7 +23,7 @@ namespace FalloutRPG.Services
             if (specialToParse.Length != 7)
                 return null;
 
-            int[] statArray = new int[7];
+            var statArray = new int[7];
 
             int temp = 0;
             for (int stat = 0; stat < specialToParse.Length; stat++)
@@ -50,7 +50,7 @@ namespace FalloutRPG.Services
             return special;
         }
         /// <summary>
-        /// Checks each SPECIAL stat is at least 1 (or optionally 1-10), and if it sums to _specialPoints.
+        /// Checks each SPECIAL stat is at least 1 (or optionally 1-10), and if it sums to DEFAULT_SPECIAL_POINTS.
         /// </summary>
         /// <param name="special">Special to check</param>
         /// <param name="newChar">When set to true, only stats 1-10 are allowed, set to false stats must be at least 1.</param>
@@ -61,7 +61,7 @@ namespace FalloutRPG.Services
             int total = special.Strength + special.Perception + special.Endurance + special.Charisma + special.Intelligence +
                 special.Agility + special.Luck;
 
-            if (total != _specialPoints)
+            if (total != DEFAULT_SPECIAL_POINTS)
                 return false;
 
             // New characters can't have a Special stat above 10 or below 1
