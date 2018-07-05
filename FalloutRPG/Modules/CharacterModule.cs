@@ -18,8 +18,6 @@ namespace FalloutRPG.Modules
         private readonly CharacterService _charService;
         private readonly ExperienceService _expService;
 
-        private const int RATELIMIT_SECONDS = 3;
-
         public CharacterModule(
             CharacterService charService,
             ExperienceService expService)
@@ -30,7 +28,7 @@ namespace FalloutRPG.Modules
 
         [Command]
         [Alias("help")]
-        [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowCommandHelpAsync()
         {
             var embed = EmbedTool.BuildBasicEmbed("Command: !character",
@@ -49,7 +47,7 @@ namespace FalloutRPG.Modules
 
         [Command("show")]
         [Alias("display")]
-        [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowCharacterAsync(IUser targetUser = null)
         {
             var userInfo = Context.User;
@@ -77,7 +75,7 @@ namespace FalloutRPG.Modules
 
         [Command("create")]
         [Alias("new")]
-        [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task CreateCharacterAsync(string firstName, string lastName)
         {
             var userInfo = Context.User;
@@ -97,7 +95,7 @@ namespace FalloutRPG.Modules
 
         [Command("highscores")]
         [Alias("hiscores", "high", "hi", "highscore", "hiscore")]
-        [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowHighScoresAsync()
         {
             var userInfo = Context.User;
@@ -136,7 +134,7 @@ namespace FalloutRPG.Modules
 
             [Command]
             [Alias("show")]
-            [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowCharacterStatsAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -176,7 +174,7 @@ namespace FalloutRPG.Modules
 
             [Command]
             [Alias("show")]
-            [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowCharacterStoryAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -207,7 +205,7 @@ namespace FalloutRPG.Modules
 
             [Command("update")]
             [Alias("set")]
-            [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task UpdateCharacterStoryAsync([Remainder]string story)
             {
                 var userInfo = Context.User;
@@ -241,7 +239,7 @@ namespace FalloutRPG.Modules
 
             [Command]
             [Alias("show")]
-            [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowCharacterDescriptionAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -272,7 +270,7 @@ namespace FalloutRPG.Modules
 
             [Command("update")]
             [Alias("set")]
-            [Ratelimit(1, RATELIMIT_SECONDS, Measure.Seconds)]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task UpdateCharacterDescriptionAsync([Remainder]string description)
             {
                 var userInfo = Context.User;

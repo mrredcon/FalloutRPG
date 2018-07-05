@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Services;
 using FalloutRPG.Util;
@@ -16,6 +17,7 @@ namespace FalloutRPG.Modules
     {
         [Group("special")]
         [Alias("spec", "sp")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public class CharacterSpecialModule : ModuleBase<SocketCommandContext>
         {
             private readonly CharacterService _charService;
@@ -29,6 +31,7 @@ namespace FalloutRPG.Modules
 
             [Command]
             [Alias("show")]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSpecialAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -64,6 +67,7 @@ namespace FalloutRPG.Modules
             }
 
             [Command("set")]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SetSpecialAsync(int str, int per, int end, int cha, int inte, int agi, int luc)
             {
                 var userInfo = Context.User;

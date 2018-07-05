@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Services;
 using FalloutRPG.Util;
@@ -16,6 +17,7 @@ namespace FalloutRPG.Modules
     {
         [Group("skills")]
         [Alias("skill", "sk")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public class CharacterSkillsModule : ModuleBase<SocketCommandContext>
         {
             private readonly CharacterService _charService;
@@ -29,6 +31,7 @@ namespace FalloutRPG.Modules
 
             [Command]
             [Alias("show")]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -71,6 +74,7 @@ namespace FalloutRPG.Modules
             }
 
             [Command("set")]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SetSkillsAsync(string tag1, string tag2, string tag3)
             {
                 var userInfo = Context.User;
@@ -100,6 +104,7 @@ namespace FalloutRPG.Modules
             }
 
             [Command("spend")]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SpendSkillPointsAsync(string skill, int points)
             {
                 var userInfo = Context.User;

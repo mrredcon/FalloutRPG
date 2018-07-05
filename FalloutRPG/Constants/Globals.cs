@@ -22,5 +22,7 @@ namespace FalloutRPG.Constants
             "Survival",
             "Unarmed"
         };
+
+        public const int RATELIMIT_SECONDS = 3;
     }
 }
