@@ -67,6 +67,12 @@ namespace FalloutRPG.Services
             return true;
         }
 
+        /// <summary>
+        /// Gives character their skill points from leveling up.
+        /// </summary>
+        /// <remarks>
+        /// Uses the Fallout New Vegas formula. (10 + (INT / 2))
+        /// </remarks>
         public void GrantSkillPoints(Character character)
         {
             if (character == null)
@@ -77,6 +83,9 @@ namespace FalloutRPG.Services
             character.SkillPoints += points;
         }
 
+        /// <summary>
+        /// Puts an amount of points in a specified skill.
+        /// </summary>
         public void PutPointsInSkill(Character character, string skill, int points)
         {
             if (character == null)
