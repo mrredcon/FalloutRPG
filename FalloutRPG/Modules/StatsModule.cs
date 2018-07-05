@@ -90,7 +90,7 @@ namespace FalloutRPG.Modules
                 }
                 catch (Exception e)
                 {
-                    await Context.Channel.SendMessageAsync(e.Message);
+                    await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
                 }
             }
         }
@@ -175,7 +175,7 @@ namespace FalloutRPG.Modules
                 }
                 catch (Exception e)
                 {
-                    await Context.Channel.SendMessageAsync(e.Message);
+                    await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
                 }
             }
         }

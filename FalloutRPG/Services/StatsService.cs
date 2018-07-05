@@ -22,7 +22,7 @@ namespace FalloutRPG.Services
         public bool IsSpecialSet(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             var properties = character.Special.GetType().GetProperties();
 
@@ -41,13 +41,13 @@ namespace FalloutRPG.Services
         public async Task SetInitialSpecialAsync(Character character, int[] special)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             if (special.Length != 7)
-                throw new ArgumentException(Messages.EXC_SPECIAL_LENGTH);
+                throw new ArgumentException(Exceptions.CHAR_SPECIAL_LENGTH);
 
             if (special.Sum() != DEFAULT_SPECIAL_POINTS)
-                throw new ArgumentException(Messages.EXC_SPECIAL_DOESNT_ADD_UP);
+                throw new ArgumentException(Exceptions.CHAR_SPECIAL_DOESNT_ADD_UP);
 
             character.Special.Strength = special[0];
             character.Special.Perception = special[1];
@@ -63,7 +63,7 @@ namespace FalloutRPG.Services
         public bool AreSkillsSet(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             var properties = character.Skills.GetType().GetProperties();
 
@@ -82,16 +82,16 @@ namespace FalloutRPG.Services
         public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             if (!IsSpecialSet(character))
-                throw new ArgumentException(Messages.EXC_SPECIAL_NOT_FOUND);
+                throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_FOUND);
 
             if (!IsValidTagName(tag1) || !IsValidTagName(tag2) || !IsValidTagName(tag3))
-                throw new ArgumentException(Messages.EXC_INVALID_TAG_NAMES);
+                throw new ArgumentException(Exceptions.CHAR_INVALID_TAG_NAMES);
 
             if (!AreUniqueTags(tag1, tag2, tag3))
-                throw new ArgumentException(Messages.EXC_TAGS_NOT_UNIQUE);
+                throw new ArgumentException(Exceptions.CHAR_TAGS_NOT_UNIQUE);
 
             SetInitialSkills(character);
 
@@ -124,7 +124,7 @@ namespace FalloutRPG.Services
         private void SetTagSkill(Character character, string tag)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             var properties = character.Skills.GetType().GetProperties();
 
@@ -145,7 +145,7 @@ namespace FalloutRPG.Services
         private void SetInitialSkills(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             character.Skills.Barter = CalculateSkill(character.Special.Charisma, character.Special.Luck);
             character.Skills.EnergyWeapons = CalculateSkill(character.Special.Perception, character.Special.Luck);

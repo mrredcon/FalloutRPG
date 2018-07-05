@@ -17,17 +17,6 @@ namespace FalloutRPG.Constants
         public const String ERR_STORY_NOT_FOUND = "\u274C Unable to find character story. ({0})";
         public const String ERR_DESC_NOT_FOUND = "\u274C Unable to find character description. ({0})";
 
-        // Character Exception Message
-        public const String EXC_DISCORDID_EXISTS = "\u274C You already have a character. ({0})";
-        public const String EXC_NAMES_NOT_LETTERS = "\u274C Both names must only consist of letters. ({0})";
-        public const String EXC_NAMES_LENGTH = "\u274C Both names must be between 2-24 letters each. ({0})";
-        public const String EXC_SPECIAL_LENGTH = "\u274c Incorrect special length. ({0})";
-        public const String EXC_SPECIAL_DOESNT_ADD_UP = "\u274c SPECIAL does not add up to 40. ({0})";
-        public const String EXC_SPECIAL_NOT_FOUND = "\u274c Could not find SPECIAL for that character. ({0})";
-        public const String EXC_INVALID_TAG_NAMES = "\u274c One or more tag names were invalid. ({0})";
-        public const String EXC_TAGS_NOT_UNIQUE = "\u274c One or more tag names were identical. ({0})";
-        public const String EXC_CHAR_IS_NULL = "\u274c Character is null. ({0})";
-
         // Fallout Character Message
         public const String CHAR_SPECIAL_SUCCESS = "\uD83D\uDC4D S.P.E.C.I.A.L. set successfully. ({0})";
         public const String CHAR_SKILLS_SETSUCCESS = "\uD83D\uDC4D Skills set and tagged successfully! ({0})";

@@ -1,6 +1,5 @@
 ﻿using FalloutRPG.Constants;
 using FalloutRPG.Data.Repositories;
-using FalloutRPG.Exceptions;
 using FalloutRPG.Models;
 using FalloutRPG.Util;
 using System;
@@ -47,13 +46,13 @@ namespace FalloutRPG.Services
         public async Task<Character> CreateCharacterAsync(ulong discordId, string firstName, string lastName)
         {
             if (GetCharacter(discordId) != null)
-                throw new CharacterException(Messages.EXC_DISCORDID_EXISTS);
+                throw new Exception(Exceptions.CHAR_DISCORDID_EXISTS);
 
             if (!StringTool.IsOnlyLetters(firstName) || !StringTool.IsOnlyLetters(lastName))
-                throw new CharacterException(Messages.EXC_NAMES_NOT_LETTERS);
+                throw new Exception(Exceptions.CHAR_NAMES_NOT_LETTERS);
 
             if (firstName.Length > 24 || lastName.Length > 24 || firstName.Length < 2 || lastName.Length < 2)
-                throw new CharacterException(Messages.EXC_NAMES_LENGTH);
+                throw new Exception(Exceptions.CHAR_NAMES_LENGTH);
 
             var character = new Character()
             {
@@ -111,7 +110,7 @@ namespace FalloutRPG.Services
         public async Task SaveCharacterAsync(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
             await _charRepository.SaveAsync(character);
         }

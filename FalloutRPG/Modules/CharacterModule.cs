@@ -3,7 +3,6 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
-using FalloutRPG.Exceptions;
 using FalloutRPG.Services;
 using FalloutRPG.Util;
 using System;
@@ -89,9 +88,9 @@ namespace FalloutRPG.Modules
                 await Context.Channel.SendMessageAsync(
                     string.Format(Messages.CHAR_CREATED_SUCCESS, userInfo.Mention));
             }
-            catch (CharacterException ex)
+            catch (Exception e)
             {
-                await Context.Channel.SendMessageAsync(string.Format(ex.Message, userInfo.Mention));
+                await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
                 return;
             }
         }
