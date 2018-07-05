@@ -21,6 +21,9 @@ namespace FalloutRPG.Services
 
         public bool IsSpecialSet(Character character)
         {
+            if (character == null)
+                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+
             var properties = character.Special.GetType().GetProperties();
 
             foreach (var prop in properties)
@@ -37,6 +40,9 @@ namespace FalloutRPG.Services
 
         public async Task SetInitialSpecialAsync(Character character, int[] special)
         {
+            if (character == null)
+                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+
             if (special.Length != 7)
                 throw new ArgumentException(Messages.EXC_SPECIAL_LENGTH);
 
@@ -56,6 +62,9 @@ namespace FalloutRPG.Services
 
         public bool AreSkillsSet(Character character)
         {
+            if (character == null)
+                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+
             var properties = character.Skills.GetType().GetProperties();
 
             foreach (var prop in properties)
@@ -72,6 +81,9 @@ namespace FalloutRPG.Services
 
         public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
         {
+            if (character == null)
+                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+
             if (!IsSpecialSet(character))
                 throw new ArgumentException(Messages.EXC_SPECIAL_NOT_FOUND);
 
@@ -111,6 +123,9 @@ namespace FalloutRPG.Services
 
         private void SetTagSkill(Character character, string tag)
         {
+            if (character == null)
+                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+
             var properties = character.Skills.GetType().GetProperties();
 
             foreach (var prop in properties)
@@ -129,6 +144,9 @@ namespace FalloutRPG.Services
 
         private void SetInitialSkills(Character character)
         {
+            if (character == null)
+                throw new ArgumentNullException(Messages.EXC_CHAR_IS_NULL);
+
             character.Skills.Barter = CalculateSkill(character.Special.Charisma, character.Special.Luck);
             character.Skills.EnergyWeapons = CalculateSkill(character.Special.Perception, character.Special.Luck);
             character.Skills.Explosives = CalculateSkill(character.Special.Perception, character.Special.Luck);

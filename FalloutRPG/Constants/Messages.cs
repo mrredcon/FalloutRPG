@@ -26,6 +26,7 @@ namespace FalloutRPG.Constants
         public const String EXC_SPECIAL_NOT_FOUND = "\u274c Could not find SPECIAL for that character. ({0})";
         public const String EXC_INVALID_TAG_NAMES = "\u274c One or more tag names were invalid. ({0})";
         public const String EXC_TAGS_NOT_UNIQUE = "\u274c One or more tag names were identical. ({0})";
+        public const String EXC_CHAR_IS_NULL = "\u274c Character is null. ({0})";
 
         // Fallout Character Message
         public const String CHAR_SPECIAL_SUCCESS = "\uD83D\uDC4D S.P.E.C.I.A.L. set successfully. ({0})";
