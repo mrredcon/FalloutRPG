@@ -1,65 +1,50 @@
 ﻿using FalloutRPG.Constants;
 using FalloutRPG.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Services
 {
-    public class StatsService
+    public class SkillsService
     {
-        private const int DEFAULT_SPECIAL_POINTS = 40;
-
         private readonly CharacterService _charService;
+        private readonly SpecialService _specService;
 
-        public StatsService(CharacterService charService)
+        public SkillsService(CharacterService charService, SpecialService specService)
         {
             _charService = charService;
+            _specService = specService;
         }
 
-        public bool IsSpecialSet(Character character)
+        /// <summary>
+        /// Set character's tag skills.
+        /// </summary>
+        public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
         {
             if (character == null)
                 throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
-            var properties = character.Special.GetType().GetProperties();
+            if (!_specService.IsSpecialSet(character))
+                throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_FOUND);
 
-            foreach (var prop in properties)
-            {
-                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
-                    continue;
+            if (!IsValidTagName(tag1) || !IsValidTagName(tag2) || !IsValidTagName(tag3))
+                throw new ArgumentException(Exceptions.CHAR_INVALID_TAG_NAMES);
 
-                var value = Convert.ToInt32(prop.GetValue(character.Special));
-                if (value == 0) return false;
-            }
+            if (!AreUniqueTags(tag1, tag2, tag3))
+                throw new ArgumentException(Exceptions.CHAR_TAGS_NOT_UNIQUE);
 
-            return true;
-        }
+            InitializeSkills(character);
 
-        public async Task SetInitialSpecialAsync(Character character, int[] special)
-        {
-            if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
-
-            if (special.Length != 7)
-                throw new ArgumentException(Exceptions.CHAR_SPECIAL_LENGTH);
-
-            if (special.Sum() != DEFAULT_SPECIAL_POINTS)
-                throw new ArgumentException(Exceptions.CHAR_SPECIAL_DOESNT_ADD_UP);
-
-            character.Special.Strength = special[0];
-            character.Special.Perception = special[1];
-            character.Special.Endurance = special[2];
-            character.Special.Charisma = special[3];
-            character.Special.Intelligence = special[4];
-            character.Special.Agility = special[5];
-            character.Special.Luck = special[6];
+            SetTagSkill(character, tag1);
+            SetTagSkill(character, tag2);
+            SetTagSkill(character, tag3);
 
             await _charService.SaveCharacterAsync(character);
         }
 
+        /// <summary>
+        /// Checks if character's skills are set.
+        /// </summary>
         public bool AreSkillsSet(Character character)
         {
             if (character == null)
@@ -79,29 +64,9 @@ namespace FalloutRPG.Services
             return true;
         }
 
-        public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
-        {
-            if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
-
-            if (!IsSpecialSet(character))
-                throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_FOUND);
-
-            if (!IsValidTagName(tag1) || !IsValidTagName(tag2) || !IsValidTagName(tag3))
-                throw new ArgumentException(Exceptions.CHAR_INVALID_TAG_NAMES);
-
-            if (!AreUniqueTags(tag1, tag2, tag3))
-                throw new ArgumentException(Exceptions.CHAR_TAGS_NOT_UNIQUE);
-
-            SetInitialSkills(character);
-
-            SetTagSkill(character, tag1);
-            SetTagSkill(character, tag2);
-            SetTagSkill(character, tag3);
-
-            await _charService.SaveCharacterAsync(character);
-        }
-
+        /// <summary>
+        /// Checks if the tag name matches any of the skill names.
+        /// </summary>
         private bool IsValidTagName(string tag)
         {
             foreach (var name in Globals.SKILL_NAMES)
@@ -111,6 +76,9 @@ namespace FalloutRPG.Services
             return false;
         }
 
+        /// <summary>
+        /// Checks if all the tags are unique.
+        /// </summary>
         private bool AreUniqueTags(string tag1, string tag2, string tag3)
         {
             if (tag1.Equals(tag2, StringComparison.InvariantCultureIgnoreCase) ||
@@ -121,6 +89,9 @@ namespace FalloutRPG.Services
             return true;
         }
 
+        /// <summary>
+        /// Sets a character's tag skill.
+        /// </summary>
         private void SetTagSkill(Character character, string tag)
         {
             if (character == null)
@@ -137,12 +108,10 @@ namespace FalloutRPG.Services
             }
         }
 
-        private int CalculateSkill(int stat, int luck)
-        {
-            return (2 + (2 * stat) + (luck / 2));
-        }
-
-        private void SetInitialSkills(Character character)
+        /// <summary>
+        /// Initializes a character's skills.
+        /// </summary>
+        private void InitializeSkills(Character character)
         {
             if (character == null)
                 throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
@@ -160,6 +129,14 @@ namespace FalloutRPG.Services
             character.Skills.Speech = CalculateSkill(character.Special.Charisma, character.Special.Luck);
             character.Skills.Survival = CalculateSkill(character.Special.Endurance, character.Special.Luck);
             character.Skills.Unarmed = CalculateSkill(character.Special.Endurance, character.Special.Luck);
+        }
+
+        /// <summary>
+        /// Calculates a skill based on New Vegas formula.
+        /// </summary>
+        private int CalculateSkill(int stat, int luck)
+        {
+            return (2 + (2 * stat) + (luck / 2));
         }
     }
 }

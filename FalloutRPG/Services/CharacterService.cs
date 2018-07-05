@@ -62,6 +62,7 @@ namespace FalloutRPG.Services
                 Description = "",
                 Story = "",
                 Experience = 0,
+                SkillPoints = 0,
                 Special = new Special()
                 {
                     Strength = 0,
