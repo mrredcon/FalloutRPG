@@ -16,6 +16,8 @@ namespace FalloutRPG.Constants
         public const String ERR_CHAR_NOT_FOUND = "\u274C Unable to find character. ({0})";
         public const String ERR_STORY_NOT_FOUND = "\u274C Unable to find character story. ({0})";
         public const String ERR_DESC_NOT_FOUND = "\u274C Unable to find character description. ({0})";
+        public const String ERR_SPECIAL_NOT_FOUND = "\u274C Unable to find character SPECIAL. ({0})";
+        public const String ERR_SKILLS_NOT_FOUND = "\u274C Unable to find character skills. ({0})";
 
         // Fallout Character Message
         public const String CHAR_SPECIAL_SUCCESS = "\uD83D\uDC4D S.P.E.C.I.A.L. set successfully. ({0})";

@@ -47,7 +47,7 @@ namespace FalloutRPG.Modules
                 if (!_statsService.IsSpecialSet(character))
                 {
                     await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_DESC_NOT_FOUND, userInfo.Mention));
+                        string.Format(Messages.ERR_SPECIAL_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -127,7 +127,7 @@ namespace FalloutRPG.Modules
                 if (!_statsService.AreSkillsSet(character))
                 {
                     await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_SKILLS_NOTSET, userInfo.Mention));
+                        string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
