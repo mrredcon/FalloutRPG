@@ -40,6 +40,9 @@ namespace FalloutRPG.Util
         /// </summary>
         public static string ToTitleCase(string source)
         {
+            if (string.IsNullOrEmpty(source))
+                return string.Empty;
+
             return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(source.ToLower());
         }
     }
