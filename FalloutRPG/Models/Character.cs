@@ -11,7 +11,7 @@
 
         public int Experience { get; set; }
 
-        public int SkillPoints { get; set; }
+        public float SkillPoints { get; set; }
 
         public Special Special { get; set; }
         public SkillSheet Skills { get; set; }

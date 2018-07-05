@@ -7,6 +7,9 @@ namespace FalloutRPG.Services
 {
     public class SkillsService
     {
+        private const int DEFAULT_SKILL_POINTS = 10;
+        private const int MAX_SKILL_LEVEL = 100;
+
         private readonly CharacterService _charService;
         private readonly SpecialService _specService;
 
@@ -27,7 +30,7 @@ namespace FalloutRPG.Services
             if (!_specService.IsSpecialSet(character))
                 throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_FOUND);
 
-            if (!IsValidTagName(tag1) || !IsValidTagName(tag2) || !IsValidTagName(tag3))
+            if (!IsValidSkillName(tag1) || !IsValidSkillName(tag2) || !IsValidSkillName(tag3))
                 throw new ArgumentException(Exceptions.CHAR_INVALID_TAG_NAMES);
 
             if (!AreUniqueTags(tag1, tag2, tag3))
@@ -64,13 +67,57 @@ namespace FalloutRPG.Services
             return true;
         }
 
+        public void GrantSkillPoints(Character character)
+        {
+            if (character == null)
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+
+            var points = DEFAULT_SKILL_POINTS + (character.Special.Intelligence / 2);
+
+            character.SkillPoints += points;
+        }
+
+        public void PutPointsInSkill(Character character, string skill, int points)
+        {
+            if (character == null)
+                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+
+            if (!AreSkillsSet(character))
+                throw new Exception(Exceptions.CHAR_SKILLS_NOT_SET);
+
+            if (!IsValidSkillName(skill))
+                throw new ArgumentException(Exceptions.CHAR_INVALID_SKILL_NAME);
+
+            if (points == 0) return;
+
+            if (points > character.SkillPoints)
+                throw new Exception(Exceptions.CHAR_NOT_ENOUGH_SKILL_POINTS);
+
+            var properties = character.Skills.GetType().GetProperties();
+
+            foreach (var prop in properties)
+            {
+                if (prop.Name.Equals(skill, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var propSkill = Convert.ToInt32(prop.GetValue(character.Skills));
+
+                    if ((propSkill + points) > MAX_SKILL_LEVEL)
+                        throw new Exception(Exceptions.CHAR_SKILL_POINTS_GOES_OVER_MAX);
+
+                    prop.SetValue(character.Skills, (propSkill + points));
+                    character.SkillPoints -= points;
+                    break;
+                }
+            }
+        }
+
         /// <summary>
         /// Checks if the tag name matches any of the skill names.
         /// </summary>
-        private bool IsValidTagName(string tag)
+        private bool IsValidSkillName(string skill)
         {
             foreach (var name in Globals.SKILL_NAMES)
-                if (tag.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                if (skill.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                     return true;
 
             return false;

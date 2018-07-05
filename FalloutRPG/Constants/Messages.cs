@@ -8,6 +8,7 @@ namespace FalloutRPG.Constants
         public const String CHAR_CREATED_SUCCESS = "\uD83D\uDC4D Character created successfully. ({0})";
         public const String CHAR_STORY_SUCCESS = "\uD83D\uDC4D Character story updated successfully. ({0})";
         public const String CHAR_DESC_SUCCESS = "\uD83D\uDC4D Character description updated successfully. ({0})";
+        public const String CHAR_SPEND_POINTS_SUCCESS = "\uD83D\uDC4D Skill points added successfully. ({0})";
 
         // Experience Messages
         public const String EXP_LEVEL_UP = "\u2B50 Congratulations {0}, you have just advanced to level {1}!";

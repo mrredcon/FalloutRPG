@@ -19,11 +19,13 @@ namespace FalloutRPG.Services
         private const int COOLDOWN_INTERVAL = 30000;
 
         private readonly CharacterService _charService;
+        private readonly SkillsService _skillsService;
         private readonly IConfiguration _config;
 
-        public ExperienceService(CharacterService charService, IConfiguration config)
+        public ExperienceService(CharacterService charService, SkillsService skillsService, IConfiguration config)
         {
             _charService = charService;
+            _skillsService = skillsService;
             _config = config;
 
             CooldownTimers = new Dictionary<ulong, Timer>();
@@ -42,7 +44,7 @@ namespace FalloutRPG.Services
 
             if (WillLevelUp(character, experience))
             {
-                await OnLevelUpAsync(character);
+                OnLevelUp(character);
                 levelUp = true;
             }
 
@@ -163,11 +165,9 @@ namespace FalloutRPG.Services
         /// <summary>
         /// Called when a character levels up.
         /// </summary>
-        private async Task OnLevelUpAsync(Character character)
+        private void OnLevelUp(Character character)
         {
-            // Give points to spend
-
-            await _charService.SaveCharacterAsync(character);
+            _skillsService.GrantSkillPoints(character);
         }
 
         /// <summary>

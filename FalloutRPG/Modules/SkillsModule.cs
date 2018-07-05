@@ -64,7 +64,8 @@ namespace FalloutRPG.Modules
                     $"**Sneak:** {character.Skills.Sneak}\n" +
                     $"**Speech:** {character.Skills.Speech}\n" +
                     $"**Survival:** {character.Skills.Survival}\n" +
-                    $"**Unarmed:** {character.Skills.Unarmed}");
+                    $"**Unarmed:** {character.Skills.Unarmed}\n" +
+                    $"*You have {character.SkillPoints} left to spend! (!char skills spend)*");
 
                 await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
             }
@@ -91,6 +92,35 @@ namespace FalloutRPG.Modules
                 {
                     await _skillsService.SetTagSkills(character, tag1, tag2, tag3);
                     await Context.Channel.SendMessageAsync(string.Format(Messages.CHAR_SKILLS_SETSUCCESS, userInfo.Mention));
+                }
+                catch (Exception e)
+                {
+                    await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
+                }
+            }
+
+            [Command("spend")]
+            public async Task SpendSkillPointsAsync(string skill, int points)
+            {
+                var userInfo = Context.User;
+                var character = _charService.GetCharacter(userInfo.Id);
+
+                if (character == null)
+                {
+                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                if (!_skillsService.AreSkillsSet(character))
+                {
+                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                try
+                {
+                    _skillsService.PutPointsInSkill(character, skill, points);
+                    await Context.Channel.SendMessageAsync(Messages.CHAR_SPEND_POINTS_SUCCESS);
                 }
                 catch (Exception e)
                 {
