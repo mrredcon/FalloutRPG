@@ -12,6 +12,23 @@ namespace FalloutRPG.Services
 {
     public class CharacterService
     {
+        private string[] validNames = new string[]
+        {
+            "Barter",
+            "EnergyWeapons",
+            "Explosives",
+            "Guns",
+            "Lockpick",
+            "Medicine",
+            "MeleeWeapons",
+            "Repair",
+            "Science",
+            "Sneak",
+            "Speech",
+            "Survival",
+            "Unarmed"
+        };
+
         private readonly IRepository<Character> _charRepository;
         private readonly IRepository<SkillSheet> _skillRepository;
         private readonly IRepository<Special> _specialRepository;
@@ -113,12 +130,15 @@ namespace FalloutRPG.Services
             await _charRepository.SaveAsync(character);
         }
 
-        public bool DoesHaveSpecial(Character character)
+        public bool IsSpecialSet(Character character)
         {
             var properties = character.Special.GetType().GetProperties();
 
             foreach (var prop in properties)
             {
+                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
+                    continue;
+
                 var value = Convert.ToInt32(prop.GetValue(character.Special));
                 if (value == 0) return false;
             }
@@ -143,6 +163,98 @@ namespace FalloutRPG.Services
             character.Special.Luck = special[6];
 
             await SaveCharacterAsync(character);
+        }
+
+        public bool AreSkillsSet(Character character)
+        {
+            var properties = character.Skills.GetType().GetProperties();
+
+            foreach (var prop in properties)
+            {
+                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
+                    continue;
+
+                var value = Convert.ToInt32(prop.GetValue(character.Skills));
+                if (value == 0) return false;
+            }
+
+            return true;
+        }
+
+        public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
+        {
+            if (!IsSpecialSet(character))
+                throw new ArgumentException("Character SPECIAL not set.");
+
+            if (!IsValidTagName(tag1) || !IsValidTagName(tag2) || !IsValidTagName(tag3))
+                throw new ArgumentException("One or more invalid tag names.");
+
+            if (!AreUniqueTags(tag1, tag2, tag3))
+                throw new ArgumentException("Tags are not unique.");
+
+            SetInitialSkills(character);
+
+            SetTagSkill(character, tag1);
+            SetTagSkill(character, tag2);
+            SetTagSkill(character, tag3);
+
+            await SaveCharacterAsync(character);
+        }
+
+        private bool IsValidTagName(string tag)
+        {
+            foreach (var name in validNames)
+            {
+                if (tag.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool AreUniqueTags(string tag1, string tag2, string tag3)
+        {
+            if (tag1.Equals(tag2, StringComparison.InvariantCultureIgnoreCase) ||
+                tag1.Equals(tag3, StringComparison.InvariantCultureIgnoreCase) ||
+                tag2.Equals(tag3, StringComparison.InvariantCultureIgnoreCase))
+                return false;
+
+            return true;
+        }
+
+        private void SetTagSkill(Character character, string tag)
+        {
+            var properties = character.Skills.GetType().GetProperties();
+
+            foreach (var prop in properties)
+            {
+                if (prop.Name.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    prop.SetValue(character.Skills, (Convert.ToInt32(prop.GetValue(character.Skills)) + 15));
+                }
+            }
+        }
+
+        private int CalculateSkill(int stat, int luck)
+        {
+            return (2 + (2 * stat) + (luck / 2));
+        }
+
+        private void SetInitialSkills(Character character)
+        {
+            character.Skills.Barter = CalculateSkill(character.Special.Charisma, character.Special.Luck);
+            character.Skills.EnergyWeapons = CalculateSkill(character.Special.Perception, character.Special.Luck);
+            character.Skills.Explosives = CalculateSkill(character.Special.Perception, character.Special.Luck);
+            character.Skills.Guns = CalculateSkill(character.Special.Agility, character.Special.Luck);
+            character.Skills.Lockpick = CalculateSkill(character.Special.Perception, character.Special.Luck);
+            character.Skills.Medicine = CalculateSkill(character.Special.Intelligence, character.Special.Luck);
+            character.Skills.MeleeWeapons = CalculateSkill(character.Special.Strength, character.Special.Luck);
+            character.Skills.Repair = CalculateSkill(character.Special.Intelligence, character.Special.Luck);
+            character.Skills.Science = CalculateSkill(character.Special.Intelligence, character.Special.Luck);
+            character.Skills.Sneak = CalculateSkill(character.Special.Agility, character.Special.Luck);
+            character.Skills.Speech = CalculateSkill(character.Special.Charisma, character.Special.Luck);
+            character.Skills.Survival = CalculateSkill(character.Special.Endurance, character.Special.Luck);
+            character.Skills.Unarmed = CalculateSkill(character.Special.Endurance, character.Special.Luck);
         }
     }
 }
