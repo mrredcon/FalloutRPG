@@ -30,7 +30,7 @@ namespace FalloutRPG.Modules
             }
 
             [Command]
-            [Alias("show")]
+            [Alias("show", "view")]
             [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsAsync(IUser targetUser = null)
             {
@@ -41,14 +41,14 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
+                    await ReplyAsync(
                         string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (!_skillsService.AreSkillsSet(character))
                 {
-                    await Context.Channel.SendMessageAsync(
+                    await ReplyAsync(
                         string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
                     return;
                 }
@@ -70,7 +70,7 @@ namespace FalloutRPG.Modules
                     $"**Unarmed:** {character.Skills.Unarmed}\n" +
                     $"*You have {character.SkillPoints} left to spend! (!char skills spend)*");
 
-                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+                await ReplyAsync(userInfo.Mention, embed: embed);
             }
 
             [Command("set")]
@@ -82,28 +82,29 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (_skillsService.AreSkillsSet(character))
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_SKILLS_ALREADYSET, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_ALREADYSET, userInfo.Mention));
                     return;
                 }
 
                 try
                 {
                     await _skillsService.SetTagSkills(character, tag1, tag2, tag3);
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.CHAR_SKILLS_SETSUCCESS, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.CHAR_SKILLS_SETSUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {
-                    await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
+                    await ReplyAsync($"{e.Message} ({userInfo.Mention})");
                 }
             }
 
             [Command("spend")]
+            [Alias("put")]
             [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SpendSkillPointsAsync(string skill, int points)
             {
@@ -112,24 +113,24 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (!_skillsService.AreSkillsSet(character))
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 try
                 {
                     _skillsService.PutPointsInSkill(character, skill, points);
-                    await Context.Channel.SendMessageAsync(Messages.CHAR_SPEND_POINTS_SUCCESS);
+                    await ReplyAsync(Messages.CHAR_SPEND_POINTS_SUCCESS);
                 }
                 catch (Exception e)
                 {
-                    await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
+                    await ReplyAsync($"{e.Message} ({userInfo.Mention})");
                 }
             }
         }

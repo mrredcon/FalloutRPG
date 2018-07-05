@@ -6,6 +6,7 @@ using FalloutRPG.Constants;
 using FalloutRPG.Services;
 using FalloutRPG.Util;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,25 +27,6 @@ namespace FalloutRPG.Modules
             _expService = expService;
         }
 
-        [Command]
-        [Alias("help")]
-        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
-        public async Task ShowCommandHelpAsync()
-        {
-            var embed = EmbedTool.BuildBasicEmbed("Command: !character",
-                "**!character show** - Displays your character.\n" +
-                "**!character show [@user]** - Displays specified user's character.\n" +
-                "**!character create [forename] [surname]** - Creates your character.\n" +
-                "**!character story** - Displays your character's story.\n" +
-                "**!character story [@user]** - Displays specified user's character story.\n" +
-                "**!character story update [story]** - Updates your character's story.\n" +
-                "**!character desc** - Displays your character's description.\n" +
-                "**!character desc [@user]** - Displays specified user's character description.\n" +
-                "**!character desc update [desc]** - Updates your character's description.");
-
-            await Context.Channel.SendMessageAsync(string.Empty, embed: embed);
-        }
-
         [Command("show")]
         [Alias("display")]
         [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
@@ -57,8 +39,7 @@ namespace FalloutRPG.Modules
 
             if (character == null)
             {
-                await Context.Channel.SendMessageAsync(
-                    string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                 return;
             }
 
@@ -70,7 +51,7 @@ namespace FalloutRPG.Modules
                 $"**Experience:** {character.Experience}\n" +
                 $"**Level:** {level}");
 
-            await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+            await ReplyAsync(userInfo.Mention, embed: embed);
         }
 
         [Command("create")]
@@ -83,12 +64,11 @@ namespace FalloutRPG.Modules
             try
             {
                 await _charService.CreateCharacterAsync(userInfo.Id, firstName, lastName);
-                await Context.Channel.SendMessageAsync(
-                    string.Format(Messages.CHAR_CREATED_SUCCESS, userInfo.Mention));
+                await ReplyAsync(string.Format(Messages.CHAR_CREATED_SUCCESS, userInfo.Mention));
             }
             catch (Exception e)
             {
-                await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
+                await ReplyAsync($"{e.Message} ({userInfo.Mention})");
                 return;
             }
         }
@@ -116,7 +96,7 @@ namespace FalloutRPG.Modules
 
             var embed = EmbedTool.BuildBasicEmbed("!command highscores", strBuilder.ToString());
 
-            await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+            await ReplyAsync(userInfo.Mention, embed: embed);
         }
 
         [Group("stats")]
@@ -144,8 +124,7 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -158,7 +137,7 @@ namespace FalloutRPG.Modules
                     $"**Experience:** {character.Experience}\n" +
                     $"**To Next Level:** {expToNextLevel}");
 
-                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+                await ReplyAsync(userInfo.Mention, embed: embed);
             }
         }
 
@@ -184,15 +163,13 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (character.Story == null || character.Story.Equals(""))
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_STORY_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_STORY_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -200,7 +177,7 @@ namespace FalloutRPG.Modules
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Story:** {character.Story}");
 
-                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+                await ReplyAsync(userInfo.Mention, embed: embed);
             }
 
             [Command("update")]
@@ -213,16 +190,14 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 character.Story = story;
 
                 await _charService.SaveCharacterAsync(character);
-                await Context.Channel.SendMessageAsync(
-                    string.Format(Messages.CHAR_STORY_SUCCESS, userInfo.Mention));
+                await ReplyAsync(string.Format(Messages.CHAR_STORY_SUCCESS, userInfo.Mention));
             }
         }
 
@@ -249,15 +224,13 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (character.Description == null || character.Description.Equals(""))
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_DESC_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_DESC_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
@@ -265,7 +238,7 @@ namespace FalloutRPG.Modules
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Description:** {character.Description}");
 
-                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+                await ReplyAsync(userInfo.Mention, embed: embed);
             }
 
             [Command("update")]
@@ -278,16 +251,14 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
-                        string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 character.Description = description;
 
                 await _charService.SaveCharacterAsync(character);
-                await Context.Channel.SendMessageAsync(
-                    string.Format(Messages.CHAR_DESC_SUCCESS, userInfo.Mention));
+                await ReplyAsync(string.Format(Messages.CHAR_DESC_SUCCESS, userInfo.Mention));
             }
         }
     }

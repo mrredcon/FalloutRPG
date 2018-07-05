@@ -16,7 +16,7 @@ namespace FalloutRPG.Modules
             var release = new DateTime(2018, 11, 14);
             var span = (release - today);
 
-            await Context.Channel.SendMessageAsync(
+            await ReplyAsync(
                 $"There are {span.Days} days," +
                 $" {span.Hours} hours," +
                 $" {span.Minutes} minutes," +
@@ -28,7 +28,7 @@ namespace FalloutRPG.Modules
         [Command("echo")]
         public async Task EchoAsync(string input)
         {
-            await Context.Channel.SendMessageAsync(input);
+            await ReplyAsync(input);
         }
     }
 }

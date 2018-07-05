@@ -41,14 +41,14 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(
+                    await ReplyAsync(
                         string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (!_specService.IsSpecialSet(character))
                 {
-                    await Context.Channel.SendMessageAsync(
+                    await ReplyAsync(
                         string.Format(Messages.ERR_SPECIAL_NOT_FOUND, userInfo.Mention));
                     return;
                 }
@@ -63,7 +63,7 @@ namespace FalloutRPG.Modules
                     $"**AGI:** {character.Special.Agility}\n" +
                     $"**LUC:** {character.Special.Luck}\n");
 
-                await Context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+                await ReplyAsync(userInfo.Mention, embed: embed);
             }
 
             [Command("set")]
@@ -76,24 +76,24 @@ namespace FalloutRPG.Modules
 
                 if (character == null)
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
                     return;
                 }
 
                 if (_specService.IsSpecialSet(character))
                 {
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
                     return;
                 }
 
                 try
                 {
                     await _specService.SetInitialSpecialAsync(character, special);
-                    await Context.Channel.SendMessageAsync(string.Format(Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {
-                    await Context.Channel.SendMessageAsync($"{e.Message} ({userInfo.Mention})");
+                    await ReplyAsync($"{e.Message} ({userInfo.Mention})");
                 }
             }
         }
