@@ -10,7 +10,7 @@ namespace FalloutRPG.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = "Server=WINDOWS-T6JSDAS;Database=FalloutRpgDB;Trusted_Connection=True;";
+            var connectionString = "";
             if (string.IsNullOrWhiteSpace(connectionString) || connectionString == "")
                throw new Exception("Please enter a valid SQL-SERVER connection string in /Data/RpgContext.cs");
 
