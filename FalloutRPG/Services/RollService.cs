@@ -57,69 +57,56 @@ namespace FalloutRPG.Services
 
             return GetSkillRollResult(skillToRoll, character);
         }
-
-        private string GetSpecialRollResult(string rollSpecial, Character character)
+        public string GetSkillRollResult(String skill, Character character)
         {
-            if (!_specService.IsSpecialSet(character)) return null;
+            Random rand = new Random();
 
-            var specialProp = typeof(Special).GetProperty(rollSpecial);
-            var specialValue = (int)specialProp.GetValue(character.Special);
-            
-            // RNG influenced by character luck except when its 5
-            var rngResult = GetRNGResult(character.Special.Luck);
-            var difference = specialValue - rngResult;
+            var charSkills = character.Skills;
+            var special = character.Special;
 
-            // compares your roll with your skills, and how much better you did than the bare minimum
-            var resultPercent = GetSpecialResultPercent(difference, specialValue);
-
-            Console.WriteLine("RNG: " + rngResult + " SPECIAL: " + specialValue + " SP: " + resultPercent);
-
-            // TODO: maybe tell user what they rolled? (needed specialValue, rolled rngResult)
-            if (rngResult <= resultPercent || rngResult <= specialValue)
-                return GetRollMessage(character.FirstName, rollSpecial, true, (int)resultPercent);
-
-            return GetRollMessage(character.FirstName, rollSpecial, false, (int)resultPercent * -1);
-        }
-
-        private string GetSkillRollResult(string skill, Character character)
-        {
-            if (!_skillsService.AreSkillsSet(character)) return null;
+            if (charSkills.Barter == 0) return null;
 
             var skillProp = typeof(SkillSheet).GetProperty(skill);
-            var skillValue = Convert.ToInt32(skillProp.GetValue(character.Skills));
+            int skillValue = (int)skillProp.GetValue(charSkills);
 
             // RNG influenced by character luck except when its 5
-            var rngResult = GetRNGResult(character.Special.Luck);
+            int rngResult = (int)Math.Round((rand.Next(1, 101) * (1.0 - (special.Luck / 10.0 - .5))));
 
             // compares your roll with your skills, and how much better you did than the bare minimum
-            var resultPercent = GetSkillResultPercent(rngResult, skillValue);
+            double resultPercent = (double)(skillValue - rngResult) / skillValue;
+            resultPercent = Math.Round(resultPercent, 2) * 100;
 
             Console.WriteLine("RNG: " + rngResult + " SKILL: " + skillValue + " SP: " + resultPercent);
 
             if (rngResult <= resultPercent || rngResult <= skillValue)
                 return GetRollMessage(character.FirstName, skill, true, (int)resultPercent);
-
-            return GetRollMessage(character.FirstName, skill, false, (int)resultPercent * -1);
+            else
+                return GetRollMessage(character.FirstName, skill, false, (int)resultPercent * -1);
         }
 
-        private int GetRNGResult(int luck)
+        public string GetSpecialRollResult(String rollSpecial, Character character)
         {
-            var rand = new Random();
-            return Convert.ToInt32(Math.Round((rand.Next(1, 11) * (1.0 - (luck / 10.0 - .5)))));
-        }
+            Random rand = new Random();
+            //var skills = CharacterUtilityService.GetCharacterSkills(user);
+            var charSpecial = character.Special;
+            if (charSpecial.Strength == 0) return null;
 
-        private double GetSpecialResultPercent(int difference, int specialValue)
-        {
-            double resultPercent = (double)difference / specialValue;
-            resultPercent = Math.Round(resultPercent, 2) * 100;
-            return resultPercent;
-        }
+            // RNG influenced by character luck except when its 5
+            int rngResult = (int)Math.Round((rand.Next(1, 11) * (1.0 - (charSpecial.Luck / 10.0 - .5)))),
+            specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
 
-        private double GetSkillResultPercent(int rngResult, int skillValue)
-        {
-            var resultPercent = (double)(skillValue - rngResult) / skillValue;
-            resultPercent = Math.Round(resultPercent, 2) * 100;
-            return resultPercent;
+            int difference = specialValue - rngResult;
+            // compares your roll with your skills, and how much better you did than the bare minimum
+            double successPercent = (double)difference / specialValue;
+            successPercent = Math.Round(successPercent, 2) * 100;
+
+            Console.WriteLine("RNG: " + rngResult + " SPECIAL: " + specialValue + " SP: " + successPercent);
+
+            // TODO: maybe tell user what they rolled? (needed specialValue, rolled rngResult)
+            if (rngResult <= successPercent || rngResult <= specialValue)
+                return GetRollMessage(character.FirstName, rollSpecial, true, (int)successPercent);
+            else
+                return GetRollMessage(character.FirstName, rollSpecial, false, (int)successPercent*-1);
         }
 
         private string GetRollMessage(string charName, string roll, bool success, int percent)
