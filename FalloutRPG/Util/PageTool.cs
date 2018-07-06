@@ -9,14 +9,15 @@ namespace FalloutRPG.Util
 {
     public class PageTool
     {
-        public static PaginatedMessage BuildPaginatedMessage(PaginatedMessage.Page[] pages)
+        public static PaginatedMessage BuildPaginatedMessage(PaginatedMessage.Page[] pages, IUser user)
         {
             var pager = new PaginatedMessage
             {
                 Pages = pages,
                 Color = Color.Blue,
                 FooterOverride = null,
-                Options = PaginatedAppearanceOptions.Default
+                Options = PaginatedAppearanceOptions.Default,
+                Content = user.Mention
             };
 
             return pager;

@@ -111,7 +111,7 @@ namespace FalloutRPG.Services
         public async Task SaveCharacterAsync(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             await _charRepository.SaveAsync(character);
         }

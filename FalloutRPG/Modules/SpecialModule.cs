@@ -17,7 +17,6 @@ namespace FalloutRPG.Modules
     {
         [Group("special")]
         [Alias("spec", "sp")]
-        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public class CharacterSpecialModule : ModuleBase<SocketCommandContext>
         {
             private readonly CharacterService _charService;

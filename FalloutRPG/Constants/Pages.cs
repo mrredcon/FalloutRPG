@@ -6,7 +6,7 @@ namespace FalloutRPG.Constants
 {
     public class Pages
     {
-        #region Help Pages
+        #region Character Help Pages
         public static string[] HELP_CHAR_PAGE1_TITLES = new string[]
         {
             "!char show",
@@ -59,6 +59,20 @@ namespace FalloutRPG.Constants
             "Displays your character's SPECIAL.",
             "Displays specified user's character SPECIAL.",
             "Sets your SPECIAL."
+        };
+        #endregion
+
+        #region Roll Help Pages
+        public static string[] HELP_ROLL_PAGE1_TITLES = new string[]
+        {
+            "!roll [skill]",
+            "!roll [special]"
+        };
+
+        public static string[] HELP_ROLL_PAGE1_CONTENTS = new string[]
+        {
+            "Gets a roll result based on the skill level.",
+            "Gets a roll result based on the SPECIAL level."
         };
         #endregion
     }

@@ -25,7 +25,7 @@ namespace FalloutRPG.Services
         public async Task SetInitialSpecialAsync(Character character, int[] special)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             if (special.Length != 7)
                 throw new ArgumentException(Exceptions.CHAR_SPECIAL_LENGTH);
@@ -60,7 +60,7 @@ namespace FalloutRPG.Services
         /// </summary>
         public bool IsSpecialSet(Character character)
         {
-            if (character == null) return false;
+            if (character == null || character.Special == null) return false;
 
             var properties = character.Special.GetType().GetProperties();
 

@@ -25,7 +25,7 @@ namespace FalloutRPG.Services
         public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             if (!_specService.IsSpecialSet(character))
                 throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_FOUND);
@@ -35,13 +35,13 @@ namespace FalloutRPG.Services
 
             if (!AreUniqueTags(tag1, tag2, tag3))
                 throw new ArgumentException(Exceptions.CHAR_TAGS_NOT_UNIQUE);
-            Console.WriteLine("HERE");
+
             InitializeSkills(character);
             
             SetTagSkill(character, tag1);
             SetTagSkill(character, tag2);
             SetTagSkill(character, tag3);
-            Console.WriteLine("2222");
+
             await _charService.SaveCharacterAsync(character);
         }
 
@@ -76,7 +76,7 @@ namespace FalloutRPG.Services
         public void GiveSkillPoints(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             var points = DEFAULT_SKILL_POINTS + (character.Special.Intelligence / 2);
 
@@ -89,7 +89,7 @@ namespace FalloutRPG.Services
         public void PutPointsInSkill(Character character, string skill, int points)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             if (!AreSkillsSet(character))
                 throw new Exception(Exceptions.CHAR_SKILLS_NOT_SET);
@@ -151,7 +151,7 @@ namespace FalloutRPG.Services
         private void SetTagSkill(Character character, string tag)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             var properties = character.Skills.GetType().GetProperties();
 
@@ -170,7 +170,7 @@ namespace FalloutRPG.Services
         private void InitializeSkills(Character character)
         {
             if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+                throw new ArgumentNullException("character");
 
             character.Skills = new SkillSheet()
             {
