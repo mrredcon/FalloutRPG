@@ -67,7 +67,7 @@ namespace FalloutRPG.Modules
             }
             catch (Exception e)
             {
-                await ReplyAsync($"{e.Message} ({userInfo.Mention})");
+                await ReplyAsync($"{Messages.FAILURE_EMOJI} {e.Message} ({userInfo.Mention})");
                 return;
             }
         }

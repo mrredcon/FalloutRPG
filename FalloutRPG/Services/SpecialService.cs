@@ -25,8 +25,8 @@ namespace FalloutRPG.Services
             if (character == null)
                 throw new ArgumentNullException("character");
 
-            if (special.Length != 7)
-                throw new ArgumentException(Exceptions.CHAR_SPECIAL_LENGTH);
+            if (!IsSpecialInRange(special))
+                throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_IN_RANGE);
 
             if (special.Sum() != DEFAULT_SPECIAL_POINTS)
                 throw new ArgumentException(Exceptions.CHAR_SPECIAL_DOESNT_ADD_UP);
@@ -34,6 +34,21 @@ namespace FalloutRPG.Services
             InitializeSpecial(character, special);
 
             await _charService.SaveCharacterAsync(character);
+        }
+
+        /// <summary>
+        /// Checks if each number in SPECIAL is between 1 and 10
+        /// and ensures there are 7 elements in the input array.
+        /// </summary>
+        private bool IsSpecialInRange(int[] special)
+        {
+            if (special.Length != 7) return false;
+
+            foreach (var sp in special)
+                if (sp < 1 || sp > 10)
+                    return false;
+
+            return true;
         }
 
         /// <summary>
