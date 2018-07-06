@@ -49,7 +49,7 @@ namespace FalloutRPG.Services
 
             if (WillLevelUp(character, experience))
             {
-                OnLevelUp(character);
+                await OnLevelUpAsync(character);
                 levelUp = true;
             }
 
@@ -170,13 +170,13 @@ namespace FalloutRPG.Services
         /// <summary>
         /// Called when a character levels up.
         /// </summary>
-        private void OnLevelUp(Character character)
+        private async Task OnLevelUpAsync(Character character)
         {
             var user = _client.GetUser(character.DiscordId);
 
             _skillsService.GiveSkillPoints(character);
 
-            user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
+            await user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
         }
 
         /// <summary>

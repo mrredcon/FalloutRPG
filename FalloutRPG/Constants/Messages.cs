@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FalloutRPG.Constants
+﻿namespace FalloutRPG.Constants
 {
     public class Messages
     {

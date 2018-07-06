@@ -5,8 +5,6 @@ using FalloutRPG.Constants;
 using FalloutRPG.Services;
 using FalloutRPG.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules

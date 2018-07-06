@@ -1,12 +1,8 @@
-﻿using Discord;
-using Discord.Addons.Interactive;
+﻿using Discord.Addons.Interactive;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Util;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 

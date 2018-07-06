@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FalloutRPG.Constants
+﻿namespace FalloutRPG.Constants
 {
     public class Pages
     {

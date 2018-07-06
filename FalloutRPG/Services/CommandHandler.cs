@@ -3,7 +3,6 @@ using Discord.WebSocket;
 using FalloutRPG.Constants;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 

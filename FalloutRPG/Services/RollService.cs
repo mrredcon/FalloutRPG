@@ -2,7 +2,6 @@
 using FalloutRPG.Constants;
 using FalloutRPG.Models;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace FalloutRPG.Services

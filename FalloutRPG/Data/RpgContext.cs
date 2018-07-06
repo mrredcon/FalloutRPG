@@ -1,6 +1,5 @@
 ﻿using FalloutRPG.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 
 namespace FalloutRPG.Data

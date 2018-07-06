@@ -9,6 +9,9 @@ namespace FalloutRPG.Util
 {
     public class PageTool
     {
+        /// <summary>
+        /// Build a new paginated message.
+        /// </summary>
         public static PaginatedMessage BuildPaginatedMessage(PaginatedMessage.Page[] pages, IUser user)
         {
             var pager = new PaginatedMessage
@@ -23,6 +26,9 @@ namespace FalloutRPG.Util
             return pager;
         }
 
+        /// <summary>
+        /// Build a basic page for the paginated message.
+        /// </summary>
         public static PaginatedMessage.Page BuildBasicPage(string title, string content)
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(content))
@@ -38,6 +44,9 @@ namespace FalloutRPG.Util
             };
         }
 
+        /// <summary>
+        /// Build a page with fields for the paginated message.
+        /// </summary>
         public static PaginatedMessage.Page BuildPageWithFields(string title, List<EmbedFieldBuilder> fields)
         {
             return new PaginatedMessage.Page
@@ -50,6 +59,9 @@ namespace FalloutRPG.Util
             };
         }
 
+        /// <summary>
+        /// Create a new field for paginated message.
+        /// </summary>
         public static EmbedFieldBuilder CreateFieldBuilder(string title, string content)
         {
             if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(content))
@@ -62,6 +74,9 @@ namespace FalloutRPG.Util
             };
         }
 
+        /// <summary>
+        /// Create field list for paginated message.
+        /// </summary>
         public static List<EmbedFieldBuilder> CreatePageFields(string[] titles, string[] contents)
         {
             if (titles.Length != contents.Length)
