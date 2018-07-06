@@ -1,6 +1,5 @@
 ﻿using FalloutRPG.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using System;
 
 namespace FalloutRPG.Data
@@ -11,7 +10,7 @@ namespace FalloutRPG.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = @"";
+            var connectionString = "";
             if (string.IsNullOrWhiteSpace(connectionString) || connectionString == "")
                throw new Exception("Please enter a valid SQL-SERVER connection string in /Data/RpgContext.cs");
 

@@ -1,4 +1,6 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
+using FalloutRPG.Constants;
 using FalloutRPG.Models;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,14 +22,16 @@ namespace FalloutRPG.Services
         private const int COOLDOWN_INTERVAL = 30000;
 
         private readonly CharacterService _charService;
-        private readonly IConfiguration _config;
+        private readonly SkillsService _skillsService;
         private readonly DiscordSocketClient _client;
+        private readonly IConfiguration _config;
 
-        public ExperienceService(CharacterService charService, IConfiguration config, DiscordSocketClient client)
+        public ExperienceService(CharacterService charService, SkillsService skillsService, DiscordSocketClient client, IConfiguration config)
         {
             _charService = charService;
-            _config = config;
+            _skillsService = skillsService;
             _client = client;
+            _config = config;
 
             CooldownTimers = new Dictionary<ulong, Timer>();
             LoadExperienceEnabledChannels();
@@ -168,25 +172,11 @@ namespace FalloutRPG.Services
         /// </summary>
         private async Task OnLevelUpAsync(Character character)
         {
-            int pointsToAdd = 0;
+            var user = _client.GetUser(character.DiscordId);
 
-            // Give points to spend
-            if (character.Special.Intelligence == 0)
-            {
-                var user = _client.GetUser(character.DiscordId);
-                var dmChannel = await user.GetOrCreateDMChannelAsync();
-                await dmChannel.SendMessageAsync(String.Format(
-                    Constants.Messages.ERR_LEVEL_SKILLS, String.Format(Constants.Messages.ERR_SPECIAL_INVALID, user.Mention)));
-            }
+            _skillsService.GiveSkillPoints(character);
 
-            if (character.Special.Intelligence % 2 == 1)
-                if (CalculateLevelForExperience(character.Experience) + 1 % 2 == 0)
-                    pointsToAdd++;
-
-            pointsToAdd += (10 + character.Special.Intelligence / 2);
-
-            character.SkillPoints += pointsToAdd;
-            await _charService.SaveCharacterAsync(character);
+            await user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
         }
 
         /// <summary>

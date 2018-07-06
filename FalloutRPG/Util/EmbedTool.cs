@@ -24,5 +24,26 @@ namespace FalloutRPG.Util
 
             return builder.Build();
         }
+
+        public static Embed BuildBasicEmbedWithFields(string title, string content, string[] fieldTitles, string[] fieldContents)
+        {
+            if (fieldTitles.Length != fieldContents.Length)
+                return null;
+
+            var builder = new EmbedBuilder()
+                .WithDescription(content)
+                .WithColor(new Color(0, 128, 255))
+                .WithAuthor(author => {
+                    author
+                        .WithName(title);
+                });
+
+            for (var i = 0; i < fieldTitles.Length; i++)
+            {
+                builder.AddField(fieldTitles[i], fieldContents[i]);
+            }
+
+            return builder.Build();
+        }
     }
 }
