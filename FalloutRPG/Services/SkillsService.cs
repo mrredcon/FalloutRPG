@@ -35,13 +35,13 @@ namespace FalloutRPG.Services
 
             if (!AreUniqueTags(tag1, tag2, tag3))
                 throw new ArgumentException(Exceptions.CHAR_TAGS_NOT_UNIQUE);
-
+            Console.WriteLine("HERE");
             InitializeSkills(character);
-
+            
             SetTagSkill(character, tag1);
             SetTagSkill(character, tag2);
             SetTagSkill(character, tag3);
-
+            Console.WriteLine("2222");
             await _charService.SaveCharacterAsync(character);
         }
 
@@ -50,8 +50,8 @@ namespace FalloutRPG.Services
         /// </summary>
         public bool AreSkillsSet(Character character)
         {
-            if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+            if (character == null || character.Skills == null)
+                return false;
 
             var properties = character.Skills.GetType().GetProperties();
 
@@ -172,19 +172,22 @@ namespace FalloutRPG.Services
             if (character == null)
                 throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
 
-            character.Skills.Barter = CalculateSkill(character.Special.Charisma, character.Special.Luck);
-            character.Skills.EnergyWeapons = CalculateSkill(character.Special.Perception, character.Special.Luck);
-            character.Skills.Explosives = CalculateSkill(character.Special.Perception, character.Special.Luck);
-            character.Skills.Guns = CalculateSkill(character.Special.Agility, character.Special.Luck);
-            character.Skills.Lockpick = CalculateSkill(character.Special.Perception, character.Special.Luck);
-            character.Skills.Medicine = CalculateSkill(character.Special.Intelligence, character.Special.Luck);
-            character.Skills.MeleeWeapons = CalculateSkill(character.Special.Strength, character.Special.Luck);
-            character.Skills.Repair = CalculateSkill(character.Special.Intelligence, character.Special.Luck);
-            character.Skills.Science = CalculateSkill(character.Special.Intelligence, character.Special.Luck);
-            character.Skills.Sneak = CalculateSkill(character.Special.Agility, character.Special.Luck);
-            character.Skills.Speech = CalculateSkill(character.Special.Charisma, character.Special.Luck);
-            character.Skills.Survival = CalculateSkill(character.Special.Endurance, character.Special.Luck);
-            character.Skills.Unarmed = CalculateSkill(character.Special.Endurance, character.Special.Luck);
+            character.Skills = new SkillSheet()
+            {
+                Barter = CalculateSkill(character.Special.Charisma, character.Special.Luck),
+                EnergyWeapons = CalculateSkill(character.Special.Perception, character.Special.Luck),
+                Explosives = CalculateSkill(character.Special.Perception, character.Special.Luck),
+                Guns = CalculateSkill(character.Special.Agility, character.Special.Luck),
+                Lockpick = CalculateSkill(character.Special.Perception, character.Special.Luck),
+                Medicine = CalculateSkill(character.Special.Intelligence, character.Special.Luck),
+                MeleeWeapons = CalculateSkill(character.Special.Strength, character.Special.Luck),
+                Repair = CalculateSkill(character.Special.Intelligence, character.Special.Luck),
+                Science = CalculateSkill(character.Special.Intelligence, character.Special.Luck),
+                Sneak = CalculateSkill(character.Special.Agility, character.Special.Luck),
+                Speech = CalculateSkill(character.Special.Charisma, character.Special.Luck),
+                Survival = CalculateSkill(character.Special.Endurance, character.Special.Luck),
+                Unarmed = CalculateSkill(character.Special.Endurance, character.Special.Luck)
+            };
         }
 
         /// <summary>

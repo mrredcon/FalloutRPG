@@ -17,7 +17,6 @@ namespace FalloutRPG.Modules
     {
         [Group("skills")]
         [Alias("skill", "sk")]
-        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public class CharacterSkillsModule : ModuleBase<SocketCommandContext>
         {
             private readonly CharacterService _charService;
@@ -79,7 +78,7 @@ namespace FalloutRPG.Modules
             {
                 var userInfo = Context.User;
                 var character = _charService.GetCharacter(userInfo.Id);
-
+                Console.WriteLine("lolwat");
                 if (character == null)
                 {
                     await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));

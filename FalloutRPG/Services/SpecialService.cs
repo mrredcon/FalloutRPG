@@ -33,15 +33,26 @@ namespace FalloutRPG.Services
             if (special.Sum() != DEFAULT_SPECIAL_POINTS)
                 throw new ArgumentException(Exceptions.CHAR_SPECIAL_DOESNT_ADD_UP);
 
-            character.Special.Strength = special[0];
-            character.Special.Perception = special[1];
-            character.Special.Endurance = special[2];
-            character.Special.Charisma = special[3];
-            character.Special.Intelligence = special[4];
-            character.Special.Agility = special[5];
-            character.Special.Luck = special[6];
+            InitializeSpecial(character, special);
 
             await _charService.SaveCharacterAsync(character);
+        }
+
+        /// <summary>
+        /// Initializes character's special.
+        /// </summary>
+        private void InitializeSpecial(Character character, int[] special)
+        {
+            character.Special = new Special()
+            {
+                Strength = special[0],
+                Perception = special[1],
+                Endurance = special[2],
+                Charisma = special[3],
+                Intelligence = special[4],
+                Agility = special[5],
+                Luck = special[6]
+             };
         }
 
         /// <summary>
@@ -49,8 +60,7 @@ namespace FalloutRPG.Services
         /// </summary>
         public bool IsSpecialSet(Character character)
         {
-            if (character == null)
-                throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);
+            if (character == null) return false;
 
             var properties = character.Special.GetType().GetProperties();
 
