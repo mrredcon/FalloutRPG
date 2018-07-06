@@ -3,6 +3,7 @@
   "tokens": {
     "discord": ""
   },
+  "enabled-channel-categories": [ "462324850027921420" ],
   "roleplay": {
     "exp-channels": [ "" ]
   }
