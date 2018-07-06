@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace FalloutRPG.Util
 {
@@ -21,6 +22,28 @@ namespace FalloutRPG.Util
         public static bool IsOnlyLetters(string source)
         {
             return Regex.IsMatch(source, @"^[a-zA-Z]+$");
+        }
+
+        /// <summary>
+        /// Capitalizes the first letter in the source string.
+        /// </summary>
+        public static string UppercaseFirstLetter(string source)
+        {
+            if (string.IsNullOrEmpty(source))
+                return string.Empty;
+
+            return char.ToUpper(source[0]) + source.Substring(1);
+        }
+
+        /// <summary>
+        /// Sets source string to title case. Ex: joHn becomes John.
+        /// </summary>
+        public static string ToTitleCase(string source)
+        {
+            if (string.IsNullOrEmpty(source))
+                return string.Empty;
+
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(source.ToLower());
         }
     }
 }

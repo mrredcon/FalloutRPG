@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Migrations\20180703170324_skillandperkpoints.cs" />
-    <Compile Include="Migrations\20180703170324_skillandperkpoints.Designer.cs" />
-    <Compile Include="Migrations\20180703171312_Dummy.cs" />
-    <Compile Include="Migrations\20180703171312_Dummy.Designer.cs" />
     <Compile Include="Migrations\RpgContextModelSnapshot.cs" />
   </ItemGroup>
 
