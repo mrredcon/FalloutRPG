@@ -54,9 +54,6 @@ namespace FalloutRPG.Services
             if (firstName.Length > 24 || lastName.Length > 24 || firstName.Length < 2 || lastName.Length < 2)
                 throw new Exception(Exceptions.CHAR_NAMES_LENGTH);
 
-            firstName = StringTool.ToTitleCase(firstName);
-            lastName = StringTool.ToTitleCase(lastName);
-
             var character = new Character()
             {
                 DiscordId = discordId,
