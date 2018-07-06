@@ -57,6 +57,7 @@ namespace FalloutRPG.Services
 
             return GetSkillRollResult(skillToRoll, character);
         }
+
         public string GetSkillRollResult(String skill, Character character)
         {
             Random rand = new Random();
@@ -93,7 +94,7 @@ namespace FalloutRPG.Services
 
             // RNG influenced by character luck except when its 5
             int rngResult = (int)Math.Round((rand.Next(1, 11) * (1.0 - (charSpecial.Luck / 10.0 - .5)))),
-            specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
+                specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
 
             int difference = specialValue - rngResult;
             // compares your roll with your skills, and how much better you did than the bare minimum
@@ -106,7 +107,7 @@ namespace FalloutRPG.Services
             if (rngResult <= successPercent || rngResult <= specialValue)
                 return GetRollMessage(character.FirstName, rollSpecial, true, (int)successPercent);
             else
-                return GetRollMessage(character.FirstName, rollSpecial, false, (int)successPercent*-1);
+                return GetRollMessage(character.FirstName, rollSpecial, false, (int)successPercent * -1);
         }
 
         private string GetRollMessage(string charName, string roll, bool success, int percent)
