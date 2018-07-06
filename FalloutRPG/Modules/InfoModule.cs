@@ -21,7 +21,7 @@ namespace FalloutRPG.Modules
 
             var builder = new EmbedBuilder()
                 .WithTitle("Description")
-                .WithDescription("Currently a simple bot that tells you how much time is left until the release of Fallout 76.")
+                .WithDescription("A Fallout-based RPG bot designed for the Country Road Bar Fallout 76 Discord Server.")
                 .WithColor(new Color(0, 128, 255)) // Blue
                 .WithFooter(footer =>
                 {
