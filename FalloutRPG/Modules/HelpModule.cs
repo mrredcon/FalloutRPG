@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Util;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ namespace FalloutRPG.Modules
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
         [Command]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowHelpAsync()
         {
             var userInfo = Context.User;
@@ -31,6 +33,7 @@ namespace FalloutRPG.Modules
         public class CharacterHelpModule : InteractiveBase<SocketCommandContext>
         {
             [Command]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowCharacterHelpAsync()
             {
                 var page1 = PageTool.BuildPageWithFields("Command: !help character", 
@@ -55,6 +58,7 @@ namespace FalloutRPG.Modules
         public class RollHelpModule : InteractiveBase<SocketCommandContext>
         {
             [Command]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowRollHelpAsync()
             {
                 var page1 = PageTool.BuildPageWithFields("Command: !help roll",
@@ -76,6 +80,7 @@ namespace FalloutRPG.Modules
         public class SkillsHelpModule : InteractiveBase<SocketCommandContext>
         {
             [Command]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsHelpAsync()
             {
                 var userInfo = Context.User;

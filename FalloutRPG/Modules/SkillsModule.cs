@@ -87,14 +87,14 @@ namespace FalloutRPG.Modules
 
                 if (_skillsService.AreSkillsSet(character))
                 {
-                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_ALREADYSET, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_ALREADY_SET, userInfo.Mention));
                     return;
                 }
 
                 try
                 {
                     await _skillsService.SetTagSkills(character, tag1, tag2, tag3);
-                    await ReplyAsync(string.Format(Messages.CHAR_SKILLS_SETSUCCESS, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.SKILLS_SET_SUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {
@@ -125,7 +125,7 @@ namespace FalloutRPG.Modules
                 try
                 {
                     _skillsService.PutPointsInSkill(character, skill, points);
-                    await ReplyAsync(Messages.CHAR_SPEND_POINTS_SUCCESS);
+                    await ReplyAsync(Messages.SKILLS_SPEND_POINTS_SUCCESS);
                 }
                 catch (Exception e)
                 {

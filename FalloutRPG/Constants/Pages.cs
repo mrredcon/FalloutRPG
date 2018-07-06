@@ -75,5 +75,25 @@ namespace FalloutRPG.Constants
             "Gets a roll result based on the SPECIAL level."
         };
         #endregion
+
+        #region Tutorial
+        public static string[] TUTORIAL_TITLES = new string[]
+        {
+            "STEP 1: CREATING A CHARACTER",
+            "STEP 2: SETTING A STORY AND DESCRIPTION",
+            "STEP 3: SETTING A SPECIAL",
+            "STEP 4: SETTING TAG SKILLS",
+            "STEP 5: ROLLING"
+        };
+
+        public static string[] TUTORIAL_CONTENTS = new string[]
+        {
+            "Use !char create [firstname] [lastname] to create your character.",
+            "Use !char story set [story] and !char desc set [desc] to set your story and description.",
+            "Use !char spec set [S] [P] [E] [C] [I] [A] [L] to set your SPECIAL.",
+            "Use !char skills set [tag1] [tag2] [tag3] to set tag skills.",
+            "Use !roll [special] and !roll [skill] to roll."
+        };
+        #endregion
     }
 }

@@ -81,14 +81,14 @@ namespace FalloutRPG.Modules
 
                 if (_specService.IsSpecialSet(character))
                 {
-                    await ReplyAsync(string.Format(Messages.ERR_SPECIAL_EXISTS, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.ERR_SPECIAL_ALREADY_SET, userInfo.Mention));
                     return;
                 }
 
                 try
                 {
                     await _specService.SetInitialSpecialAsync(character, special);
-                    await ReplyAsync(string.Format(Messages.CHAR_SPECIAL_SUCCESS, userInfo.Mention));
+                    await ReplyAsync(string.Format(Messages.SPECIAL_SET_SUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {
