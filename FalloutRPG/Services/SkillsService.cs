@@ -73,7 +73,7 @@ namespace FalloutRPG.Services
         /// <remarks>
         /// Uses the Fallout New Vegas formula. (10 + (INT / 2))
         /// </remarks>
-        public void GrantSkillPoints(Character character)
+        public void GiveSkillPoints(Character character)
         {
             if (character == null)
                 throw new ArgumentNullException(Exceptions.CHAR_CHARACTER_IS_NULL);

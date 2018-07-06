@@ -31,10 +31,10 @@ namespace FalloutRPG.Modules
             public async Task ShowCharacterHelpAsync()
             {
                 var page1 = PageTool.BuildPageWithFields("Command: !help character", 
-                    PageTool.CreatePageFields(Messages.HELP_CHAR_PAGE1_TITLES, Messages.HELP_CHAR_PAGE1_CONTENTS));
+                    PageTool.CreatePageFields(Pages.HELP_CHAR_PAGE1_TITLES, Pages.HELP_CHAR_PAGE1_CONTENTS));
 
                 var page2 = PageTool.BuildPageWithFields("Command: !help character", 
-                    PageTool.CreatePageFields(Messages.HELP_CHAR_PAGE2_TITLES, Messages.HELP_CHAR_PAGE2_CONTENTS));
+                    PageTool.CreatePageFields(Pages.HELP_CHAR_PAGE2_TITLES, Pages.HELP_CHAR_PAGE2_CONTENTS));
 
                 var pager = PageTool.BuildPaginatedMessage(new[] { page1, page2 });
 

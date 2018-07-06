@@ -1,4 +1,7 @@
-﻿using FalloutRPG.Models;
+﻿using Discord;
+using Discord.WebSocket;
+using FalloutRPG.Constants;
+using FalloutRPG.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -20,12 +23,14 @@ namespace FalloutRPG.Services
 
         private readonly CharacterService _charService;
         private readonly SkillsService _skillsService;
+        private readonly DiscordSocketClient _client;
         private readonly IConfiguration _config;
 
-        public ExperienceService(CharacterService charService, SkillsService skillsService, IConfiguration config)
+        public ExperienceService(CharacterService charService, SkillsService skillsService, DiscordSocketClient client, IConfiguration config)
         {
             _charService = charService;
             _skillsService = skillsService;
+            _client = client;
             _config = config;
 
             CooldownTimers = new Dictionary<ulong, Timer>();
@@ -167,7 +172,11 @@ namespace FalloutRPG.Services
         /// </summary>
         private void OnLevelUp(Character character)
         {
-            _skillsService.GrantSkillPoints(character);
+            var user = _client.GetUser(character.DiscordId);
+
+            _skillsService.GiveSkillPoints(character);
+
+            user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
         }
 
         /// <summary>
