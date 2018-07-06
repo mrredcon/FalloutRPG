@@ -52,7 +52,7 @@ namespace FalloutRPG.Services
         private int _shooterIndex;
         
         private Round round;
-        private int point;
+        private int shooterPoint;
 
         public CrapsService(GamblingService gamblingService)
         {
@@ -60,7 +60,7 @@ namespace FalloutRPG.Services
             bets = new List<Bet>();
             
             round = Round.ComeOut;
-            point = -1;
+            shooterPoint = -1;
 
             _shooterIndex = 0;
 
@@ -68,50 +68,200 @@ namespace FalloutRPG.Services
 
             random = new Random();
         }
-        public void AdvanceRound(RoundResult result)
+        public string SpewGutsOut()
         {
-            switch (result)
+            StringBuilder result = new StringBuilder();
+                result.Append("Okay, I'll talk, just don't hurt me!\n" +
+                "The shooter is: " + shooter.Mention + "\n" +
+                "Shooter index is " + _shooterIndex + "\n" +
+                "The state of the round is: " + round.ToString() + "\n" +
+                "The shooter's point is " + shooterPoint + "\n" + 
+                "Players:\n");
+
+            foreach (var player in players)
             {
-                case RoundResult.CrapOut:
-                    {
+                result.Append(player.Mention + "\n");
+            }
 
+            result.Append("Active bets:\n");
+
+            foreach (var bet in bets.ToList())
+            {
+                result.Append(bet.User.Mention + " " + bet.BetType.ToString() + " " + bet.BetAmount + "\n");
+            }
+
+            return result.ToString();
+        }
+        private string AwardComeBets(int roll)
+        {
+            string result = "";
+
+            foreach (var bet in bets.ToList())
+            {
+                if (bet.BetType == BetType.Come)
+                {
+                    if (roll == bet.Point) // come point achieved
+                    {
+                        AwardBet(bet);
+                        result += bet.User.Mention + " reached their Point!\n";
                     }
+                    else if (bet.Point == -1) // "come out" roll for new Come Bet
+                    {
+                        if (roll == 7 || roll == 11) // natural
+                        {
+                            AwardBet(bet);
+                            result += bet.User.Mention + " got a Natural!\n";
+                        }
+                        else if (roll == 2 || roll == 3 || roll == 12) // crap out
+                        {
+                            AwardBet(bet, false);
+                            result += bet.User.Mention + " crapped out!\n";
+                        }
+                        else // point
+                        {
+                            bet.Point = roll;
+                            result += bet.User.Mention + "'s point is: " + roll + "\n";
+                        }
+                    }
+                }
+                else if (bet.BetType == BetType.DontCome)
+                {
+                    if (roll == bet.Point) // point achieved
+                    {
+                        AwardBet(bet, false);
+                        result += bet.User.Mention + " reached their Point but they betted against it!\n";
+                    }
+                    else if (bet.Point != -1 && roll == 7) // seven out
+                    {
+                        AwardBet(bet);
+                        result += bet.User.Mention + " sevened out but they were counting on it!\n";
+                    }
+                    else if (bet.Point == -1) // come out roll
+                    {
+                        if (roll == 2 || roll == 3) // crap out
+                        {
+                            AwardBet(bet);
+                            result += bet.User.Mention + " crapped out but they were counting on it!\n";
+                        }
+                        else if (roll == 12) // crap out push (house always wins)
+                        {
+                            AwardBet(bet, false, true);
+                            result += bet.User.Mention + " would've made some money, but the House Always Wins!\n";
+                        }
+                        else if (roll == 7 || roll == 11) // natural
+                        {
+                            AwardBet(bet, false);
+                            result += bet.User.Mention + " got a Natural, but they betted against it!\n";
+                        }
+                        else
+                        {
+                            bet.Point = roll; // point
+                            result += bet.User.Mention + "'s point is: " + roll + "\n";
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+        private string AdvanceRound(int roll)
+        {
+            string result = "";
+
+            if (round == Round.ComeOut)
+            {
+                if (roll == 2 || roll == 3 || roll == 12) // crap out
+                {
+                    AwardBets(BetType.DontPass);
+                    result += shooter.Mention + " crapped out!\n";
+                }
+                else if (roll == 7 || roll == 11) // natural
+                {
+                    AwardBets(BetType.Pass);
+                    result += shooter.Mention + " rolled a Natural!\n";
+                }
+                else // point
+                {
+                    shooterPoint = roll;
+                    round = Round.Point;
+                    result += shooter.Mention + " advanced the round into the Point!\n";
+                }
+            }
+            else if (round == Round.Point)
+            {
+                if (roll == 7) // seven out
+                {
+                    AwardBets(BetType.DontPass);
+                    //AwardBets(BetType.dontcome);
+                    result += shooter.Mention + " sevened out!\n";
+                    round = Round.ComeOut;
+                    NextShooter();
+                    result += "New shooter: " + shooter.Mention + "\n";
+                }
+                else if (roll == shooterPoint)
+                {
+                    AwardBets(BetType.Pass);
+                    round = Round.ComeOut;
+                    result += shooter.Mention + " rolled the point!\n";
+                }
+            }
+            result += AwardComeBets(roll);
+            return result;
+        }
+        private void AwardBet(Bet bet, bool win = true, bool push = false)
+        {
+            var balances = _gamblingService.UserBalances;
+            if (win)
+            {
+                balances[bet.User] += bet.BetAmount;
+                bets.Remove(bet);
+            }
+            else
+            {
+                balances[bet.User] -= bet.BetAmount;
+                bets.Remove(bet);
+            }
+        }
+        private void AwardBets(BetType winningBet)
+        {
+            BetType notWinningBet = BetType.Error;
+            switch (winningBet)
+            {
+                case BetType.Pass:
+                    notWinningBet = BetType.DontPass;
                     break;
-                case RoundResult.Natural:
-                    {
-
-                    }
+                case BetType.DontPass:
+                    notWinningBet = BetType.Pass;
                     break;
-                case RoundResult.SevenOut:
-                    {
-
-                    }
+                case BetType.Come:
+                    notWinningBet = BetType.DontCome;
+                    break;
+                case BetType.DontCome:
+                    notWinningBet = BetType.Come;
                     break;
                 default:
                     break;
             }
-            if (_shooterIndex+1 < players.Count)
+            foreach (var bet in bets.ToList())
             {
-                shooter = players[++_shooterIndex];
+                if (bet.BetType == winningBet)
+                {
+                    _gamblingService.UserBalances[bet.User] += bet.BetAmount;
+                    bets.Remove(bet);
+                }
+                else if (bet.BetType == notWinningBet)
+                {
+                    _gamblingService.UserBalances[bet.User] -= bet.BetAmount;
+                    bets.Remove(bet);
+                }
             }
-            point = -1;
-
-            var losingBets = new List<Bet>();
-            var winningBets = new List<Bet>();
-
-            foreach (var bet in bets)
-            {
-
-            }
-
-            var shooterBet = bets.Find(x => x.User.Equals(shooter));
-            _gamblingService.UserBalances[shooter] -= shooterBet.BetAmount;
-            result += "Crapped out!";
         }
         public string Roll(IUser user)
         {
             if (user != shooter)
-                return null;
+                return user.Mention + ", you are not the shooter! (Join the match and wait.)";
+            if (bets.Find(x => x.User.Equals(user)) == null)
+                return user.Mention + ", you do not have a bet placed!";
 
             string result = "";
 
@@ -121,49 +271,7 @@ namespace FalloutRPG.Services
 
             result = DiceToEmoji(dice1) + " " + DiceToEmoji(dice2) + "\n";
 
-            // TODO: make a method that loops through all players and award or substract losing bets (RoundEnd())
-            if (point == -1) // point not set
-            {
-                if (sum == 2 || sum == 3 || sum == 12) // crap out
-                {
-                    AdvanceRound();
-                    result += "Crap out!";
-                }
-                else if (sum == 7 || sum == 1) // natural
-                {
-                    AdvanceRound();
-                    var shooterBet = bets.Find(x => x.User.Equals(shooter));
-                    _gamblingService.UserBalances[user] += shooterBet.BetAmount;
-                    result += "Natural!";
-                }
-                else
-                {
-                    point = sum;
-                    return result + "\nPoint is: " + point; // [5][3]   Point is 8.
-                }
-            }
-            else // point set
-            {
-                if (sum == point)
-                {
-                    AdvanceRound();
-                    var shooterBet = bets.Find(x => x.User.Equals(shooter));
-                    _gamblingService.UserBalances[user] += shooterBet.BetAmount;
-                    result += "Point achieved!";
-                }
-                else if (sum == 7) // seven out
-                {
-                    AdvanceRound();
-                    var shooterBet = bets.Find(x => x.User.Equals(shooter));
-                    _gamblingService.UserBalances[user] -= shooterBet.BetAmount;
-                    result += "Seven out!";
-                }
-                else
-                {
-                    result += "Roll again!";
-                }
-            }
-            return result;
+            return result + AdvanceRound(sum);
         }
         public void JoinMatch(IUser user)
         {
@@ -174,32 +282,62 @@ namespace FalloutRPG.Services
 
             _gamblingService.UserBalances.Add(user, 0);
         }
-        public bool PlaceBet(IUser user, string betToPlace, int betAmount)
+        public bool NextShooter()
         {
-            if (Enum.TryParse(betToPlace.ToLower(), out BetType betType))
+            IUser oldShooter = shooter;
+
+            if (players.Count > _shooterIndex + 1)
+                shooter = players[++_shooterIndex];
+            else
+                _shooterIndex = 0;
+
+            if (shooter != oldShooter)
+                return true;
+            else
+                return false;
+        }
+        public string PlaceBet(IUser user, string betToPlace, int betAmount)
+        {
+            if (bets.Find(x => x.User.Equals(user)) != null) // bet already placed
+                return user.Mention + ", you already have a bet!";
+
+            betToPlace = betToPlace.ToLower();
+            BetType betType = BetType.Error;
+
+            if (betToPlace == "pass")
+                betType = BetType.Pass;
+            if (betToPlace == "dontpass")
+                betType = BetType.DontPass;
+            if (betToPlace == "come")
+                betType = BetType.Come;
+            if (betToPlace == "dontcome")
+                betType = BetType.DontCome;
+
+            if (betType != BetType.Error)
             {
                 if (round == Round.ComeOut)
                 {
                     // can't place a Come bet during the come out round
-                    if (betType == BetType.come || betType == BetType.dontcome)
-                        return false;
+                    if (betType == BetType.Come || betType == BetType.DontCome)
+                        return user.Mention + ", you can't place a Come bet when the Point isn't set!";
                 }
-                //else if (_round == Round.Point)
-                //{
-                //    // can't place a Pass bet during the point round
-                //    if (betType == BetType.pass || betType == BetType.dontpass)
-                //        return false;
-                //}
+                else if (round == Round.Point)
+                {
+                    // can't place a Pass bet during the point round
+                    if (betType == BetType.Pass || betType == BetType.DontPass)
+                        return user.Mention + ", you can't place a Pass or Don't Pass bet after the Point has been set!";
+                }
                 if (betAmount <= 0)
-                    return false;
+                    return user.Mention + ", you have to bet something!";
 
                 bets.Add(new Bet(user, betAmount, betType));
-                return true;
+
+                return user.Mention + ", bet placed!";
             }
             else
             {
                 // failed to parse bet type
-                return false;
+                return user.Mention + ", valid bet types are: 'pass', 'dontpass', 'come', or 'dontcome' (without single quotes.)";
             }
         }
         private string DiceToEmoji(int num)
@@ -234,10 +372,11 @@ namespace FalloutRPG.Services
         }
         public enum BetType
         {
-            pass,
-            dontpass,
-            come,
-            dontcome
+            Error,
+            Pass,
+            DontPass,
+            Come,
+            DontCome
         }
         private class Bet
         {
@@ -250,7 +389,8 @@ namespace FalloutRPG.Services
             {
                 User = user;
                 BetAmount = betAmount;
-                BetType = BetType;
+                BetType = betType;
+                Point = -1;
             }
         }
     }

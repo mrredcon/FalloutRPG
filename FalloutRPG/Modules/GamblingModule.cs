@@ -8,9 +8,23 @@ using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules
 {
-    //class GamblingModule
-    //{
-    //}
+    public class GamblingModule : ModuleBase<SocketCommandContext>
+    {
+        private readonly GamblingService _gamblingService;
+
+        public GamblingModule(GamblingService gamblingService)
+        {
+            _gamblingService = gamblingService;
+        }
+
+        [Command("balance")]
+        [Alias("bal")]
+        public async Task ViewBalanceAsync()
+        {
+            var user = Context.User;
+            await ReplyAsync("U HAV: " + _gamblingService.UserBalances[user]);
+        }
+    }
     [Group("craps")]
     public class CrapsModule : ModuleBase<SocketCommandContext>
     {
@@ -31,21 +45,17 @@ namespace FalloutRPG.Modules
         public async Task RollAsync()
         {
             string rollResult = _crapsService.Roll(Context.User);
-            if (rollResult == null || rollResult.Equals(""))
-                await ReplyAsync("Failed to roll (Are you the shooter?)");
-            else
-                await ReplyAsync(rollResult);
+            await ReplyAsync(rollResult);
         }
         [Command("bet")]
         public async Task BetAsync(string betType, int betAmount)
         {
-            bool result = _crapsService.PlaceBet(Context.User, betType, betAmount);
-            if (result)
-            {
-                await ReplyAsync("Placed bet!");
-            }
-            else
-                await ReplyAsync("Failed to place bet!");
+            await ReplyAsync( _crapsService.PlaceBet(Context.User, betType, betAmount));
+        }
+        [Command("info")]
+        public async Task GetGameInfoAsync()
+        {
+            await ReplyAsync(_crapsService.SpewGutsOut());
         }
     }
     //[Group("slots")]
