@@ -166,7 +166,7 @@ namespace System.Collections.ObjectModel
         #region INotifyCollectionChanged Members
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
-        public event Func<object, NotifyCollectionChangedEventArgs, Task> CollectionChangedAsync;
+        public event Func<object, EventArgs, Task> CollectionChangedAsync;
 
         #endregion
 
@@ -196,7 +196,7 @@ namespace System.Collections.ObjectModel
             }
         }
 
-        private async Task Insert(TKey key, TValue value, bool add)
+        private void Insert(TKey key, TValue value, bool add)
         {
             if (key == null) throw new ArgumentNullException("key");
 
@@ -207,7 +207,7 @@ namespace System.Collections.ObjectModel
                 if (Equals(item, value)) return;
                 Dictionary[key] = value;
 
-                await OnCollectionChanged(NotifyCollectionChangedAction.Replace, new KeyValuePair<TKey, TValue>(key, value), new KeyValuePair<TKey, TValue>(key, item));
+                OnCollectionChanged(NotifyCollectionChangedAction.Replace, new KeyValuePair<TKey, TValue>(key, value), new KeyValuePair<TKey, TValue>(key, item));
             }
             else
             {
@@ -254,18 +254,7 @@ namespace System.Collections.ObjectModel
                 return;
             }
 
-            Delegate[] invocationList = handler.GetInvocationList();
-            Console.WriteLine("invocationList is this long:" + invocationList.Length);
-            Task[] handlerTasks = new Task[invocationList.Length];
-            Console.WriteLine("handlerTasks is this long: " + handlerTasks.Length);
-
-            for (int i = 0; i < invocationList.Length; i++)
-            {
-                handlerTasks[i] = ((Func<object, NotifyCollectionChangedEventArgs, Task>)invocationList[i])(this, invocationList[i].Method.ReturnParameter.);
-            }
-
-            //if (CollectionChangedAsync != null) await CollectionChangedAsync(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem));
-            await Task.WhenAll(handlerTasks);
+            await Task.WhenAll(handler.GetInvocationList().Select(invocation => ((Func<object, EventArgs, Task>)invocation)(this, EventArgs.Empty)));
             Console.WriteLine("made it to the end!");
         }
 

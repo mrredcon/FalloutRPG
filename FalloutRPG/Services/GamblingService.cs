@@ -30,27 +30,25 @@ namespace FalloutRPG.Services
             LoadGamblingEnabledChannels();
         }
 
-        private async Task UserBalances_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private async Task UserBalances_CollectionChanged(object sender, EventArgs e)
         {
             Console.WriteLine("Event firing!");
-            if (e.Action == NotifyCollectionChangedAction.Replace)
+
+            foreach (var bal in UserBalances)
             {
-                Console.WriteLine("Action is replace!");
-                foreach (var newItem in e.NewItems)
+                Console.WriteLine("Starting loop!");
+
+                var user = bal.Key;
+                var newMoney = bal.Value;
+
+                var character = await _charService.GetCharacterAsync(user.Id);
+                if (character.Money != newMoney)
                 {
-                    Console.WriteLine("Starting loop!");
-                    var dictEntry = (KeyValuePair<IUser, long>)newItem;
-
-                    var user = dictEntry.Key;
-                    var newMoney = dictEntry.Value;
-
-                    var character = await _charService.GetCharacterAsync(user.Id);
                     character.Money = newMoney;
-
                     await _charService.SaveCharacterAsync(character);
-                    Console.WriteLine("Ending loop!");
-//                    await Task.Delay(2000);
                 }
+                Console.WriteLine("Ending loop!");
+                //                    await Task.Delay(2000);
             }
             //throw new NotImplementedException();
         }
