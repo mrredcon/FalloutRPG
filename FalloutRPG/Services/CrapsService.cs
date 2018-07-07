@@ -66,7 +66,7 @@ namespace FalloutRPG.Services
                     return String.Format(Messages.ERR_BALANCE_ADD_FAIL, user.Mention);
 
             if (betAmount > _gamblingService.UserBalances[user])
-                //return String.Format(Messages.ERR_BET_TOO_HIGH, user.Mention);
+                return String.Format(Messages.ERR_BET_TOO_HIGH, user.Mention);
 
             if (betAmount <= 0)
                 return String.Format(Messages.ERR_BET_TOO_LOW, user.Mention);
