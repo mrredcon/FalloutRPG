@@ -134,7 +134,8 @@ namespace FalloutRPG.Modules
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Level:** {level}\n" +
                     $"**Experience:** {character.Experience}\n" +
-                    $"**To Next Level:** {expToNextLevel}");
+                    $"**To Next Level:** {expToNextLevel}\n" +
+                    $"**Money:** {character.Money}");
 
                 await ReplyAsync(userInfo.Mention, embed: embed);
             }
