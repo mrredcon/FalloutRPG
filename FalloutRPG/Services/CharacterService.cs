@@ -1,8 +1,8 @@
 ﻿using FalloutRPG.Constants;
 using FalloutRPG.Data.Repositories;
-using FalloutRPG.Exceptions;
 using FalloutRPG.Models;
 using FalloutRPG.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,13 +46,13 @@ namespace FalloutRPG.Services
         public async Task<Character> CreateCharacterAsync(ulong discordId, string firstName, string lastName)
         {
             if (GetCharacter(discordId) != null)
-                throw new CharacterException(Messages.EXC_DISCORDID_EXISTS);
+                throw new Exception(Exceptions.CHAR_DISCORDID_EXISTS);
 
             if (!StringTool.IsOnlyLetters(firstName) || !StringTool.IsOnlyLetters(lastName))
-                throw new CharacterException(Messages.EXC_NAMES_NOT_LETTERS);
+                throw new Exception(Exceptions.CHAR_NAMES_NOT_LETTERS);
 
             if (firstName.Length > 24 || lastName.Length > 24 || firstName.Length < 2 || lastName.Length < 2)
-                throw new CharacterException(Messages.EXC_NAMES_LENGTH);
+                throw new Exception(Exceptions.CHAR_NAMES_LENGTH);
 
             firstName = StringTool.ToTitleCase(firstName);
             lastName = StringTool.ToTitleCase(lastName);
@@ -65,6 +65,7 @@ namespace FalloutRPG.Services
                 Description = "",
                 Story = "",
                 Experience = 0,
+                SkillPoints = 0,
                 Special = new Special()
                 {
                     Strength = 0,
@@ -112,6 +113,9 @@ namespace FalloutRPG.Services
         /// </summary>
         public async Task SaveCharacterAsync(Character character)
         {
+            if (character == null)
+                throw new ArgumentNullException("character");
+
             await _charRepository.SaveAsync(character);
         }
     }

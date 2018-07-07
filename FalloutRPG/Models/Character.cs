@@ -10,8 +10,8 @@
         public string Story { get; set; }
 
         public int Experience { get; set; }
-        public int SkillPoints { get; set; }
-        public int PerkPoints { get; set; }
+
+        public float SkillPoints { get; set; }
 
         public Special Special { get; set; }
         public SkillSheet Skills { get; set; }
