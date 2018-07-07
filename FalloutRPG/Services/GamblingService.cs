@@ -28,6 +28,13 @@ namespace FalloutRPG.Services
             LoadGamblingEnabledChannels();
         }
 
+        public bool IsGamblingEnabledChannel(ulong channelId)
+        {
+            if (_gamblingChannels.Contains(channelId))
+                return true;
+            return false;
+        }
+
         /// <summary>
         /// This will create an entry in UserBalances with the specified user, and their balance
         /// </summary>
@@ -82,6 +89,7 @@ namespace FalloutRPG.Services
             catch (Exception)
             {
                 Console.WriteLine("You have not specified any gambling enabled channels in Config.json");
+                _gamblingChannels = new List<ulong>();
             }
         }
     }

@@ -10,29 +10,38 @@ namespace FalloutRPG.Modules
     [Group("craps")]
     public class CrapsModule : ModuleBase<SocketCommandContext>
     {
+        private readonly GamblingService _gamblingService;
         private readonly CrapsService _crapsService;
 
-        public CrapsModule(CrapsService crapsService)
+        public CrapsModule(GamblingService gamblingService, CrapsService crapsService)
         {
+            _gamblingService = gamblingService;
             _crapsService = crapsService;
         }
 
         [Command("join")]
         public async Task JoinCrapsGameAsync()
         {
-            _crapsService.JoinMatch(Context.User);
-            await ReplyAsync("Joined match!");
+            if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
+            {
+                _crapsService.JoinMatch(Context.User);
+                await ReplyAsync("Joined match!");
+            }
         }
         [Command("roll")]
         public async Task RollAsync()
         {
-            string rollResult = _crapsService.Roll(Context.User);
-            await ReplyAsync(rollResult);
+            if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
+            {
+                string rollResult = _crapsService.Roll(Context.User);
+                await ReplyAsync(rollResult);
+            }
         }
         [Command("bet")]
         public async Task BetAsync(string betType, int betAmount)
         {
-            await ReplyAsync(_crapsService.PlaceBet(Context.User, betType, betAmount));
+            if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
+                await ReplyAsync(_crapsService.PlaceBet(Context.User, betType, betAmount));
         }
         [Command("info")]
         public async Task GetGameInfoAsync()

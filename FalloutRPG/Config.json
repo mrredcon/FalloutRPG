@@ -3,7 +3,9 @@
   "tokens": {
     "discord": ""
   },
-  "enabled-channel-categories": [ "" ],
+  "gambling": {
+    "enabled-channels": [ "" ]
+  },
   "roleplay": {
     "exp-channels": [ "" ]
   }

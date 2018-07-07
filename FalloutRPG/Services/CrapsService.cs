@@ -170,13 +170,13 @@ namespace FalloutRPG.Services
                 else if (roll == 7 || roll == 11) // natural
                 {
                     winningBet = BetType.Pass;
-                    result += _shooter.Mention + " rolled a Natural!\n";
+                    result += String.Format(Messages.CRAPS_NATURAL, _shooter.Mention) + "\n";
                 }
                 else // point
                 {
                     _shooterPoint = roll;
                     _round = Round.Point;
-                    result += _shooter.Mention + " advanced the round into the Point!\n";
+                    result += String.Format(Messages.CRAPS_POINT_ROUND, _shooter.Mention) + "\n";
                 }
             }
             else if (_round == Round.Point)
@@ -185,17 +185,17 @@ namespace FalloutRPG.Services
                 {
                     winningBet = BetType.DontPass;
 
-                    result += _shooter.Mention + " sevened out!\n";
+                    result += String.Format(Messages.CRAPS_SEVEN_OUT, _shooter.Mention) + "\n";
                     _round = Round.ComeOut;
                     NextShooter();
-                    result += "New shooter: " + _shooter.Mention + "\n";
+                    result += String.Format(Messages.CRAPS_NEW_SHOOTER, _shooter.Mention, roll) + "\n";
                 }
                 else if (roll == _shooterPoint) // shooter reached point
                 {
                     winningBet = BetType.Pass;
 
                     _round = Round.ComeOut;
-                    result += _shooter.Mention + " rolled the point!\n";
+                    result += String.Format(Messages.CRAPS_POINT_ROLL, _shooter.Mention) + "\n";
                 }
             }
             BetType losingBet = BetType.Error;
@@ -223,27 +223,27 @@ namespace FalloutRPG.Services
             {
                 if (bet.BetType == BetType.Come)
                 {
-                    if (roll == bet.Point) // come point achieved
+                    if (roll == bet.Point) // come point achieved (win bet)
                     {
                         AwardBet(bet);
-                        result += bet.User.Mention + " reached their Point!\n";
+                        result += String.Format(Messages.CRAPS_POINT_ROLL, bet.User.Mention) + "\n";
                     }
                     else if (bet.Point == -1) // "come out" roll for new Come Bet
                     {
                         if (roll == 7 || roll == 11) // natural
                         {
                             AwardBet(bet);
-                            result += bet.User.Mention + " got a Natural!\n";
+                            result += String.Format(Messages.CRAPS_NATURAL, bet.User.Mention) + "\n";
                         }
                         else if (roll == 2 || roll == 3 || roll == 12) // crap out
                         {
                             AwardBet(bet, false);
-                            result += bet.User.Mention + " crapped out!\n";
+                            result += String.Format(Messages.CRAPS_CRAPOUT, bet.User.Mention) + "\n";
                         }
                         else // point
                         {
                             bet.Point = roll;
-                            result += bet.User.Mention + "'s point is: " + roll + "\n";
+                            result += String.Format(Messages.CRAPS_POINT_SET, bet.User.Mention, roll) + "\n";
                         }
                     }
                 }
@@ -252,34 +252,34 @@ namespace FalloutRPG.Services
                     if (roll == bet.Point) // point achieved
                     {
                         AwardBet(bet, false);
-                        result += bet.User.Mention + " reached their Point but they betted against it!\n";
+                        result += String.Format(Messages.CRAPS_POINT_ROLL_NEG, bet.User.Mention, roll) + "\n";
                     }
                     else if (bet.Point != -1 && roll == 7) // seven out
                     {
                         AwardBet(bet);
-                        result += bet.User.Mention + " sevened out but they were counting on it!\n";
+                        result += String.Format(Messages.CRAPS_SEVEN_OUT_POS, bet.User.Mention, roll) + "\n";
                     }
                     else if (bet.Point == -1) // come out roll
                     {
                         if (roll == 2 || roll == 3) // crap out
                         {
                             AwardBet(bet);
-                            result += bet.User.Mention + " crapped out but they were counting on it!\n";
+                            result += String.Format(Messages.CRAPS_CRAPOUT_POS, bet.User.Mention, roll) + "\n";
                         }
                         else if (roll == 12) // crap out push (house always wins)
                         {
                             AwardBet(bet, false, true);
-                            result += bet.User.Mention + " would've made some money, but the House Always Wins!\n";
+                            result += String.Format(Messages.CRAPS_CRAPOUT_PUSH, bet.User.Mention, roll) + "\n";
                         }
                         else if (roll == 7 || roll == 11) // natural
                         {
                             AwardBet(bet, false);
-                            result += bet.User.Mention + " got a Natural, but they betted against it!\n";
+                            result += String.Format(Messages.CRAPS_NATURAL_NEG, bet.User.Mention, roll) + "\n";
                         }
                         else
                         {
                             bet.Point = roll; // point
-                            result += bet.User.Mention + "'s point is: " + roll + "\n";
+                            result += String.Format(Messages.CRAPS_POINT_SET, bet.User.Mention, roll) + "\n";
                         }
                     }
                 }
