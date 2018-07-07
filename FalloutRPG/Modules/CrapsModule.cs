@@ -37,7 +37,7 @@ namespace FalloutRPG.Modules
         [Command("info")]
         public async Task GetGameInfoAsync()
         {
-            await ReplyAsync(_crapsService.SpewGutsOut());
+            //await ReplyAsync(_crapsService.SpewGutsOut());
         }
     }
 }

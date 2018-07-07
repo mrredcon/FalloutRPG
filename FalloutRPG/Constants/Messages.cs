@@ -28,5 +28,24 @@
         public const string ERR_SKILLS_NOT_FOUND = FAILURE_EMOJI + "Unable to find character skills. ({0})";
         public const string ERR_SKILLS_ALREADY_SET = FAILURE_EMOJI + "Character skills are already set. ({0})";
         public const string ERR_SPECIAL_ALREADY_SET = FAILURE_EMOJI + "Character SPECIAL is already set. ({0})";
+
+        // Gambling Messages
+        public const string BET_PLACED = SUCCESS_EMOJI + "{0}, bet placed!";
+
+        // Gambling Error Messages
+        public const string ERR_BALANCE_ADD_FAIL = FAILURE_EMOJI + "{0}, I failed to add your balance to the directory! (Do you have a character?)";
+        public const string ERR_BET_TOO_HIGH = FAILURE_EMOJI + "{0}, you don't have enough money for that bet!";
+        public const string ERR_BET_TOO_LOW = FAILURE_EMOJI + "{0}, you have to bet something!";
+
+        // Craps Messages
+        public const string CRAPS_CRAPOUT = "{0} crapped out!";
+
+        // Craps Error Messages
+        public const string ERR_CRAPS_NOT_SHOOTER = FAILURE_EMOJI + "{0}, you are not the shooter! (Join the match and wait.)";
+        public const string ERR_CRAPS_BET_NOT_SET = FAILURE_EMOJI + "{0}, you do not have a bet placed!";
+        public const string ERR_CRAPS_BET_ALREADY_SET = FAILURE_EMOJI + "{0}, you already have a bet!";
+        public const string ERR_CRAPS_BET_PARSE_FAIL = FAILURE_EMOJI + "{0}, valid bet types are: 'pass', 'dontpass', 'come', or 'dontcome' (without single quotes.)";
+        public const string ERR_CRAPS_POINT_NOT_SET = FAILURE_EMOJI + "{0}, you can't place a Come bet when the Point isn't set!";
+        public const string ERR_CRAPS_POINT_ALREADY_SET = FAILURE_EMOJI + "{0}, you can't place a Pass bet after the Point has been set!";
     }
 }

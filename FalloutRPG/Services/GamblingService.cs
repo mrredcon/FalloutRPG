@@ -28,19 +28,11 @@ namespace FalloutRPG.Services
             LoadGamblingEnabledChannels();
         }
 
-        private async void UserBalances_Changed(object sender, EventArgs e)
-        {
-            try
-            {
-                await SaveUserBalancesAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-                //Console.WriteLine("some bo' 'schitt happened yo ");
-            }
-        }
-
+        /// <summary>
+        /// This will create an entry in UserBalances with the specified user, and their balance
+        /// </summary>
+        /// <param name="user">The user to add their balance to UserBalances</param>
+        /// <returns>A boolean stating whether the user's balance was added or not.</returns>
         public bool AddUserBalance(IUser user)
         {
             var character = _charService.GetCharacter(user.Id);
@@ -55,19 +47,25 @@ namespace FalloutRPG.Services
             return true;
         }
 
+        /// <summary>
+        /// Saves every user's changed balance in UserBalances into the database.
+        /// </summary>
         public async Task SaveUserBalancesAsync()
         {
-            Console.WriteLine("im running yaaaaaaaay!");
             foreach (var bal in UserBalances)
             {
                 var character = _charService.GetCharacter(bal.Key.Id);
                 if (character.Money != bal.Value) // only save if money has changed
                 {
-                    Console.WriteLine("saving value!");
                     character.Money = bal.Value;
                     await _charService.SaveCharacterAsync(character);
                 }
             }
+        }
+
+        private async void UserBalances_Changed(object sender, EventArgs e)
+        {
+            await SaveUserBalancesAsync();
         }
 
         private void LoadGamblingEnabledChannels()

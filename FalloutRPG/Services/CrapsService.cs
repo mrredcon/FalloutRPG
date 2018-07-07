@@ -1,4 +1,5 @@
 ﻿using Discord;
+using FalloutRPG.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,60 +11,215 @@ namespace FalloutRPG.Services
     {
         private readonly GamblingService _gamblingService;
 
-        private readonly Random _random;
+        private readonly Random _rand;
 
-        private List<IUser> players;
-        private List<Bet> bets;
+        private List<IUser> _players;
+        private List<Bet> _bets;
 
-        private IUser shooter;
+        private IUser _shooter;
         private int _shooterIndex;
 
-        private Round round;
-        private int shooterPoint;
+        private Round _round;
+        private int _shooterPoint;
 
         public CrapsService(GamblingService gamblingService)
         {
-            players = new List<IUser>();
-            bets = new List<Bet>();
+            _players = new List<IUser>();
+            _bets = new List<Bet>();
 
-            round = Round.ComeOut;
-            shooterPoint = -1;
+            _round = Round.ComeOut;
+            _shooterPoint = -1;
 
             _shooterIndex = 0;
 
             _gamblingService = gamblingService;
 
-            _random = new Random();
+            _rand = new Random();
         }
-        public string SpewGutsOut()
+
+        public string Roll(IUser user)
         {
-            StringBuilder result = new StringBuilder();
-            result.Append("Okay, I'll talk, just don't hurt me!\n" +
-            "The shooter is: " + shooter.Mention + "\n" +
-            "Shooter index is " + _shooterIndex + "\n" +
-            "The state of the round is: " + round.ToString() + "\n" +
-            "The shooter's point is " + shooterPoint + "\n" +
-            "Players:\n");
+            if (user != _shooter)
+                return String.Format(Messages.ERR_CRAPS_NOT_SHOOTER, user.Mention);
+            if (_bets.Find(x => x.User.Equals(user)) == null)
+                return String.Format(Messages.ERR_CRAPS_BET_NOT_SET, user.Mention);
 
-            foreach (var player in players)
-            {
-                result.Append(player.Mention + "\n");
-            }
+            string result = "";
 
-            result.Append("Active bets:\n");
+            int dice1 = _rand.Next(1, 7),
+                dice2 = _rand.Next(1, 7),
+                sum = dice1 + dice2;
 
-            foreach (var bet in bets.ToList())
-            {
-                result.Append(bet.User.Mention + " " + bet.BetType.ToString() + " " + bet.BetAmount + "\n");
-            }
+            result = DiceToEmoji(dice1) + " " + DiceToEmoji(dice2) + "\n";
 
-            return result.ToString();
+            return result + AdvanceRound(sum);
         }
+
+        public string PlaceBet(IUser user, string betToPlace, int betAmount)
+        {
+            if (_bets.Find(x => x.User.Equals(user)) != null) // bet already placed
+                return String.Format(Messages.ERR_CRAPS_BET_ALREADY_SET, user.Mention);
+
+            if (!_gamblingService.UserBalances.ContainsKey(user)) // can't find user in dictionary
+                if (!_gamblingService.AddUserBalance(user)) // failed to add user
+                    return String.Format(Messages.ERR_BALANCE_ADD_FAIL, user.Mention);
+
+            if (betAmount > _gamblingService.UserBalances[user])
+                //return String.Format(Messages.ERR_BET_TOO_HIGH, user.Mention);
+
+            if (betAmount <= 0)
+                return String.Format(Messages.ERR_BET_TOO_LOW, user.Mention);
+
+            betToPlace = betToPlace.ToLower();
+
+            BetType betType = BetType.Error;
+
+            switch (betToPlace)
+            {
+                case "pass":
+                    betType = BetType.Pass;
+                    break;
+                case "dontpass":
+                    betType = BetType.DontPass;
+                    break;
+                case "come":
+                    betType = BetType.Come;
+                    break;
+                case "dontcome":
+                    betType = BetType.DontCome;
+                    break;
+            }
+
+            if (betType != BetType.Error)
+            {
+                if (_round == Round.ComeOut)
+                {
+                    // can't place a Come bet during the come out round
+                    if (betType == BetType.Come || betType == BetType.DontCome)
+                        return String.Format(Messages.ERR_CRAPS_POINT_NOT_SET, user.Mention);
+                }
+                else if (_round == Round.Point)
+                {
+                    // can't place a Pass bet during the point round
+                    if (betType == BetType.Pass || betType == BetType.DontPass)
+                        return String.Format(Messages.ERR_CRAPS_POINT_ALREADY_SET, user.Mention);
+                }
+
+                _bets.Add(new Bet(user, betAmount, betType));
+
+                return String.Format(Messages.BET_PLACED, user.Mention);
+            }
+            else
+            {
+                // failed to parse bet type
+                return String.Format(Messages.ERR_CRAPS_BET_PARSE_FAIL, user.Mention);
+            }
+        }
+
+        private string AdvanceRound(int roll)
+        {
+            string result = "";
+
+            result += AwardPassBets(roll);
+            result += AwardComeBets(roll);
+            return result;
+        }
+
+        public bool JoinMatch(IUser user)
+        {
+            if (!_gamblingService.AddUserBalance(user))
+            {
+                return false;
+            }
+            _players.Add(user);
+
+            if (_players.Count == 1)
+                _shooter = user;
+
+            return true;
+        }
+
+        public bool NextShooter()
+        {
+            IUser oldShooter = _shooter;
+
+            if (_players.Count > _shooterIndex + 1)
+                _shooter = _players[++_shooterIndex];
+            else
+                _shooterIndex = 0;
+
+            if (_shooter != oldShooter)
+                return true;
+            else
+                return false;
+        }
+
+        private string AwardPassBets(int roll)
+        {
+            string result = "";
+
+            BetType winningBet = BetType.Error;
+
+            if (_round == Round.ComeOut)
+            {
+                if (roll == 2 || roll == 3 || roll == 12) // crap out
+                {
+                    winningBet = BetType.DontPass;
+                    result += String.Format(Messages.CRAPS_CRAPOUT, _shooter.Mention) + "\n";
+                }
+                else if (roll == 7 || roll == 11) // natural
+                {
+                    winningBet = BetType.Pass;
+                    result += _shooter.Mention + " rolled a Natural!\n";
+                }
+                else // point
+                {
+                    _shooterPoint = roll;
+                    _round = Round.Point;
+                    result += _shooter.Mention + " advanced the round into the Point!\n";
+                }
+            }
+            else if (_round == Round.Point)
+            {
+                if (roll == 7) // seven out
+                {
+                    winningBet = BetType.DontPass;
+
+                    result += _shooter.Mention + " sevened out!\n";
+                    _round = Round.ComeOut;
+                    NextShooter();
+                    result += "New shooter: " + _shooter.Mention + "\n";
+                }
+                else if (roll == _shooterPoint) // shooter reached point
+                {
+                    winningBet = BetType.Pass;
+
+                    _round = Round.ComeOut;
+                    result += _shooter.Mention + " rolled the point!\n";
+                }
+            }
+            BetType losingBet = BetType.Error;
+
+            if (winningBet == BetType.Pass)
+                losingBet = BetType.DontPass;
+            else if (winningBet == BetType.DontPass)
+                losingBet = BetType.Pass;
+
+            foreach (var bet in _bets.ToList())
+            {
+                if (bet.BetType == winningBet)
+                    AwardBet(bet);
+                else if (bet.BetType == losingBet)
+                    AwardBet(bet, false);
+            }
+            return result;
+        }
+
         private string AwardComeBets(int roll)
         {
             string result = "";
 
-            foreach (var bet in bets.ToList())
+            foreach (var bet in _bets.ToList())
             {
                 if (bet.BetType == BetType.Come)
                 {
@@ -131,194 +287,22 @@ namespace FalloutRPG.Services
 
             return result;
         }
-        private string AdvanceRound(int roll)
-        {
-            string result = "";
 
-            if (round == Round.ComeOut)
-            {
-                if (roll == 2 || roll == 3 || roll == 12) // crap out
-                {
-                    AwardBets(BetType.DontPass);
-                    result += shooter.Mention + " crapped out!\n";
-                }
-                else if (roll == 7 || roll == 11) // natural
-                {
-                    AwardBets(BetType.Pass);
-                    result += shooter.Mention + " rolled a Natural!\n";
-                }
-                else // point
-                {
-                    shooterPoint = roll;
-                    round = Round.Point;
-                    result += shooter.Mention + " advanced the round into the Point!\n";
-                }
-            }
-            else if (round == Round.Point)
-            {
-                if (roll == 7) // seven out
-                {
-                    AwardBets(BetType.DontPass);
-                    //AwardBets(BetType.dontcome);
-                    result += shooter.Mention + " sevened out!\n";
-                    round = Round.ComeOut;
-                    NextShooter();
-                    result += "New shooter: " + shooter.Mention + "\n";
-                }
-                else if (roll == shooterPoint)
-                {
-                    AwardBets(BetType.Pass);
-                    round = Round.ComeOut;
-                    result += shooter.Mention + " rolled the point!\n";
-                }
-            }
-            result += AwardComeBets(roll);
-            return result;
-        }
         private void AwardBet(Bet bet, bool win = true, bool push = false)
         {
             var balances = _gamblingService.UserBalances;
             if (win)
             {
                 balances[bet.User] += bet.BetAmount;
-                bets.Remove(bet);
+                _bets.Remove(bet);
             }
             else
             {
                 balances[bet.User] -= bet.BetAmount;
-                bets.Remove(bet);
+                _bets.Remove(bet);
             }
         }
-        private void AwardBets(BetType winningBet)
-        {
-            BetType notWinningBet = BetType.Error;
-            switch (winningBet)
-            {
-                case BetType.Pass:
-                    notWinningBet = BetType.DontPass;
-                    break;
-                case BetType.DontPass:
-                    notWinningBet = BetType.Pass;
-                    break;
-                case BetType.Come:
-                    notWinningBet = BetType.DontCome;
-                    break;
-                case BetType.DontCome:
-                    notWinningBet = BetType.Come;
-                    break;
-                default:
-                    break;
-            }
-            foreach (var bet in bets.ToList())
-            {
-                if (bet.BetType == winningBet)
-                {
-                    _gamblingService.UserBalances[bet.User] += bet.BetAmount;
-                    bets.Remove(bet);
-                }
-                else if (bet.BetType == notWinningBet)
-                {
-                    _gamblingService.UserBalances[bet.User] -= bet.BetAmount;
-                    bets.Remove(bet);
-                }
-            }
-        }
-        public string Roll(IUser user)
-        {
-            if (user != shooter)
-                return user.Mention + ", you are not the shooter! (Join the match and wait.)";
-            if (bets.Find(x => x.User.Equals(user)) == null)
-                return user.Mention + ", you do not have a bet placed!";
 
-            string result = "";
-
-            int dice1 = _random.Next(1, 7),
-                dice2 = _random.Next(1, 7),
-                sum = dice1 + dice2;
-
-            result = DiceToEmoji(dice1) + " " + DiceToEmoji(dice2) + "\n";
-
-            return result + AdvanceRound(sum);
-        }
-        public bool JoinMatch(IUser user)
-        {
-            if (!_gamblingService.AddUserBalance(user))
-            {
-                return false;
-            }
-            players.Add(user);
-
-            if (players.Count == 1)
-                shooter = user;
-
-            return true;
-        }
-        public bool NextShooter()
-        {
-            IUser oldShooter = shooter;
-
-            if (players.Count > _shooterIndex + 1)
-                shooter = players[++_shooterIndex];
-            else
-                _shooterIndex = 0;
-
-            if (shooter != oldShooter)
-                return true;
-            else
-                return false;
-        }
-        public string PlaceBet(IUser user, string betToPlace, int betAmount)
-        {
-            if (bets.Find(x => x.User.Equals(user)) != null) // bet already placed
-                return user.Mention + ", you already have a bet!";
-
-            if (!_gamblingService.UserBalances.ContainsKey(user)) // can't find user in dictionary
-                if (!_gamblingService.AddUserBalance(user)) // failed to add user
-                    return user.Mention + ", I failed to add your balance to the directory! (Do you have a character?)";
-
-            if (betAmount > _gamblingService.UserBalances[user])
-                return user.Mention + ", you don't have enough money for that bet!";
-
-            if (betAmount <= 0)
-                return user.Mention + ", you have to bet something!";
-
-            betToPlace = betToPlace.ToLower();
-            BetType betType = BetType.Error;
-
-            if (betToPlace == "pass")
-                betType = BetType.Pass;
-            if (betToPlace == "dontpass")
-                betType = BetType.DontPass;
-            if (betToPlace == "come")
-                betType = BetType.Come;
-            if (betToPlace == "dontcome")
-                betType = BetType.DontCome;
-
-            if (betType != BetType.Error)
-            {
-                if (round == Round.ComeOut)
-                {
-                    // can't place a Come bet during the come out round
-                    if (betType == BetType.Come || betType == BetType.DontCome)
-                        return user.Mention + ", you can't place a Come bet when the Point isn't set!";
-                }
-                else if (round == Round.Point)
-                {
-                    // can't place a Pass bet during the point round
-                    if (betType == BetType.Pass || betType == BetType.DontPass)
-                        return user.Mention + ", you can't place a Pass or Don't Pass bet after the Point has been set!";
-                }
-
-                bets.Add(new Bet(user, betAmount, betType));
-
-                return user.Mention + ", bet placed!";
-            }
-            else
-            {
-                // failed to parse bet type
-                return user.Mention + ", valid bet types are: 'pass', 'dontpass', 'come', or 'dontcome' (without single quotes.)";
-            }
-        }
         private string DiceToEmoji(int num)
         {
             switch (num)
