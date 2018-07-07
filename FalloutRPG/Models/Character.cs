@@ -15,5 +15,7 @@
 
         public Special Special { get; set; }
         public SkillSheet Skills { get; set; }
+
+        public long Money { get; set; }
     }
 }
