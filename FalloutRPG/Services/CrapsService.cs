@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FalloutRPG.Services
 {
@@ -61,7 +62,7 @@ namespace FalloutRPG.Services
                 return String.Format(Messages.ERR_CRAPS_BET_ALREADY_SET, user.Mention);
 
             if (!_gamblingService.UserBalances.ContainsKey(user)) // can't find user in dictionary
-                if (!_gamblingService.AddUserBalance(user)) // failed to add user
+                if (_gamblingService.AddUserBalanceAsync(user).Result != GamblingService.AddUserBalanceResult.Success) // failed to add user
                     return String.Format(Messages.ERR_BALANCE_ADD_FAIL, user.Mention);
 
             if (betAmount > _gamblingService.UserBalances[user])
@@ -125,18 +126,18 @@ namespace FalloutRPG.Services
             return result;
         }
 
-        public bool JoinMatch(IUser user)
+        public async Task<GamblingService.AddUserBalanceResult> JoinMatch(IUser user)
         {
-            if (!_gamblingService.AddUserBalance(user))
+            var result = await _gamblingService.AddUserBalanceAsync(user);
+            if (result == GamblingService.AddUserBalanceResult.Success || result == GamblingService.AddUserBalanceResult.AlreadyIn)
             {
-                return false;
+                _players.Add(user);
+
+                if (_players.Count == 1)
+                    _shooter = user;
+                return GamblingService.AddUserBalanceResult.Success;
             }
-            _players.Add(user);
-
-            if (_players.Count == 1)
-                _shooter = user;
-
-            return true;
+            return result;
         }
 
         public bool LeaveMatch(IUser user)

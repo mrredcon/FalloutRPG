@@ -25,10 +25,14 @@ namespace FalloutRPG.Modules
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
-                if (_crapsService.JoinMatch(Context.User))
+                var result = _crapsService.JoinMatch(Context.User).Result;
+                if (result == GamblingService.AddUserBalanceResult.Success)
                     await ReplyAsync(String.Format(Messages.CRAPS_JOIN_MATCH, Context.User.Mention));
                 else
+                {
+                    Console.WriteLine(result.ToString());
                     await ReplyAsync(String.Format(Messages.ERR_CRAPS_JOIN_FAIL, Context.User.Mention));
+                }
             }
         }
 

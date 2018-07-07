@@ -3,8 +3,10 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Services
@@ -21,11 +23,36 @@ namespace FalloutRPG.Services
         {
             UserBalances = new ObservableDictionary<IUser, long>();
 
-            UserBalances.CollectionChanged += UserBalances_Changed;
+            UserBalances.CollectionChangedAsync += UserBalances_CollectionChanged;
 
             _config = config;
             _charService = charService;
             LoadGamblingEnabledChannels();
+        }
+
+        private async Task UserBalances_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            Console.WriteLine("Event firing!");
+            if (e.Action == NotifyCollectionChangedAction.Replace)
+            {
+                Console.WriteLine("Action is replace!");
+                foreach (var newItem in e.NewItems)
+                {
+                    Console.WriteLine("Starting loop!");
+                    var dictEntry = (KeyValuePair<IUser, long>)newItem;
+
+                    var user = dictEntry.Key;
+                    var newMoney = dictEntry.Value;
+
+                    var character = await _charService.GetCharacterAsync(user.Id);
+                    character.Money = newMoney;
+
+                    await _charService.SaveCharacterAsync(character);
+                    Console.WriteLine("Ending loop!");
+//                    await Task.Delay(2000);
+                }
+            }
+            //throw new NotImplementedException();
         }
 
         public bool IsGamblingEnabledChannel(ulong channelId)
@@ -40,18 +67,26 @@ namespace FalloutRPG.Services
         /// </summary>
         /// <param name="user">The user to add their balance to UserBalances</param>
         /// <returns>A boolean stating whether the user's balance was added or not.</returns>
-        public bool AddUserBalance(IUser user)
+        public async Task<AddUserBalanceResult> AddUserBalanceAsync(IUser user)
         {
-            var character = _charService.GetCharacter(user.Id);
+            var character = await _charService.GetCharacterAsync(user.Id);
 
             if (character == null)
-                return false;
+                return AddUserBalanceResult.NullCharacter;
 
             if (UserBalances.ContainsKey(user))
-                return false;
+                return AddUserBalanceResult.AlreadyIn;
 
             UserBalances.Add(user, character.Money);
-            return true;
+            return AddUserBalanceResult.Success;
+        }
+
+        public enum AddUserBalanceResult
+        {
+            Success,
+            AlreadyIn,
+            NullCharacter,
+            UnknownError
         }
 
         /// <summary>
@@ -68,11 +103,6 @@ namespace FalloutRPG.Services
                     await _charService.SaveCharacterAsync(character);
                 }
             }
-        }
-
-        private async void UserBalances_Changed(object sender, EventArgs e)
-        {
-            await SaveUserBalancesAsync();
         }
 
         private void LoadGamblingEnabledChannels()

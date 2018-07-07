@@ -3,6 +3,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 
 namespace System.Collections.ObjectModel
 {
@@ -165,6 +166,7 @@ namespace System.Collections.ObjectModel
         #region INotifyCollectionChanged Members
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event Func<object, NotifyCollectionChangedEventArgs, Task> CollectionChangedAsync;
 
         #endregion
 
@@ -194,7 +196,7 @@ namespace System.Collections.ObjectModel
             }
         }
 
-        private void Insert(TKey key, TValue value, bool add)
+        private async Task Insert(TKey key, TValue value, bool add)
         {
             if (key == null) throw new ArgumentNullException("key");
 
@@ -205,7 +207,7 @@ namespace System.Collections.ObjectModel
                 if (Equals(item, value)) return;
                 Dictionary[key] = value;
 
-                OnCollectionChanged(NotifyCollectionChangedAction.Replace, new KeyValuePair<TKey, TValue>(key, value), new KeyValuePair<TKey, TValue>(key, item));
+                await OnCollectionChanged(NotifyCollectionChangedAction.Replace, new KeyValuePair<TKey, TValue>(key, value), new KeyValuePair<TKey, TValue>(key, item));
             }
             else
             {
@@ -240,10 +242,31 @@ namespace System.Collections.ObjectModel
             if (CollectionChanged != null) CollectionChanged(this, new NotifyCollectionChangedEventArgs(action, changedItem));
         }
 
-        private void OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem, KeyValuePair<TKey, TValue> oldItem)
+        private async Task OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem, KeyValuePair<TKey, TValue> oldItem)
         {
+            Console.WriteLine("OnCollectionChanged running!");
             OnPropertyChanged();
-            if (CollectionChanged != null) CollectionChanged(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem));
+            Func<object, NotifyCollectionChangedEventArgs, Task> handler = CollectionChangedAsync;
+
+            if (handler == null)
+            {
+                Console.WriteLine("Handler was null!");
+                return;
+            }
+
+            Delegate[] invocationList = handler.GetInvocationList();
+            Console.WriteLine("invocationList is this long:" + invocationList.Length);
+            Task[] handlerTasks = new Task[invocationList.Length];
+            Console.WriteLine("handlerTasks is this long: " + handlerTasks.Length);
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<object, NotifyCollectionChangedEventArgs, Task>)invocationList[i])(this, invocationList[i].Method.ReturnParameter.);
+            }
+
+            //if (CollectionChangedAsync != null) await CollectionChangedAsync(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem));
+            await Task.WhenAll(handlerTasks);
+            Console.WriteLine("made it to the end!");
         }
 
         private void OnCollectionChanged(NotifyCollectionChangedAction action, IList newItems)

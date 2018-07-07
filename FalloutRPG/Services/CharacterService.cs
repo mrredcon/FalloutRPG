@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FalloutRPG.Services
 {
@@ -36,6 +37,18 @@ namespace FalloutRPG.Services
 
             character.Special = _specialRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefault();
             character.Skills = _skillRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefault();
+
+            return character;
+        }
+
+        public async Task<Character> GetCharacterAsync(ulong discordId)
+        {
+            var character = await _charRepository.Query.Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
+
+            if (character == null) return null;
+
+            character.Special = await _specialRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefaultAsync();
+            character.Skills = await _skillRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefaultAsync();
 
             return character;
         }
