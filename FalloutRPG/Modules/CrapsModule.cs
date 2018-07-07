@@ -30,7 +30,6 @@ namespace FalloutRPG.Modules
                     await ReplyAsync(String.Format(Messages.CRAPS_JOIN_MATCH, Context.User.Mention));
                 else
                 {
-                    Console.WriteLine(result.ToString());
                     await ReplyAsync(String.Format(Messages.ERR_CRAPS_JOIN_FAIL, Context.User.Mention));
                 }
             }

@@ -126,6 +126,7 @@ namespace FalloutRPG.Services
             return result;
         }
 
+        // this probably needs to be changed
         public async Task<GamblingService.AddUserBalanceResult> JoinMatch(IUser user)
         {
             var result = await _gamblingService.AddUserBalanceAsync(user);

@@ -30,27 +30,25 @@ namespace FalloutRPG.Services
             LoadGamblingEnabledChannels();
         }
 
-        private async Task UserBalances_CollectionChanged(object sender, EventArgs e)
+        private async Task UserBalances_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Console.WriteLine("Event firing!");
-
-            foreach (var bal in UserBalances)
+            if (e.Action == NotifyCollectionChangedAction.Replace)
             {
-                Console.WriteLine("Starting loop!");
-
-                var user = bal.Key;
-                var newMoney = bal.Value;
-
-                var character = await _charService.GetCharacterAsync(user.Id);
-                if (character.Money != newMoney)
+                // should only be one item in NewItems
+                foreach (var newItem in e.NewItems)
                 {
+                    var keyValue = (KeyValuePair<IUser, long>)newItem;
+
+                    var user = keyValue.Key;
+                    var newMoney = keyValue.Value;
+
+                    var character = await _charService.GetCharacterAsync(user.Id);
+
                     character.Money = newMoney;
+
                     await _charService.SaveCharacterAsync(character);
                 }
-                Console.WriteLine("Ending loop!");
-                //                    await Task.Delay(2000);
             }
-            //throw new NotImplementedException();
         }
 
         public bool IsGamblingEnabledChannel(ulong channelId)
@@ -85,22 +83,6 @@ namespace FalloutRPG.Services
             AlreadyIn,
             NullCharacter,
             UnknownError
-        }
-
-        /// <summary>
-        /// Saves every user's changed balance in UserBalances into the database.
-        /// </summary>
-        public async Task SaveUserBalancesAsync()
-        {
-            foreach (var bal in UserBalances)
-            {
-                var character = _charService.GetCharacter(bal.Key.Id);
-                if (character.Money != bal.Value) // only save if money has changed
-                {
-                    character.Money = bal.Value;
-                    await _charService.SaveCharacterAsync(character);
-                }
-            }
         }
 
         private void LoadGamblingEnabledChannels()

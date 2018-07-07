@@ -166,7 +166,7 @@ namespace System.Collections.ObjectModel
         #region INotifyCollectionChanged Members
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
-        public event Func<object, EventArgs, Task> CollectionChangedAsync;
+        public event Func<object, NotifyCollectionChangedEventArgs, Task> CollectionChangedAsync;
 
         #endregion
 
@@ -244,18 +244,21 @@ namespace System.Collections.ObjectModel
 
         private async Task OnCollectionChanged(NotifyCollectionChangedAction action, KeyValuePair<TKey, TValue> newItem, KeyValuePair<TKey, TValue> oldItem)
         {
-            Console.WriteLine("OnCollectionChanged running!");
             OnPropertyChanged();
             Func<object, NotifyCollectionChangedEventArgs, Task> handler = CollectionChangedAsync;
 
             if (handler == null)
-            {
-                Console.WriteLine("Handler was null!");
                 return;
+
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<object, NotifyCollectionChangedEventArgs, Task>)invocationList[i])(this, new NotifyCollectionChangedEventArgs(action, newItem, oldItem));
             }
 
-            await Task.WhenAll(handler.GetInvocationList().Select(invocation => ((Func<object, EventArgs, Task>)invocation)(this, EventArgs.Empty)));
-            Console.WriteLine("made it to the end!");
+            await Task.WhenAll(handlerTasks);
         }
 
         private void OnCollectionChanged(NotifyCollectionChangedAction action, IList newItems)
