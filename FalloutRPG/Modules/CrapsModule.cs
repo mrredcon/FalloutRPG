@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using FalloutRPG.Constants;
 using FalloutRPG.Services;
 using System;
 using System.Collections.Generic;
@@ -24,10 +25,25 @@ namespace FalloutRPG.Modules
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
-                _crapsService.JoinMatch(Context.User);
-                await ReplyAsync("Joined match!");
+                if (_crapsService.JoinMatch(Context.User))
+                    await ReplyAsync(String.Format(Messages.CRAPS_JOIN_MATCH, Context.User.Mention));
+                else
+                    await ReplyAsync(String.Format(Messages.ERR_CRAPS_JOIN_FAIL, Context.User.Mention));
             }
         }
+
+        [Command("leave")]
+        public async Task LeaveCrapsGameAsync()
+        {
+            if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
+            {
+                if (_crapsService.LeaveMatch(Context.User))
+                    await ReplyAsync(String.Format(Messages.CRAPS_LEAVE_MATCH, Context.User.Mention));
+                else
+                    await ReplyAsync(String.Format(Messages.ERR_CRAPS_LEAVE_FAIL, Context.User.Mention));
+            }
+        }
+
         [Command("roll")]
         public async Task RollAsync()
         {

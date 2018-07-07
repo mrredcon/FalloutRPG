@@ -50,6 +50,8 @@
         public const string CRAPS_SEVEN_OUT = "{0} sevened out!";
         public const string CRAPS_SEVEN_OUT_POS = "{0} sevened out, but they were counting on it!";
         public const string CRAPS_NEW_SHOOTER = "{0} is the new shooter.";
+        public const string CRAPS_JOIN_MATCH = "{0} joins the match!";
+        public const string CRAPS_LEAVE_MATCH = "{0} left the match.";
 
         // Craps Error Messages
         public const string ERR_CRAPS_NOT_SHOOTER = FAILURE_EMOJI + "{0}, you are not the shooter! (Join the match and wait.)";
@@ -58,5 +60,7 @@
         public const string ERR_CRAPS_BET_PARSE_FAIL = FAILURE_EMOJI + "{0}, valid bet types are: 'pass', 'dontpass', 'come', or 'dontcome' (without single quotes.)";
         public const string ERR_CRAPS_POINT_NOT_SET = FAILURE_EMOJI + "{0}, you can't place a Come bet when the Point isn't set!";
         public const string ERR_CRAPS_POINT_ALREADY_SET = FAILURE_EMOJI + "{0}, you can't place a Pass bet after the Point has been set!";
+        public const string ERR_CRAPS_JOIN_FAIL = FAILURE_EMOJI + "Failed to join {0} into the match.";
+        public const string ERR_CRAPS_LEAVE_FAIL = FAILURE_EMOJI + "Failed to remove {0} match, are they the shooter?";
     }
 }

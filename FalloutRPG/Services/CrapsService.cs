@@ -139,6 +139,16 @@ namespace FalloutRPG.Services
             return true;
         }
 
+        public bool LeaveMatch(IUser user)
+        {
+            if (user == _shooter)
+                return false;
+
+            _players.Remove(user);
+
+            return true;
+        }
+
         public bool NextShooter()
         {
             IUser oldShooter = _shooter;
