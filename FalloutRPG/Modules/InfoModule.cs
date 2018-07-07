@@ -18,10 +18,11 @@ namespace FalloutRPG.Modules
         {
             var buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
             var app = await Context.Client.GetApplicationInfoAsync();
+            var mrredUser = Context.Client.GetUser(129306645548367872UL);
 
             var builder = new EmbedBuilder()
-                .WithTitle("Description")
-                .WithDescription("Currently a simple bot that tells you how much time is left until the release of Fallout 76.")
+                .WithTitle("Fallout Roleplay Automated Game System")
+                .WithDescription("A Fallout-based roleplaying bot designed for the Country Road Bar.")
                 .WithColor(new Color(0, 128, 255)) // Blue
                 .WithFooter(footer =>
                 {
@@ -32,10 +33,10 @@ namespace FalloutRPG.Modules
                 .WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl().ToString())
                 .WithAuthor(author => {
                     author
-                        .WithName("Vault Boy")
+                        .WithName("F.R.A.G.S.")
                         .WithIconUrl(Context.Client.CurrentUser.GetAvatarUrl().ToString());
                 })
-                .AddField("Author", $"{app.Owner.Mention}")
+                .AddField("Author", $"{app.Owner.Mention} & {mrredUser.Mention}")
                 .AddField("Library", $"Discord.Net ({DiscordConfig.Version})")
                 .AddField("Runtime", $"{RuntimeInformation.FrameworkDescription} {RuntimeInformation.ProcessArchitecture} " +
                     $"({RuntimeInformation.OSDescription} {RuntimeInformation.OSArchitecture})")
