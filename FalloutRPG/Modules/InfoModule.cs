@@ -19,9 +19,12 @@ namespace FalloutRPG.Modules
             var buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
             var app = await Context.Client.GetApplicationInfoAsync();
 
+            var mrredUser = Context.Client.GetUser(129306645548367872UL);
+            var dukeUser = Context.Client.GetUser(409676326262538240UL);
+
             var builder = new EmbedBuilder()
-                .WithTitle("Description")
-                .WithDescription("A Fallout-based RPG bot designed for the Country Road Bar Fallout 76 Discord Server.")
+                .WithTitle("Fallout Roleplay Automated Game System")
+                .WithDescription("A Fallout-based roleplaying bot designed for the Country Road Bar.")
                 .WithColor(new Color(0, 128, 255)) // Blue
                 .WithFooter(footer =>
                 {
@@ -32,10 +35,11 @@ namespace FalloutRPG.Modules
                 .WithThumbnailUrl(Context.Client.CurrentUser.GetAvatarUrl().ToString())
                 .WithAuthor(author => {
                     author
-                        .WithName("Vault Boy")
+                        .WithName("F.R.A.G.S.")
                         .WithIconUrl(Context.Client.CurrentUser.GetAvatarUrl().ToString());
                 })
-                .AddField("Author", $"{app.Owner.Mention}")
+                .AddField("Developed By", $"{app.Owner.Mention} and {mrredUser.Mention}")
+                .AddField("Name and Artwork By", $"{dukeUser.Mention}")
                 .AddField("Library", $"Discord.Net ({DiscordConfig.Version})")
                 .AddField("Runtime", $"{RuntimeInformation.FrameworkDescription} {RuntimeInformation.ProcessArchitecture} " +
                     $"({RuntimeInformation.OSDescription} {RuntimeInformation.OSArchitecture})")
@@ -45,7 +49,7 @@ namespace FalloutRPG.Modules
                 .AddField("Users", Context.Client.Guilds.Sum(g => g.Users.Count));
             var embed = builder.Build();
 
-            await ReplyAsync(string.Empty, embed: embed).ConfigureAwait(false);
+            await Context.Channel.SendMessageAsync(string.Empty, embed: embed).ConfigureAwait(false);
         }
 
         private static string GetUptime() => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");

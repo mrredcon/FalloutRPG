@@ -97,7 +97,7 @@ namespace FalloutRPG.Services
             if (!IsValidSkillName(skill))
                 throw new ArgumentException(Exceptions.CHAR_INVALID_SKILL_NAME);
 
-            if (points == 0) return;
+            if (points < 1) return;
 
             if (points > character.SkillPoints)
                 throw new Exception(Exceptions.CHAR_NOT_ENOUGH_SKILL_POINTS);
