@@ -18,7 +18,9 @@ namespace FalloutRPG.Modules
         {
             var buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;
             var app = await Context.Client.GetApplicationInfoAsync();
+
             var mrredUser = Context.Client.GetUser(129306645548367872UL);
+            var dukeUser = Context.Client.GetUser(409676326262538240UL);
 
             var builder = new EmbedBuilder()
                 .WithTitle("Fallout Roleplay Automated Game System")
@@ -36,7 +38,8 @@ namespace FalloutRPG.Modules
                         .WithName("F.R.A.G.S.")
                         .WithIconUrl(Context.Client.CurrentUser.GetAvatarUrl().ToString());
                 })
-                .AddField("Author", $"{app.Owner.Mention} & {mrredUser.Mention}")
+                .AddField("Developed By", $"{app.Owner.Mention} and {mrredUser.Mention}")
+                .AddField("Name and Artwork By", $"{dukeUser.Mention}")
                 .AddField("Library", $"Discord.Net ({DiscordConfig.Version})")
                 .AddField("Runtime", $"{RuntimeInformation.FrameworkDescription} {RuntimeInformation.ProcessArchitecture} " +
                     $"({RuntimeInformation.OSDescription} {RuntimeInformation.OSArchitecture})")
