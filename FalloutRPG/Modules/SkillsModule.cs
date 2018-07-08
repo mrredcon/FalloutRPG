@@ -19,15 +19,27 @@ namespace FalloutRPG.Modules
         {
             private readonly CharacterService _charService;
             private readonly SkillsService _skillsService;
+            private readonly HelpService _helpService;
 
-            public CharacterSkillsModule(CharacterService charService, SkillsService skillsService)
+            public CharacterSkillsModule(
+                CharacterService charService,
+                SkillsService skillsService,
+                HelpService helpService)
             {
                 _charService = charService;
                 _skillsService = skillsService;
+                _helpService = helpService;
             }
 
             [Command]
-            [Alias("show", "view")]
+            [Alias("help")]
+            public async Task ShowSkillsHelpAsync()
+            {
+                await _helpService.ShowSkillsHelpAsync(Context);
+            }
+
+            [Command("show")]
+            [Alias("view")]
             [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsAsync(IUser targetUser = null)
             {
