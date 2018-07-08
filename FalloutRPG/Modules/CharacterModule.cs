@@ -17,13 +17,23 @@ namespace FalloutRPG.Modules
     {
         private readonly CharacterService _charService;
         private readonly ExperienceService _expService;
+        private readonly HelpService _helpService;
 
         public CharacterModule(
             CharacterService charService,
-            ExperienceService expService)
+            ExperienceService expService,
+            HelpService helpService)
         {
             _charService = charService;
             _expService = expService;
+            _helpService = helpService;
+        }
+
+        [Command]
+        [Alias("help")]
+        public async Task ShowCharacterHelpAsync()
+        {
+            await _helpService.ShowCharacterHelpAsync(Context);
         }
 
         [Command("show")]
@@ -48,7 +58,8 @@ namespace FalloutRPG.Modules
                 $"**Description:** {character.Description}\n" +
                 $"**Story:** {character.Story}\n" +
                 $"**Experience:** {character.Experience}\n" +
-                $"**Level:** {level}");
+                $"**Level:** {level}\n" +
+                $"**Caps:** {character.Money}");
 
             await ReplyAsync(userInfo.Mention, embed: embed);
         }

@@ -14,10 +14,19 @@ namespace FalloutRPG.Modules
     public class RollModule : ModuleBase<SocketCommandContext>
     {
         private readonly RollService _rollService;
+        private readonly HelpService _helpService;
 
-        public RollModule(RollService rollService)
+        public RollModule(RollService rollService, HelpService helpService)
         {
             _rollService = rollService;
+            _helpService = helpService;
+        }
+
+        [Command]
+        [Alias("help")]
+        public async Task ShowRollHelpAsync()
+        {
+            await _helpService.ShowRollHelpAsync(Context);
         }
 
         #region SPECIAL Commands
