@@ -226,10 +226,18 @@ namespace FalloutRPG.Services
         {
             IUser oldShooter = Shooter;
 
+            if (HasBet(Shooter))
+                return false;
+
             if (_players.Count > _shooterIndex + 1) // players remaining in list
+            {
                 Shooter = _players[++_shooterIndex];
+            }
             else
+            {
                 _shooterIndex = 0; // set _shooterIndex to 0 to loop back around the "table"
+                Shooter = _players[_shooterIndex];
+            }
 
             // give the new shooter some time to roll :)
             _rollTimer.Stop();

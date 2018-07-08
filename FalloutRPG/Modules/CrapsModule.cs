@@ -93,6 +93,8 @@ namespace FalloutRPG.Modules
                 {
                     await ReplyAsync(String.Format(Messages.CRAPS_NEW_SHOOTER, _crapsService.Shooter.Mention));
                 }
+                else
+                    await ReplyAsync(String.Format(Messages.ERR_CRAPS_PASS_FAIL, Context.User.Mention));
             }
         }
     }
