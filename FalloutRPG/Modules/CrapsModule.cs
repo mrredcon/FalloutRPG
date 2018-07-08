@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace FalloutRPG.Modules
 {
     [Group("craps")]
+    [Alias("cr")]
     public class CrapsModule : ModuleBase<SocketCommandContext>
     {
         private readonly GamblingService _gamblingService;
@@ -52,6 +53,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command("leave")]
+        [Alias("quit")]
         public async Task LeaveCrapsGameAsync()
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
@@ -64,6 +66,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command("roll")]
+        [Alias("r")]
         public async Task RollAsync()
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
@@ -74,6 +77,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command("bet")]
+        [Alias("b")]
         public async Task BetAsync(string betType, int betAmount)
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
