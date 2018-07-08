@@ -59,13 +59,17 @@ namespace FalloutRPG.Services
             }
             else
             {
-                if (_players.Count == 1)
+                if (_players.Count < 1)
+                {
+                    _rollTimer.Stop();
+                }
+                else if (_players.Count == 1)
                 {
                     await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_KICK, Shooter.Mention));
                     await LeaveMatch(Shooter);
                     _rollTimer.Stop();
                 }
-                else
+                else if (_players.Contains > 1)
                 {
                     var oldShooterMention = Shooter.Mention;
                     NextShooter();
