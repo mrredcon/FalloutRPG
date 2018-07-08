@@ -29,18 +29,6 @@ namespace FalloutRPG.Services
         /// <summary>
         /// Gets a character from the repository by Discord ID.
         /// </summary>
-        public Character GetCharacter(ulong discordId)
-        {
-            var character = _charRepository.Query.Where(x => x.DiscordId == discordId).FirstOrDefault();
-
-            if (character == null) return null;
-
-            character.Special = _specialRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefault();
-            character.Skills = _skillRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefault();
-
-            return character;
-        }
-
         public async Task<Character> GetCharacterAsync(ulong discordId)
         {
             var character = await _charRepository.Query.Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
@@ -58,7 +46,7 @@ namespace FalloutRPG.Services
         /// </summary>
         public async Task<Character> CreateCharacterAsync(ulong discordId, string firstName, string lastName)
         {
-            if (GetCharacter(discordId) != null)
+            if (await GetCharacterAsync(discordId) != null)
                 throw new Exception(Exceptions.CHAR_DISCORDID_EXISTS);
 
             if (!StringTool.IsOnlyLetters(firstName) || !StringTool.IsOnlyLetters(lastName))

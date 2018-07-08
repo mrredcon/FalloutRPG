@@ -45,8 +45,8 @@ namespace FalloutRPG.Modules
             {
                 var userInfo = Context.User;
                 var character = targetUser == null
-                    ? _charService.GetCharacter(userInfo.Id)
-                    : _charService.GetCharacter(targetUser.Id);
+                    ? await _charService.GetCharacterAsync(userInfo.Id)
+                    : await _charService.GetCharacterAsync(targetUser.Id);
 
                 if (character == null)
                 {
@@ -87,7 +87,7 @@ namespace FalloutRPG.Modules
             public async Task SetSkillsAsync(string tag1, string tag2, string tag3)
             {
                 var userInfo = Context.User;
-                var character = _charService.GetCharacter(userInfo.Id);
+                var character = await _charService.GetCharacterAsync(userInfo.Id);
 
                 if (character == null)
                 {
@@ -118,7 +118,7 @@ namespace FalloutRPG.Modules
             public async Task SpendSkillPointsAsync(string skill, int points)
             {
                 var userInfo = Context.User;
-                var character = _charService.GetCharacter(userInfo.Id);
+                var character = await _charService.GetCharacterAsync(userInfo.Id);
 
                 if (character == null)
                 {

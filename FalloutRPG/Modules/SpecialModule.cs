@@ -35,8 +35,8 @@ namespace FalloutRPG.Modules
             {
                 var userInfo = Context.User;
                 var character = targetUser == null
-                    ? _charService.GetCharacter(userInfo.Id)
-                    : _charService.GetCharacter(targetUser.Id);
+                    ? await _charService.GetCharacterAsync(userInfo.Id)
+                    : await _charService.GetCharacterAsync(targetUser.Id);
 
                 if (character == null)
                 {
@@ -70,7 +70,7 @@ namespace FalloutRPG.Modules
             public async Task SetSpecialAsync(int str, int per, int end, int cha, int inte, int agi, int luc)
             {
                 var userInfo = Context.User;
-                var character = _charService.GetCharacter(userInfo.Id);
+                var character = await _charService.GetCharacterAsync(userInfo.Id);
                 var special = new int[] { str, per, end, cha, inte, agi, luc };
 
                 if (character == null)

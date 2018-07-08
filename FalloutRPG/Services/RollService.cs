@@ -3,6 +3,7 @@ using FalloutRPG.Constants;
 using FalloutRPG.Models;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace FalloutRPG.Services
 {
@@ -19,9 +20,9 @@ namespace FalloutRPG.Services
             _skillsService = skillsService;
         }
 
-        public string GetSpRoll(IUser user, string specialToRoll)
+        public async Task<string> GetSpRollAsync(IUser user, string specialToRoll)
         {
-            var character = _charService.GetCharacter(user.Id);
+            var character = await _charService.GetCharacterAsync(user.Id);
 
             if (character == null)
             {
@@ -36,9 +37,9 @@ namespace FalloutRPG.Services
             return GetSpecialRollResult(specialToRoll, character);
         }
 
-        public string GetSkillRoll(IUser user, String skillToRoll)
+        public async Task<string> GetSkillRollAsync(IUser user, String skillToRoll)
         {
-            var character = _charService.GetCharacter(user.Id);
+            var character = await _charService.GetCharacterAsync(user.Id);
 
             if (character == null)
             {

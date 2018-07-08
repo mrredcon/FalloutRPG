@@ -81,7 +81,7 @@ namespace FalloutRPG.Services
             if (!_expService.IsInExperienceEnabledChannel(context.Channel.Id)) return;
 
             var userInfo = context.User;
-            var character = _charService.GetCharacter(userInfo.Id);
+            var character = await _charService.GetCharacterAsync(userInfo.Id);
 
             if (character == null) return;
 
