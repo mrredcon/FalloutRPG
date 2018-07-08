@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace FalloutRPG.Services
 {
@@ -23,6 +24,8 @@ namespace FalloutRPG.Services
         private Round _round;
         private int _shooterPoint;
 
+        private Timer _rollTimer;
+
         public CrapsService(GamblingService gamblingService)
         {
             _players = new List<IUser>();
@@ -36,6 +39,36 @@ namespace FalloutRPG.Services
             _gamblingService = gamblingService;
 
             _rand = new Random();
+
+            _rollTimer = new Timer(45 * 1000);
+            _rollTimer.Elapsed += ShooterTimeout;
+        }
+
+        private async void ShooterTimeout(object sender, ElapsedEventArgs e)
+        {
+            // if shooter does not have a bet, skip them
+            // if they do, roll for them
+            var dmChannel = await _shooter.GetOrCreateDMChannelAsync();
+            
+            if (HasBet(_shooter)) // shooter bet exists
+            {
+                Roll(_shooter);
+                await dmChannel.SendMessageAsync("We rolled for you due to inactivity.");
+            }
+            else
+            {
+                if (_players.Count == 1)
+                {
+                    LeaveMatch(_shooter);
+                    _rollTimer.Stop();
+                    await dmChannel.SendMessageAsync("Hey, we removed you from this match, since you were the only one there and were inactive.");
+                }
+                else
+                {
+                    NextShooter();
+                    await dmChannel.SendMessageAsync("Hey, we gave the dice to the next player since you were inactive.");
+                }
+            }
         }
 
         public string Roll(IUser user)
@@ -52,7 +85,8 @@ namespace FalloutRPG.Services
                 sum = dice1 + dice2;
 
             result = DiceToEmoji(dice1) + " " + DiceToEmoji(dice2) + "\n";
-
+            _rollTimer.Stop();
+            _rollTimer.Start();
             return result + AdvanceRound(sum);
         }
 
@@ -127,23 +161,43 @@ namespace FalloutRPG.Services
         }
 
         // this probably needs to be changed
-        public async Task<GamblingService.AddUserBalanceResult> JoinMatch(IUser user)
+        public async Task<JoinMatchResult> JoinMatch(IUser user)
         {
             var result = await _gamblingService.AddUserBalanceAsync(user);
-            if (result == GamblingService.AddUserBalanceResult.Success || result == GamblingService.AddUserBalanceResult.AlreadyIn)
+
+            if (result == GamblingService.AddUserBalanceResult.Success || result == GamblingService.AddUserBalanceResult.AlreadyInDictionary)
             {
-                _players.Add(user);
+                if (!_players.Contains(user))
+                    _players.Add(user);
+                else
+                    return JoinMatchResult.AlreadyInMatch;
 
                 if (_players.Count == 1)
+                {
                     _shooter = user;
-                return GamblingService.AddUserBalanceResult.Success;
+                    _rollTimer.Start();
+                    return JoinMatchResult.NewMatch;
+                }
+                return JoinMatchResult.Success;
             }
-            return result;
+            else if (result == GamblingService.AddUserBalanceResult.NullCharacter)
+                return JoinMatchResult.NullCharacter;
+            else
+                return JoinMatchResult.UnknownError;
+        }
+
+        public enum JoinMatchResult
+        {
+            Success,
+            NewMatch,
+            AlreadyInMatch,
+            NullCharacter,
+            UnknownError
         }
 
         public bool LeaveMatch(IUser user)
         {
-            if (user == _shooter)
+            if (user == _shooter && HasBet(user))
                 return false;
 
             _players.Remove(user);
@@ -151,14 +205,29 @@ namespace FalloutRPG.Services
             return true;
         }
 
+        private bool HasBet(IUser user)
+        {
+            if (_bets.Find(x => x.User == user) == null)
+                return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Changes the active shooter to the next player in the list.
+        /// </summary>
+        /// <returns>True if the shooter changed, False if the new shooter is the same as the previous.</returns>
         public bool NextShooter()
         {
             IUser oldShooter = _shooter;
 
-            if (_players.Count > _shooterIndex + 1)
+            if (_players.Count > _shooterIndex + 1) // players remaining in list
                 _shooter = _players[++_shooterIndex];
             else
-                _shooterIndex = 0;
+                _shooterIndex = 0; // set _shooterIndex to 0 to loop back around the "table"
+
+            // give the new shooter some time to roll :)
+            _rollTimer.Stop();
+            _rollTimer.Start();
 
             if (_shooter != oldShooter)
                 return true;

@@ -26,8 +26,23 @@ namespace FalloutRPG.Modules
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
                 var result = _crapsService.JoinMatch(Context.User).Result;
-                if (result == GamblingService.AddUserBalanceResult.Success)
+
+                if (result == CrapsService.JoinMatchResult.Success)
+                {
                     await ReplyAsync(String.Format(Messages.CRAPS_JOIN_MATCH, Context.User.Mention));
+                }
+                else if (result == CrapsService.JoinMatchResult.NewMatch)
+                {
+                    await ReplyAsync(String.Format(Messages.CRAPS_NEW_MATCH, Context.User.Mention));
+                }
+                else if (result == CrapsService.JoinMatchResult.AlreadyInMatch)
+                {
+                    await ReplyAsync(String.Format(Messages.CRAPS_ALREADY_IN_MATCH, Context.User.Mention));
+                }
+                else if (result == CrapsService.JoinMatchResult.NullCharacter)
+                {
+                    await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
+                }
                 else
                 {
                     await ReplyAsync(String.Format(Messages.ERR_CRAPS_JOIN_FAIL, Context.User.Mention));

@@ -71,7 +71,7 @@ namespace FalloutRPG.Services
                 return AddUserBalanceResult.NullCharacter;
 
             if (UserBalances.ContainsKey(user))
-                return AddUserBalanceResult.AlreadyIn;
+                return AddUserBalanceResult.AlreadyInDictionary;
 
             UserBalances.Add(user, character.Money);
             return AddUserBalanceResult.Success;
@@ -80,7 +80,7 @@ namespace FalloutRPG.Services
         public enum AddUserBalanceResult
         {
             Success,
-            AlreadyIn,
+            AlreadyInDictionary,
             NullCharacter,
             UnknownError
         }
