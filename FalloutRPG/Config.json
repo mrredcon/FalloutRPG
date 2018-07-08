@@ -4,7 +4,9 @@
     "discord": ""
   },
   "gambling": {
-    "enabled-channels": [ "" ]
+    "enabled-channels": [ "" ],
+    "minimum-bet": 30,
+    "maximum-bet": 1000
   },
   "roleplay": {
     "exp-channels": [ "" ]

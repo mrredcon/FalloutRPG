@@ -104,10 +104,10 @@ namespace FalloutRPG.Services
                 if (_gamblingService.AddUserBalanceAsync(user).Result != GamblingService.AddUserBalanceResult.Success) // failed to add user
                     return String.Format(Messages.ERR_BALANCE_ADD_FAIL, user.Mention);
 
-            if (betAmount > _gamblingService.UserBalances[user])
+            if (betAmount > _gamblingService.UserBalances[user] || betAmount > _gamblingService.MAXIMUM_BET)
                 return String.Format(Messages.ERR_BET_TOO_HIGH, user.Mention);
 
-            if (betAmount <= 0)
+            if (betAmount < _gamblingService.MINIMUM_BET)
                 return String.Format(Messages.ERR_BET_TOO_LOW, user.Mention);
 
             betToPlace = betToPlace.ToLower();

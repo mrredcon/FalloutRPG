@@ -19,6 +19,9 @@ namespace FalloutRPG.Services
         private readonly IConfiguration _config;
         private readonly CharacterService _charService;
 
+        public readonly long MINIMUM_BET;
+        public readonly long MAXIMUM_BET;
+
         public GamblingService(IConfiguration config, CharacterService charService)
         {
             UserBalances = new ObservableDictionary<IUser, long>();
@@ -26,6 +29,10 @@ namespace FalloutRPG.Services
             UserBalances.CollectionChangedAsync += UserBalances_CollectionChanged;
 
             _config = config;
+
+            MINIMUM_BET = long.Parse(_config["minimum-bet"]);
+            MAXIMUM_BET = long.Parse(_config["maxiumum-bet"]);
+
             _charService = charService;
             LoadGamblingEnabledChannels();
         }
