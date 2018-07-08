@@ -146,7 +146,11 @@ namespace FalloutRPG.Services
                 }
 
                 _bets.Add(new Bet(user, betAmount, betType));
-
+                if (user == Shooter)
+                {
+                    _rollTimer.Stop();
+                    _rollTimer.Start();
+                }
                 return String.Format(Messages.BET_PLACED, user.Mention);
             }
             else
