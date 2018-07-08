@@ -32,14 +32,7 @@ namespace FalloutRPG.Modules
             }
 
             [Command]
-            [Alias("help")]
-            public async Task ShowSkillsHelpAsync()
-            {
-                await _helpService.ShowSkillsHelpAsync(Context);
-            }
-
-            [Command("show")]
-            [Alias("view")]
+            [Alias("show", "view")]
             [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsAsync(IUser targetUser = null)
             {
@@ -80,6 +73,13 @@ namespace FalloutRPG.Modules
                     $"*You have {character.SkillPoints} left to spend! (!char skills spend)*");
 
                 await ReplyAsync(userInfo.Mention, embed: embed);
+            }
+
+            [Command("help")]
+            [Alias("help")]
+            public async Task ShowSkillsHelpAsync()
+            {
+                await _helpService.ShowSkillsHelpAsync(Context);
             }
 
             [Command("set")]
