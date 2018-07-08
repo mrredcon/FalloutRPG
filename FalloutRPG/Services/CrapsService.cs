@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.WebSocket;
 using FalloutRPG.Constants;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,11 @@ namespace FalloutRPG.Services
         private readonly Random _rand;
 
         private List<IUser> _players;
+        private ISocketMessageChannel _channel;
         private List<Bet> _bets;
 
-        private IUser _shooter;
+        public IUser Shooter { get; private set; }
+        private const int SHOOTER_TIMEOUT_SECONDS = 45;
         private int _shooterIndex;
 
         private Round _round;
@@ -40,7 +43,7 @@ namespace FalloutRPG.Services
 
             _rand = new Random();
 
-            _rollTimer = new Timer(45 * 1000);
+            _rollTimer = new Timer(SHOOTER_TIMEOUT_SECONDS * 1000);
             _rollTimer.Elapsed += ShooterTimeout;
         }
 
@@ -48,33 +51,35 @@ namespace FalloutRPG.Services
         {
             // if shooter does not have a bet, skip them
             // if they do, roll for them
-            var dmChannel = await _shooter.GetOrCreateDMChannelAsync();
             
-            if (HasBet(_shooter)) // shooter bet exists
+            if (HasBet(Shooter)) // shooter bet exists
             {
-                Roll(_shooter);
-                await dmChannel.SendMessageAsync("We rolled for you due to inactivity.");
+                await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_ROLL, Shooter.Mention));
+                await _channel.SendMessageAsync(Roll(Shooter));
             }
             else
             {
                 if (_players.Count == 1)
                 {
-                    LeaveMatch(_shooter);
+                    await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_KICK, Shooter.Mention));
+                    LeaveMatch(Shooter);
                     _rollTimer.Stop();
-                    await dmChannel.SendMessageAsync("Hey, we removed you from this match, since you were the only one there and were inactive.");
                 }
                 else
                 {
+                    var oldShooterMention = Shooter.Mention;
                     NextShooter();
-                    await dmChannel.SendMessageAsync("Hey, we gave the dice to the next player since you were inactive.");
+                    await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_PASS_DICE, Shooter.Mention, oldShooterMention));
                 }
             }
         }
 
         public string Roll(IUser user)
         {
-            if (user != _shooter)
-                return String.Format(Messages.ERR_CRAPS_NOT_SHOOTER, user.Mention);
+            if (_players.Count == 0)
+                return String.Format(Messages.CRAPS_EMPTY_MATCH, user.Mention);
+            if (user != Shooter)
+                return String.Format(Messages.ERR_CRAPS_NOT_SHOOTER, user.Mention, Shooter.Mention);
             if (_bets.Find(x => x.User.Equals(user)) == null)
                 return String.Format(Messages.ERR_CRAPS_BET_NOT_SET, user.Mention);
 
@@ -160,9 +165,10 @@ namespace FalloutRPG.Services
             return result;
         }
 
-        // this probably needs to be changed
-        public async Task<JoinMatchResult> JoinMatch(IUser user)
+        public async Task<JoinMatchResult> JoinMatch(IUser user, ISocketMessageChannel channel)
         {
+            _channel = channel;
+
             var result = await _gamblingService.AddUserBalanceAsync(user);
 
             if (result == GamblingService.AddUserBalanceResult.Success || result == GamblingService.AddUserBalanceResult.AlreadyInDictionary)
@@ -174,7 +180,7 @@ namespace FalloutRPG.Services
 
                 if (_players.Count == 1)
                 {
-                    _shooter = user;
+                    Shooter = user;
                     _rollTimer.Start();
                     return JoinMatchResult.NewMatch;
                 }
@@ -197,7 +203,7 @@ namespace FalloutRPG.Services
 
         public bool LeaveMatch(IUser user)
         {
-            if (user == _shooter && HasBet(user))
+            if (user == Shooter && HasBet(user))
                 return false;
 
             _players.Remove(user);
@@ -218,10 +224,10 @@ namespace FalloutRPG.Services
         /// <returns>True if the shooter changed, False if the new shooter is the same as the previous.</returns>
         public bool NextShooter()
         {
-            IUser oldShooter = _shooter;
+            IUser oldShooter = Shooter;
 
             if (_players.Count > _shooterIndex + 1) // players remaining in list
-                _shooter = _players[++_shooterIndex];
+                Shooter = _players[++_shooterIndex];
             else
                 _shooterIndex = 0; // set _shooterIndex to 0 to loop back around the "table"
 
@@ -229,7 +235,7 @@ namespace FalloutRPG.Services
             _rollTimer.Stop();
             _rollTimer.Start();
 
-            if (_shooter != oldShooter)
+            if (Shooter != oldShooter)
                 return true;
             else
                 return false;
@@ -246,18 +252,18 @@ namespace FalloutRPG.Services
                 if (roll == 2 || roll == 3 || roll == 12) // crap out
                 {
                     winningBet = BetType.DontPass;
-                    result += String.Format(Messages.CRAPS_CRAPOUT, _shooter.Mention) + "\n";
+                    result += String.Format(Messages.CRAPS_CRAPOUT, Shooter.Mention) + "\n";
                 }
                 else if (roll == 7 || roll == 11) // natural
                 {
                     winningBet = BetType.Pass;
-                    result += String.Format(Messages.CRAPS_NATURAL, _shooter.Mention) + "\n";
+                    result += String.Format(Messages.CRAPS_NATURAL, Shooter.Mention) + "\n";
                 }
                 else // point
                 {
                     _shooterPoint = roll;
                     _round = Round.Point;
-                    result += String.Format(Messages.CRAPS_POINT_ROUND, _shooter.Mention) + "\n";
+                    result += String.Format(Messages.CRAPS_POINT_ROUND, Shooter.Mention) + "\n";
                 }
             }
             else if (_round == Round.Point)
@@ -266,17 +272,17 @@ namespace FalloutRPG.Services
                 {
                     winningBet = BetType.DontPass;
 
-                    result += String.Format(Messages.CRAPS_SEVEN_OUT, _shooter.Mention) + "\n";
+                    result += String.Format(Messages.CRAPS_SEVEN_OUT, Shooter.Mention) + "\n";
                     _round = Round.ComeOut;
                     NextShooter();
-                    result += String.Format(Messages.CRAPS_NEW_SHOOTER, _shooter.Mention, roll) + "\n";
+                    result += String.Format(Messages.CRAPS_NEW_SHOOTER, Shooter.Mention, roll) + "\n";
                 }
                 else if (roll == _shooterPoint) // shooter reached point
                 {
                     winningBet = BetType.Pass;
 
                     _round = Round.ComeOut;
-                    result += String.Format(Messages.CRAPS_POINT_ROLL, _shooter.Mention) + "\n";
+                    result += String.Format(Messages.CRAPS_POINT_ROLL, Shooter.Mention) + "\n";
                 }
             }
             BetType losingBet = BetType.Error;
@@ -403,17 +409,20 @@ namespace FalloutRPG.Services
             }
             return null;
         }
+
         private enum Round
         {
             ComeOut,
             Point
         }
+
         private enum RoundResult
         {
             CrapOut,
             Natural,
             SevenOut
         }
+
         public enum BetType
         {
             Error,
@@ -422,6 +431,7 @@ namespace FalloutRPG.Services
             Come,
             DontCome
         }
+
         private class Bet
         {
             public IUser User { get; }

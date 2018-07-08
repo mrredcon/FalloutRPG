@@ -54,9 +54,13 @@
         public const string CRAPS_JOIN_MATCH = "{0} joins the match!";
         public const string CRAPS_ALREADY_IN_MATCH = "{0}, you're already in this match!";
         public const string CRAPS_LEAVE_MATCH = "{0} left the match.";
+        public const string CRAPS_EMPTY_MATCH = "{0}, to roll you must join the match first.";
+        public const string CRAPS_INACTIVITY_ROLL = "Rolling for {0} due to inactivity.";
+        public const string CRAPS_INACTIVITY_KICK = "{0} has been removed from the match due to inactivity.";
+        public const string CRAPS_INACTIVITY_PASS_DICE = "Gave the dice to {0} since {1} was inactive.";
 
         // Craps Error Messages
-        public const string ERR_CRAPS_NOT_SHOOTER = FAILURE_EMOJI + "{0}, you are not the shooter! (Join the match and wait.)";
+        public const string ERR_CRAPS_NOT_SHOOTER = FAILURE_EMOJI + "{0}, {1} is the current shooter. (Join the match and wait your turn.)";
         public const string ERR_CRAPS_BET_NOT_SET = FAILURE_EMOJI + "{0}, you do not have a bet placed!";
         public const string ERR_CRAPS_BET_ALREADY_SET = FAILURE_EMOJI + "{0}, you already have a bet!";
         public const string ERR_CRAPS_BET_PARSE_FAIL = FAILURE_EMOJI + "{0}, valid bet types are: 'pass', 'dontpass', 'come', or 'dontcome' (without single quotes.)";

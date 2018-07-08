@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using FalloutRPG.Constants;
 using FalloutRPG.Services;
 using System;
@@ -25,7 +26,7 @@ namespace FalloutRPG.Modules
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
-                var result = _crapsService.JoinMatch(Context.User).Result;
+                var result = _crapsService.JoinMatch(Context.User, Context.Channel).Result;
 
                 if (result == CrapsService.JoinMatchResult.Success)
                 {
@@ -71,16 +72,24 @@ namespace FalloutRPG.Modules
                 await ReplyAsync(rollResult);
             }
         }
+
         [Command("bet")]
         public async Task BetAsync(string betType, int betAmount)
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
                 await ReplyAsync(_crapsService.PlaceBet(Context.User, betType, betAmount));
         }
-        [Command("info")]
-        public async Task GetGameInfoAsync()
+
+        [Command("pass")]
+        public async Task PassDice()
         {
-            //await ReplyAsync(_crapsService.SpewGutsOut());
+            if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
+            {
+                if (_crapsService.NextShooter())
+                {
+                    await ReplyAsync(String.Format(Messages.CRAPS_NEW_SHOOTER, _crapsService.Shooter.Mention));
+                }
+            }
         }
     }
 }
