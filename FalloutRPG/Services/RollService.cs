@@ -13,11 +13,15 @@ namespace FalloutRPG.Services
         private readonly SpecialService _specService;
         private readonly SkillsService _skillsService;
 
+        private readonly Random _rand;
+
         public RollService(CharacterService charService, SpecialService specService, SkillsService skillsService)
         {
             _charService = charService;
             _specService = specService;
             _skillsService = skillsService;
+
+            _rand = new Random();
         }
 
         public async Task<string> GetSpRollAsync(IUser user, string specialToRoll)
@@ -61,8 +65,6 @@ namespace FalloutRPG.Services
 
         public string GetSkillRollResult(String skill, Character character)
         {
-            Random rand = new Random();
-
             var charSkills = character.Skills;
             var special = character.Special;
 
@@ -72,7 +74,7 @@ namespace FalloutRPG.Services
             int skillValue = (int)skillProp.GetValue(charSkills);
 
             // RNG influenced by character luck except when its 5
-            int rngResult = (int)Math.Round((rand.Next(1, 101) * (1.0 - (special.Luck / 10.0 - .5))));
+            int rngResult = (int)Math.Round((_rand.Next(1, 101) * (1.0 - (special.Luck / 10.0 - .5))));
 
             // compares your roll with your skills, and how much better you did than the bare minimum
             double resultPercent = (double)(skillValue - rngResult) / skillValue;
@@ -88,13 +90,12 @@ namespace FalloutRPG.Services
 
         public string GetSpecialRollResult(String rollSpecial, Character character)
         {
-            Random rand = new Random();
             //var skills = CharacterUtilityService.GetCharacterSkills(user);
             var charSpecial = character.Special;
             if (charSpecial.Strength == 0) return null;
 
             // RNG influenced by character luck except when its 5
-            int rngResult = (int)Math.Round((rand.Next(1, 11) * (1.0 - (charSpecial.Luck / 10.0 - .5)))),
+            int rngResult = (int)Math.Round((_rand.Next(1, 11) * (1.0 - (charSpecial.Luck / 10.0 - .5)))),
                 specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
 
             int difference = specialValue - rngResult;
