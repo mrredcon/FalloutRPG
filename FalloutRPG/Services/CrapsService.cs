@@ -69,7 +69,7 @@ namespace FalloutRPG.Services
                     await LeaveMatch(Shooter);
                     _rollTimer.Stop();
                 }
-                else if (_players.Contains > 1)
+                else if (_players.Count > 1)
                 {
                     var oldShooterMention = Shooter.Mention;
                     NextShooter();
