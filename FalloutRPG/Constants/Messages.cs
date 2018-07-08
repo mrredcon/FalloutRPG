@@ -34,8 +34,8 @@
 
         // Gambling Error Messages
         public const string ERR_BALANCE_ADD_FAIL = FAILURE_EMOJI + "{0}, I failed to add your balance to the directory! (Do you have a character?)";
-        public const string ERR_BET_TOO_HIGH = FAILURE_EMOJI + "{0}, you don't have enough money for that bet!";
-        public const string ERR_BET_TOO_LOW = FAILURE_EMOJI + "{0}, you have to bet something!";
+        public const string ERR_BET_TOO_HIGH = FAILURE_EMOJI + "{0}, that bet is too high! (Do you have enough money?)";
+        public const string ERR_BET_TOO_LOW = FAILURE_EMOJI + "{0}, that bet is too low!";
 
         // Craps Messages
         public const string CRAPS_CRAPOUT = "{0} crapped out!";

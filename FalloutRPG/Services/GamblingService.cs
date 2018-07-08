@@ -30,8 +30,8 @@ namespace FalloutRPG.Services
 
             _config = config;
 
-            MINIMUM_BET = long.Parse(_config["minimum-bet"]);
-            MAXIMUM_BET = long.Parse(_config["maxiumum-bet"]);
+            MINIMUM_BET = long.Parse(_config["gambling:minimum-bet"]);
+            MAXIMUM_BET = long.Parse(_config["gambling:maximum-bet"]);
 
             _charService = charService;
             LoadGamblingEnabledChannels();

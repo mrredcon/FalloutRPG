@@ -62,7 +62,7 @@ namespace FalloutRPG.Services
                 if (_players.Count == 1)
                 {
                     await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_KICK, Shooter.Mention));
-                    LeaveMatch(Shooter);
+                    await LeaveMatch(Shooter);
                     _rollTimer.Stop();
                 }
                 else
@@ -185,6 +185,7 @@ namespace FalloutRPG.Services
                 if (_players.Count == 1)
                 {
                     Shooter = user;
+                    _shooterIndex = 0;
                     _rollTimer.Start();
                     return JoinMatchResult.NewMatch;
                 }
@@ -205,7 +206,7 @@ namespace FalloutRPG.Services
             UnknownError
         }
 
-        public bool LeaveMatch(IUser user)
+        public async Task<bool> LeaveMatch(IUser user)
         {
             if (user == Shooter && HasBet(user))
                 return false;
@@ -213,6 +214,13 @@ namespace FalloutRPG.Services
             if (_players.Contains(user))
             {
                 _players.Remove(user);
+
+                if (user == Shooter && _players.Count >= 1)
+                    NextShooter();
+
+                if (Shooter != user && Shooter != null)
+                    await _channel.SendMessageAsync(String.Format(Messages.CRAPS_NEW_SHOOTER, Shooter.Mention));
+
                 return true;
             }
             else

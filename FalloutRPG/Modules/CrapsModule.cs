@@ -58,7 +58,7 @@ namespace FalloutRPG.Modules
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
-                if (_crapsService.LeaveMatch(Context.User))
+                if (await _crapsService.LeaveMatch(Context.User))
                     await ReplyAsync(String.Format(Messages.CRAPS_LEAVE_MATCH, Context.User.Mention));
                 else
                     await ReplyAsync(String.Format(Messages.ERR_CRAPS_LEAVE_FAIL, Context.User.Mention));
@@ -89,12 +89,17 @@ namespace FalloutRPG.Modules
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
-                if (_crapsService.NextShooter())
+                if (_crapsService.Shooter == Context.User)
                 {
-                    await ReplyAsync(String.Format(Messages.CRAPS_NEW_SHOOTER, _crapsService.Shooter.Mention));
+                    if (_crapsService.NextShooter())
+                    {
+                        await ReplyAsync(String.Format(Messages.CRAPS_NEW_SHOOTER, _crapsService.Shooter.Mention));
+                    }
+                    else
+                    {
+                        await ReplyAsync(String.Format(Messages.ERR_CRAPS_PASS_FAIL, Context.User.Mention));
+                    }
                 }
-                else
-                    await ReplyAsync(String.Format(Messages.ERR_CRAPS_PASS_FAIL, Context.User.Mention));
             }
         }
     }
