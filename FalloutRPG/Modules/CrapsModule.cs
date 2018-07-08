@@ -91,7 +91,7 @@ namespace FalloutRPG.Modules
             {
                 if (_crapsService.Shooter == Context.User)
                 {
-                    if (_crapsService.NextShooter())
+                    if (_crapsService.PassDice())
                     {
                         await ReplyAsync(String.Format(Messages.CRAPS_NEW_SHOOTER, _crapsService.Shooter.Mention));
                     }

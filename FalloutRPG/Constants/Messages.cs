@@ -50,6 +50,7 @@
         public const string CRAPS_SEVEN_OUT = "{0} sevened out!";
         public const string CRAPS_SEVEN_OUT_POS = "{0} sevened out, but they were counting on it!";
         public const string CRAPS_NEW_SHOOTER = "{0} is the new shooter.";
+        public const string CRAPS_NEW_SHOOTER_ONE_PLAYER = "{0} is the \"new\" shooter since no one else is playing!";
         public const string CRAPS_NEW_MATCH = "A new match of Craps is starting, with {0} as the first shooter!";
         public const string CRAPS_JOIN_MATCH = "{0} joins the match!";
         public const string CRAPS_ALREADY_IN_MATCH = "{0}, you're already in this match!";

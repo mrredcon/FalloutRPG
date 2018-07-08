@@ -21,7 +21,7 @@ namespace FalloutRPG.Services
         private List<Bet> _bets;
 
         public IUser Shooter { get; private set; }
-        private const int SHOOTER_TIMEOUT_SECONDS = 45;
+        private const int SHOOTER_TIMEOUT_SECONDS = 50;
         private int _shooterIndex;
 
         private Round _round;
@@ -52,7 +52,7 @@ namespace FalloutRPG.Services
             // if shooter does not have a bet, skip them
             // if they do, roll for them
             
-            if (HasBet(Shooter)) // shooter bet exists
+            if (HasBet(Shooter, BetType.Pass)) // shooter bet exists
             {
                 await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_ROLL, Shooter.Mention));
                 await _channel.SendMessageAsync(Roll(Shooter));
@@ -84,7 +84,7 @@ namespace FalloutRPG.Services
                 return String.Format(Messages.CRAPS_EMPTY_MATCH, user.Mention);
             if (user != Shooter)
                 return String.Format(Messages.ERR_CRAPS_NOT_SHOOTER, user.Mention, Shooter.Mention);
-            if (_bets.Find(x => x.User.Equals(user)) == null)
+            if (!HasBet(user, BetType.Pass))
                 return String.Format(Messages.ERR_CRAPS_BET_NOT_SET, user.Mention);
 
             string result = "";
@@ -212,7 +212,7 @@ namespace FalloutRPG.Services
 
         public async Task<bool> LeaveMatch(IUser user)
         {
-            if (user == Shooter && HasBet(user))
+            if (user == Shooter && HasBet(user, BetType.Pass))
                 return false;
 
             if (_players.Contains(user))
@@ -231,11 +231,19 @@ namespace FalloutRPG.Services
                 return false;
         }
 
-        private bool HasBet(IUser user)
+        private bool HasBet(IUser user, BetType betType)
         {
-            if (_bets.Find(x => x.User == user) == null)
+            var bet = _bets.Find(x => x.User == user);
+
+            if (bet == null)
                 return false;
-            return true;
+
+            if (betType == BetType.Pass || betType == BetType.DontPass)
+                return bet.BetType == BetType.Pass || bet.BetType == BetType.DontPass;
+            else if (betType == BetType.Come || betType == BetType.DontCome)
+                return bet.BetType == BetType.Come || bet.BetType == BetType.DontCome;
+
+            return false;
         }
 
         /// <summary>
@@ -246,8 +254,9 @@ namespace FalloutRPG.Services
         {
             IUser oldShooter = Shooter;
 
-            if (HasBet(Shooter))
-                return false;
+            // if the shooter is betting on themself, don't let them get switched
+            //if (HasBet(Shooter, BetType.Pass))
+            //    return false;
 
             if (_players.Count > _shooterIndex + 1) // players remaining in list
             {
@@ -269,9 +278,17 @@ namespace FalloutRPG.Services
                 return false;
         }
 
+        public bool PassDice()
+        {
+            if (HasBet(Shooter, BetType.Pass))
+                return false;
+            return NextShooter();
+        }
+
         private string AwardPassBets(int roll)
         {
             string result = "";
+            bool sevenOut = false;
 
             BetType winningBet = BetType.Error;
 
@@ -302,8 +319,7 @@ namespace FalloutRPG.Services
 
                     result += String.Format(Messages.CRAPS_SEVEN_OUT, Shooter.Mention) + "\n";
                     _round = Round.ComeOut;
-                    NextShooter();
-                    result += String.Format(Messages.CRAPS_NEW_SHOOTER, Shooter.Mention, roll) + "\n";
+                    sevenOut = true;
                 }
                 else if (roll == _shooterPoint) // shooter reached point
                 {
@@ -327,6 +343,16 @@ namespace FalloutRPG.Services
                 else if (bet.BetType == losingBet)
                     AwardBet(bet, false);
             }
+
+            if (sevenOut)
+            {
+                NextShooter();
+                if (_players.Count == 1)
+                    result += String.Format(Messages.CRAPS_NEW_SHOOTER_ONE_PLAYER, Shooter.Mention, roll) + "\n";
+                else
+                    result += String.Format(Messages.CRAPS_NEW_SHOOTER, Shooter.Mention, roll) + "\n";
+            }
+
             return result;
         }
 
@@ -342,6 +368,11 @@ namespace FalloutRPG.Services
                     {
                         AwardBet(bet);
                         result += String.Format(Messages.CRAPS_POINT_ROLL, bet.User.Mention) + "\n";
+                    }
+                    else if (bet.Point != -1 && roll == 7) // seven out
+                    {
+                        AwardBet(bet);
+                        result += String.Format(Messages.CRAPS_SEVEN_OUT, bet.User.Mention, roll) + "\n";
                     }
                     else if (bet.Point == -1) // "come out" roll for new Come Bet
                     {
