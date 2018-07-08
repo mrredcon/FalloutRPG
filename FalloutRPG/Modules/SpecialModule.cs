@@ -29,7 +29,7 @@ namespace FalloutRPG.Modules
             }
 
             [Command]
-            [Alias("show")]
+            [Alias("show", "view")]
             [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSpecialAsync(IUser targetUser = null)
             {

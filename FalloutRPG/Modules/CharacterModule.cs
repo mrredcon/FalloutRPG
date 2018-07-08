@@ -37,7 +37,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command("show")]
-        [Alias("display")]
+        [Alias("display", "stats")]
         [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowCharacterAsync(IUser targetUser = null)
         {
@@ -53,12 +53,14 @@ namespace FalloutRPG.Modules
             }
 
             var level = _expService.CalculateLevelForExperience(character.Experience);
+            var expToNextLevel = _expService.CalculateRemainingExperienceToNextLevel(character.Experience);
 
             var embed = EmbedTool.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
                 $"**Description:** {character.Description}\n" +
                 $"**Story:** {character.Story}\n" +
-                $"**Experience:** {character.Experience}\n" +
                 $"**Level:** {level}\n" +
+                $"**Experience:** {character.Experience}\n" +
+                $"**To Next Level:** {expToNextLevel}\n" +  
                 $"**Caps:** {character.Money}");
 
             await ReplyAsync(userInfo.Mention, embed: embed);
@@ -107,49 +109,6 @@ namespace FalloutRPG.Modules
             var embed = EmbedTool.BuildBasicEmbed("!command highscores", strBuilder.ToString());
 
             await ReplyAsync(userInfo.Mention, embed: embed);
-        }
-
-        [Group("stats")]
-        [Alias("statistics", "level", "levels", "experience", "exp")]
-        public class CharacterStatsModule : ModuleBase<SocketCommandContext>
-        {
-            private readonly CharacterService _charService;
-            private readonly ExperienceService _expService;
-
-            public CharacterStatsModule(CharacterService charService, ExperienceService expService)
-            {
-                _charService = charService;
-                _expService = expService;
-            }
-
-            [Command]
-            [Alias("show")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
-            public async Task ShowCharacterStatsAsync(IUser targetUser = null)
-            {
-                var userInfo = Context.User;
-                var character = targetUser == null
-                    ? _charService.GetCharacter(userInfo.Id)
-                    : _charService.GetCharacter(targetUser.Id);
-
-                if (character == null)
-                {
-                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
-                    return;
-                }
-
-                var level = _expService.CalculateLevelForExperience(character.Experience);
-                var expToNextLevel = _expService.CalculateRemainingExperienceToNextLevel(character.Experience);
-
-                var embed = EmbedTool.BuildBasicEmbed("!character stats",
-                    $"**Name:** {character.FirstName} {character.LastName}\n" +
-                    $"**Level:** {level}\n" +
-                    $"**Experience:** {character.Experience}\n" +
-                    $"**To Next Level:** {expToNextLevel}\n" +
-                    $"**Money:** {character.Money}");
-
-                await ReplyAsync(userInfo.Mention, embed: embed);
-            }
         }
 
         [Group("story")]
