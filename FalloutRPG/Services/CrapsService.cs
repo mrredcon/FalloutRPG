@@ -210,9 +210,13 @@ namespace FalloutRPG.Services
             if (user == Shooter && HasBet(user))
                 return false;
 
-            _players.Remove(user);
-
-            return true;
+            if (_players.Contains(user))
+            {
+                _players.Remove(user);
+                return true;
+            }
+            else
+                return false;
         }
 
         private bool HasBet(IUser user)
