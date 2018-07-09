@@ -30,14 +30,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command]
-        [Alias("help")]
-        public async Task ShowCharacterHelpAsync()
-        {
-            await _helpService.ShowCharacterHelpAsync(Context);
-        }
-
-        [Command("show")]
-        [Alias("display", "stats")]
+        [Alias("show", "display", "stats")]
         [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowCharacterAsync(IUser targetUser = null)
         {
@@ -64,6 +57,13 @@ namespace FalloutRPG.Modules
                 $"**Caps:** {character.Money}");
 
             await ReplyAsync(userInfo.Mention, embed: embed);
+        }
+
+        [Command("help")]
+        [Alias("help")]
+        public async Task ShowCharacterHelpAsync()
+        {
+            await _helpService.ShowCharacterHelpAsync(Context);
         }
 
         [Command("create")]
