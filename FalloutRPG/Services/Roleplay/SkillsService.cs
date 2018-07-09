@@ -3,7 +3,7 @@ using FalloutRPG.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace FalloutRPG.Services
+namespace FalloutRPG.Services.Roleplay
 {
     public class SkillsService
     {

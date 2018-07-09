@@ -3,13 +3,14 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
+using FalloutRPG.Helpers;
 using FalloutRPG.Services;
-using FalloutRPG.Util;
+using FalloutRPG.Services.Roleplay;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FalloutRPG.Modules
+namespace FalloutRPG.Modules.Roleplay
 {
     [Group("character")]
     [Alias("char")]
@@ -55,7 +56,7 @@ namespace FalloutRPG.Modules
             var level = _expService.CalculateLevelForExperience(character.Experience);
             var expToNextLevel = _expService.CalculateRemainingExperienceToNextLevel(character.Experience);
 
-            var embed = EmbedTool.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
+            var embed = EmbedHelper.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
                 $"**Description:** {character.Description}\n" +
                 $"**Story:** {character.Story}\n" +
                 $"**Level:** {level}\n" +
@@ -106,7 +107,7 @@ namespace FalloutRPG.Modules
                     $" - User: {user.Username}");
             }
 
-            var embed = EmbedTool.BuildBasicEmbed("!command highscores", strBuilder.ToString());
+            var embed = EmbedHelper.BuildBasicEmbed("!command highscores", strBuilder.ToString());
 
             await ReplyAsync(userInfo.Mention, embed: embed);
         }
@@ -143,7 +144,7 @@ namespace FalloutRPG.Modules
                     return;
                 }
 
-                var embed = EmbedTool.BuildBasicEmbed("Command: !character story",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: !character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Story:** {character.Story}");
 
@@ -204,7 +205,7 @@ namespace FalloutRPG.Modules
                     return;
                 }
 
-                var embed = EmbedTool.BuildBasicEmbed("Command: !character story",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: !character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Description:** {character.Description}");
 

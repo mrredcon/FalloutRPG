@@ -2,12 +2,13 @@
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
+using FalloutRPG.Helpers;
 using FalloutRPG.Services;
-using FalloutRPG.Util;
+using FalloutRPG.Services.Roleplay;
 using System;
 using System.Threading.Tasks;
 
-namespace FalloutRPG.Modules
+namespace FalloutRPG.Modules.Roleplay
 {
     [Group("character")]
     [Alias("char")]
@@ -55,7 +56,7 @@ namespace FalloutRPG.Modules
                     return;
                 }
 
-                var embed = EmbedTool.BuildBasicEmbed("Command: !character skills",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: !character skills",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Barter:** {character.Skills.Barter}\n" +
                     $"**Energy Weapons:** {character.Skills.EnergyWeapons}\n" +

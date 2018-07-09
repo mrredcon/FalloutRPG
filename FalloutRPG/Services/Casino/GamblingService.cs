@@ -1,15 +1,14 @@
 ﻿using Discord;
+using FalloutRPG.Services.Roleplay;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace FalloutRPG.Services
+namespace FalloutRPG.Services.Casino
 {
     public class GamblingService
     {

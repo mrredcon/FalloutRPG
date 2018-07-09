@@ -1,13 +1,9 @@
-﻿using Discord;
-using Discord.Commands;
-using FalloutRPG.Constants;
+﻿using Discord.Commands;
 using FalloutRPG.Services;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using FalloutRPG.Services.Roleplay;
 using System.Threading.Tasks;
 
-namespace FalloutRPG.Modules
+namespace FalloutRPG.Modules.Roleplay
 {
     [Group("roll")]
     [Alias("r")]
