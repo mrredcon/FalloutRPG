@@ -3,9 +3,7 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
-using FalloutRPG.Util;
-using System;
-using System.Collections.Generic;
+using FalloutRPG.Helpers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,7 +19,7 @@ namespace FalloutRPG.Modules
             var userInfo = Context.User;
             var message = new StringBuilder();
 
-            var embed = EmbedTool.BuildBasicEmbedWithFields("Command: !tutorial", 
+            var embed = EmbedHelper.BuildBasicEmbedWithFields("Command: !tutorial", 
                 "More functionality will be added in future iterations.", Pages.TUTORIAL_TITLES, Pages.TUTORIAL_CONTENTS);
 
             await Context.User.SendMessageAsync(userInfo.Mention, embed: embed);

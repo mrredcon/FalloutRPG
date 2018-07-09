@@ -2,12 +2,10 @@
 using Discord.Addons.Interactive;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace FalloutRPG.Util
+namespace FalloutRPG.Helpers
 {
-    public class PageTool
+    public class PaginatedMessageHelper
     {
         /// <summary>
         /// Build a new paginated message.

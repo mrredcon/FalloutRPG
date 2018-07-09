@@ -6,6 +6,8 @@ using FalloutRPG.Data;
 using FalloutRPG.Data.Repositories;
 using FalloutRPG.Models;
 using FalloutRPG.Services;
+using FalloutRPG.Services.Casino;
+using FalloutRPG.Services.Roleplay;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -33,7 +35,7 @@ namespace FalloutRPG
         {
             var services = BuildServiceProvider();
 
-            services.GetRequiredService<LogService>();
+            //services.GetRequiredService<LogService>();
             await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             await services.GetRequiredService<StartupService>().StartAsync();
 
@@ -59,16 +61,20 @@ namespace FalloutRPG
             .AddSingleton<CommandHandler>()
             .AddSingleton<LogService>()
             .AddSingleton<StartupService>()
+            .AddSingleton<HelpService>()
+            // Roleplay
             .AddSingleton<RollService>()
             .AddSingleton<SkillsService>()
             .AddSingleton<SpecialService>()
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
+            // Casino
             .AddSingleton<GamblingService>()
             .AddSingleton<CrapsService>()
-            .AddSingleton<HelpService>()
+            // Addons
             .AddSingleton<InteractiveService>()
+            // Database
             .AddDbContext<RpgContext>()
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()

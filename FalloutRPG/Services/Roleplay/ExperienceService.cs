@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using FalloutRPG.Constants;
 using FalloutRPG.Models;
@@ -9,12 +10,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace FalloutRPG.Services
+namespace FalloutRPG.Services.Roleplay
 {
     public class ExperienceService
     {
-        private Dictionary<ulong, Timer> CooldownTimers;
-        private List<ulong> ExperienceEnabledChannels;
+        private Dictionary<ulong, Timer> cooldownTimers;
+        private List<ulong> experienceEnabledChannels;
+        private Random random;
 
         private const int DEFAULT_EXP_GAIN = 100;
         private const int DEFAULT_EXP_RANGE_FROM = 50;
@@ -26,15 +28,43 @@ namespace FalloutRPG.Services
         private readonly DiscordSocketClient _client;
         private readonly IConfiguration _config;
 
-        public ExperienceService(CharacterService charService, SkillsService skillsService, DiscordSocketClient client, IConfiguration config)
+        public ExperienceService(
+            CharacterService charService,
+            SkillsService skillsService,
+            DiscordSocketClient client,
+            IConfiguration config)
         {
             _charService = charService;
             _skillsService = skillsService;
             _client = client;
             _config = config;
 
-            CooldownTimers = new Dictionary<ulong, Timer>();
+            cooldownTimers = new Dictionary<ulong, Timer>();
             LoadExperienceEnabledChannels();
+            random = new Random();
+        }
+
+        /// <summary>
+        /// Processes experience to give if channel is an experience
+        /// enabled channel.
+        /// </summary>
+        public async Task ProcessExperienceAsync(SocketCommandContext context)
+        {
+            if (!IsInExperienceEnabledChannel(context.Channel.Id)) return;
+
+            var userInfo = context.User;
+            var character = await _charService.GetCharacterAsync(userInfo.Id);
+
+            if (character == null) return;
+
+            var expToGive = GetRandomExperience();
+
+            if (await GiveExperienceAsync(character, expToGive))
+            {
+                var level = CalculateLevelForExperience(character.Experience);
+                await context.Channel.SendMessageAsync(
+                    string.Format(Messages.EXP_LEVEL_UP, userInfo.Mention, level));
+            }
         }
 
         /// <summary>
@@ -43,7 +73,7 @@ namespace FalloutRPG.Services
         public async Task<bool> GiveExperienceAsync(Character character, int experience = DEFAULT_EXP_GAIN)
         {
             if (character == null) return false;
-            if (CooldownTimers.ContainsKey(character.DiscordId)) return false;
+            if (cooldownTimers.ContainsKey(character.DiscordId)) return false;
 
             var levelUp = false;
 
@@ -68,21 +98,7 @@ namespace FalloutRPG.Services
             int rangeFrom = DEFAULT_EXP_RANGE_FROM,
             int rangeTo = DEFAULT_EXP_RANGE_TO)
         {
-            var random = new Random();
             return random.Next(rangeFrom, rangeTo);
-        }
-
-        /// <summary>
-        /// Adds a user's Discord ID to the cooldowns.
-        /// </summary>
-        public void AddToCooldown(ulong discordId)
-        {
-            var timer = new Timer();
-            timer.Elapsed += (sender, e) => OnCooldownElapsed(sender, e, discordId);
-            timer.Interval = COOLDOWN_INTERVAL;
-            timer.Enabled = true;
-
-            CooldownTimers.Add(discordId, timer);
         }
 
         /// <summary>
@@ -130,7 +146,7 @@ namespace FalloutRPG.Services
         /// </summary>
         public bool IsInExperienceEnabledChannel(ulong channelId)
         {
-            foreach (var channel in ExperienceEnabledChannels)
+            foreach (var channel in experienceEnabledChannels)
                 if (channelId == channel)
                     return true;
 
@@ -145,7 +161,7 @@ namespace FalloutRPG.Services
         {
             try
             {
-                ExperienceEnabledChannels = _config
+                experienceEnabledChannels = _config
                     .GetSection("roleplay:exp-channels")
                     .GetChildren()
                     .Select(x => UInt64.Parse(x.Value))
@@ -180,15 +196,28 @@ namespace FalloutRPG.Services
         }
 
         /// <summary>
+        /// Adds a user's Discord ID to the cooldowns.
+        /// </summary>
+        private void AddToCooldown(ulong discordId)
+        {
+            var timer = new Timer();
+            timer.Elapsed += (sender, e) => OnCooldownElapsed(sender, e, discordId);
+            timer.Interval = COOLDOWN_INTERVAL;
+            timer.Enabled = true;
+
+            cooldownTimers.Add(discordId, timer);
+        }
+
+        /// <summary>
         /// Called when a cooldown has finished.
         /// </summary>
         private void OnCooldownElapsed(object sender, ElapsedEventArgs e, ulong discordId)
         {
-            var timer = CooldownTimers[discordId];
+            var timer = cooldownTimers[discordId];
             timer.Enabled = false;
             timer.Dispose();
 
-            CooldownTimers.Remove(discordId);
+            cooldownTimers.Remove(discordId);
         }
     }
 }

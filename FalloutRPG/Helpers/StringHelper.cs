@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace FalloutRPG.Util
+namespace FalloutRPG.Helpers
 {
-    public static class StringTool
+    public static class StringHelper
     {
         /// <summary>
         /// Shortens a string to the specified length.

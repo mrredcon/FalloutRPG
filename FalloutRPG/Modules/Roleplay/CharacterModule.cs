@@ -3,13 +3,14 @@ using Discord.Addons.Interactive;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
+using FalloutRPG.Helpers;
 using FalloutRPG.Services;
-using FalloutRPG.Util;
+using FalloutRPG.Services.Roleplay;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FalloutRPG.Modules
+namespace FalloutRPG.Modules.Roleplay
 {
     [Group("character")]
     [Alias("char")]
@@ -51,12 +52,12 @@ namespace FalloutRPG.Modules
             var description = string.IsNullOrEmpty(character.Description) ? "No description." : character.Description;
             var story = string.IsNullOrEmpty(character.Story) ? "No story." : character.Story;
 
-            var embed = EmbedTool.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
+            var embed = EmbedHelper.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
                 $"**Description:** {description}\n" +
                 $"**Story:** {story}\n" +
                 $"**Level:** {level}\n" +
                 $"**Experience:** {character.Experience}\n" +
-                $"**To Next Level:** {expToNextLevel}\n" +  
+                $"**To Next Level:** {expToNextLevel}\n" +
                 $"**Caps:** {character.Money}");
 
             await ReplyAsync(userInfo.Mention, embed: embed);
@@ -109,7 +110,7 @@ namespace FalloutRPG.Modules
                     $" - User: {user.Username}");
             }
 
-            var embed = EmbedTool.BuildBasicEmbed("!command highscores", strBuilder.ToString());
+            var embed = EmbedHelper.BuildBasicEmbed("!command highscores", strBuilder.ToString());
 
             await ReplyAsync(userInfo.Mention, embed: embed);
         }
@@ -146,7 +147,7 @@ namespace FalloutRPG.Modules
                     return;
                 }
 
-                var embed = EmbedTool.BuildBasicEmbed("Command: !character story",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: !character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Story:** {character.Story}");
 
@@ -207,7 +208,7 @@ namespace FalloutRPG.Modules
                     return;
                 }
 
-                var embed = EmbedTool.BuildBasicEmbed("Command: !character story",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: !character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Description:** {character.Description}");
 

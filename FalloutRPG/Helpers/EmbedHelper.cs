@@ -1,8 +1,8 @@
 ﻿using Discord;
 
-namespace FalloutRPG.Util
+namespace FalloutRPG.Helpers
 {
-    public class EmbedTool
+    public class EmbedHelper
     {
         /// <summary>
         /// Builds a simple Embed with a title and content.
@@ -12,7 +12,7 @@ namespace FalloutRPG.Util
         /// </remarks>
         public static Embed BuildBasicEmbed(string title, string content)
         {
-            content = StringTool.Truncate(content, 2048);
+            content = StringHelper.Truncate(content, 2048);
 
             var builder = new EmbedBuilder()
                 .WithDescription(content)
@@ -25,6 +25,14 @@ namespace FalloutRPG.Util
             return builder.Build();
         }
 
+        /// <summary>
+        /// Builds a simple Embed title, content and fields.
+        /// </summary>
+        /// <remarks>
+        /// The embed description has a max of 2048 characters. 
+        /// fieldTitles and fieldContents arrays must be the same
+        /// length.
+        /// </remarks>
         public static Embed BuildBasicEmbedWithFields(string title, string content, string[] fieldTitles, string[] fieldContents)
         {
             if (fieldTitles.Length != fieldContents.Length)

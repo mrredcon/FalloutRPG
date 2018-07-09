@@ -3,8 +3,6 @@ using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Services;
-using FalloutRPG.Util;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules

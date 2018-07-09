@@ -1,14 +1,14 @@
 ﻿using FalloutRPG.Constants;
 using FalloutRPG.Data.Repositories;
+using FalloutRPG.Helpers;
 using FalloutRPG.Models;
-using FalloutRPG.Util;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 
-namespace FalloutRPG.Services
+namespace FalloutRPG.Services.Roleplay
 {
     public class CharacterService
     {
@@ -49,14 +49,14 @@ namespace FalloutRPG.Services
             if (await GetCharacterAsync(discordId) != null)
                 throw new Exception(Exceptions.CHAR_DISCORDID_EXISTS);
 
-            if (!StringTool.IsOnlyLetters(firstName) || !StringTool.IsOnlyLetters(lastName))
+            if (!StringHelper.IsOnlyLetters(firstName) || !StringHelper.IsOnlyLetters(lastName))
                 throw new Exception(Exceptions.CHAR_NAMES_NOT_LETTERS);
 
             if (firstName.Length > 24 || lastName.Length > 24 || firstName.Length < 2 || lastName.Length < 2)
                 throw new Exception(Exceptions.CHAR_NAMES_LENGTH);
 
-            firstName = StringTool.ToTitleCase(firstName);
-            lastName = StringTool.ToTitleCase(lastName);
+            firstName = StringHelper.ToTitleCase(firstName);
+            lastName = StringHelper.ToTitleCase(lastName);
 
             var character = new Character()
             {
