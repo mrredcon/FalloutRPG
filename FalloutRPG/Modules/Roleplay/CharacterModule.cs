@@ -31,14 +31,7 @@ namespace FalloutRPG.Modules.Roleplay
         }
 
         [Command]
-        [Alias("help")]
-        public async Task ShowCharacterHelpAsync()
-        {
-            await _helpService.ShowCharacterHelpAsync(Context);
-        }
-
-        [Command("show")]
-        [Alias("display", "stats")]
+        [Alias("show", "display", "stats")]
         [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowCharacterAsync(IUser targetUser = null)
         {
@@ -57,14 +50,21 @@ namespace FalloutRPG.Modules.Roleplay
             var expToNextLevel = _expService.CalculateRemainingExperienceToNextLevel(character.Experience);
 
             var embed = EmbedHelper.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
-                $"**Description:** {character.Description}\n" +
-                $"**Story:** {character.Story}\n" +
+                $"**Description:** {description}\n" +
+                $"**Story:** {story}\n" +
                 $"**Level:** {level}\n" +
                 $"**Experience:** {character.Experience}\n" +
-                $"**To Next Level:** {expToNextLevel}\n" +  
+                $"**To Next Level:** {expToNextLevel}\n" +
                 $"**Caps:** {character.Money}");
 
             await ReplyAsync(userInfo.Mention, embed: embed);
+        }
+
+        [Command("help")]
+        [Alias("help")]
+        public async Task ShowCharacterHelpAsync()
+        {
+            await _helpService.ShowCharacterHelpAsync(Context);
         }
 
         [Command("create")]
