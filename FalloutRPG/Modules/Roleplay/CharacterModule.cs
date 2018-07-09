@@ -49,6 +49,9 @@ namespace FalloutRPG.Modules.Roleplay
             var level = _expService.CalculateLevelForExperience(character.Experience);
             var expToNextLevel = _expService.CalculateRemainingExperienceToNextLevel(character.Experience);
 
+            var description = string.IsNullOrEmpty(character.Description) ? "No description." : character.Description;
+            var story = string.IsNullOrEmpty(character.Story) ? "No story." : character.Story;
+
             var embed = EmbedHelper.BuildBasicEmbed($"{character.FirstName} {character.LastName}",
                 $"**Description:** {description}\n" +
                 $"**Story:** {story}\n" +
