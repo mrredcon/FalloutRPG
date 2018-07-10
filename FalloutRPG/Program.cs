@@ -35,7 +35,7 @@ namespace FalloutRPG
         {
             var services = BuildServiceProvider();
 
-            //services.GetRequiredService<LogService>();
+            services.GetRequiredService<LogService>();
             await services.GetRequiredService<CommandHandler>().InstallCommandsAsync();
             await services.GetRequiredService<StartupService>().StartAsync();
 
