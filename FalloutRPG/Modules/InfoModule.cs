@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using FalloutRPG.Addons;
+using FalloutRPG.Constants;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -13,7 +14,8 @@ namespace FalloutRPG.Modules
 {
     public class InfoModule : ModuleBase<SocketCommandContext>
     {
-        [Command("info"), Ratelimit(1, 0.1, Measure.Minutes)]
+        [Command("info")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task InfoAsync()
         {
             var buildDate = new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime;

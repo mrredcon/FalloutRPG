@@ -8,7 +8,8 @@ namespace FalloutRPG.Modules
 {
     public class FalloutModule : ModuleBase<SocketCommandContext>
     {
-        [Command("daysleft"), Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
+        [Command("daysleft")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         [Alias("countdown", "days")]
         public async Task DaysLeftAsync()
         {

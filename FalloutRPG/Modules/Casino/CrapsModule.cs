@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Services.Casino;
 using System;
@@ -20,6 +21,7 @@ namespace FalloutRPG.Modules.Casino
         }
 
         [Command("join")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task JoinCrapsGameAsync()
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
@@ -51,6 +53,7 @@ namespace FalloutRPG.Modules.Casino
 
         [Command("leave")]
         [Alias("quit")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task LeaveCrapsGameAsync()
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
@@ -64,6 +67,7 @@ namespace FalloutRPG.Modules.Casino
 
         [Command("roll")]
         [Alias("r")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task RollAsync()
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
@@ -75,6 +79,7 @@ namespace FalloutRPG.Modules.Casino
 
         [Command("bet")]
         [Alias("b")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task BetAsync(string betType, int betAmount)
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
@@ -82,6 +87,7 @@ namespace FalloutRPG.Modules.Casino
         }
 
         [Command("pass")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task PassDice()
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))

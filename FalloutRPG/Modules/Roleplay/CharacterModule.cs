@@ -65,6 +65,7 @@ namespace FalloutRPG.Modules.Roleplay
 
         [Command("help")]
         [Alias("help")]
+        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowCharacterHelpAsync()
         {
             await _helpService.ShowCharacterHelpAsync(Context);

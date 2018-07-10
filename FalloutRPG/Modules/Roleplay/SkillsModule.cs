@@ -78,12 +78,14 @@ namespace FalloutRPG.Modules.Roleplay
 
             [Command("help")]
             [Alias("help")]
+            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsHelpAsync()
             {
                 await _helpService.ShowSkillsHelpAsync(Context);
             }
 
             [Command("set")]
+            [Alias("tag")]
             [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SetSkillsAsync(string tag1, string tag2, string tag3)
             {
