@@ -95,5 +95,21 @@ namespace FalloutRPG.Services
             await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }
         #endregion
+
+        #region Craps Help
+        /// <summary>
+        /// Shows the Craps help menu.
+        /// </summary>
+        public async Task ShowCrapsHelpAsync(SocketCommandContext context)
+        {
+            var userInfo = context.User;
+            var message = new StringBuilder();
+
+            var embed = EmbedHelper.BuildBasicEmbedWithFields("!help craps", string.Empty,
+                Pages.HELP_CRAPS_PAGE1_TITLES, Pages.HELP_CRAPS_PAGE1_CONTENTS);
+
+            await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+        }
+        #region
     }
 }

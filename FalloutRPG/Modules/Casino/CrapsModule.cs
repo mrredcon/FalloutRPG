@@ -1,6 +1,7 @@
 ﻿using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
+using FalloutRPG.Services;
 using FalloutRPG.Services.Casino;
 using System;
 using System.Threading.Tasks;
@@ -14,11 +15,23 @@ namespace FalloutRPG.Modules.Casino
     {
         private readonly GamblingService _gamblingService;
         private readonly CrapsService _crapsService;
+        private readonly HelpService _helpService;
 
-        public CrapsModule(GamblingService gamblingService, CrapsService crapsService)
+        public CrapsModule(
+            GamblingService gamblingService,
+            CrapsService crapsService,
+            HelpService helpService)
         {
             _gamblingService = gamblingService;
             _crapsService = crapsService;
+            _helpService = helpService;
+        }
+
+        [Command]
+        [Alias("help")]
+        public async Task ShowCrapsHelpAsync()
+        {
+            await _helpService.ShowCrapsHelpAsync(Context);
         }
 
         [Command("join")]

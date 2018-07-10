@@ -72,6 +72,28 @@
         };
         #endregion
 
+        #region Craps Help Pages
+        public static string[] HELP_CRAPS_PAGE1_TITLES = new string[]
+        {
+            "!craps join",
+            "!craps leave",
+            "!craps roll",
+            "!craps bet [type] [amount]",
+            "!craps pass",
+            "Bet Types"
+        };
+
+        public static string[] HELP_CRAPS_PAGE1_CONTENTS = new string[]
+        {
+            "Joins current craps game.",
+            "Leaves current craps game.",
+            "Rolls the dice.",
+            "Makes a bet of the type and amount. Types can be found below.",
+            "Pass the dice to another user.",
+            "pass, dontpass, come, dontcome"
+        };
+        #endregion
+
         #region Tutorial
         public static string[] TUTORIAL_TITLES = new string[]
         {

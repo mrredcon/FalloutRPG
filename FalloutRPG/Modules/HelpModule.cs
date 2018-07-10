@@ -74,5 +74,22 @@ namespace FalloutRPG.Modules
                 await _helpService.ShowSkillsHelpAsync(Context);
             }
         }
+
+        [Group("craps")]
+        public class CrapsHelpModule : ModuleBase<SocketCommandContext>
+        {
+            private readonly HelpService _helpService;
+
+            public CrapsHelpModule(HelpService helpService)
+            {
+                _helpService = helpService;
+            }
+
+            [Command]
+            public async Task ShowCrapsHelpAsync()
+            {
+                await _helpService.ShowCrapsHelpAsync(Context);
+            }
+        }
     }
 }
