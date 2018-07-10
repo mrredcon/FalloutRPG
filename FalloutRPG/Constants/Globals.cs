@@ -20,5 +20,6 @@
         };
 
         public const int RATELIMIT_SECONDS = 3;
+        public const int RATELIMIT_TIMES = 2;
     }
 }

@@ -11,6 +11,7 @@ namespace FalloutRPG.Modules.Roleplay
 {
     [Group("character")]
     [Alias("char")]
+    [Ratelimit(Globals.RATELIMIT_TIMES, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
     public class SpecialModule : ModuleBase<SocketCommandContext>
     {
         [Group("special")]
@@ -28,7 +29,6 @@ namespace FalloutRPG.Modules.Roleplay
 
             [Command]
             [Alias("show", "view")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSpecialAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -64,7 +64,6 @@ namespace FalloutRPG.Modules.Roleplay
             }
 
             [Command("set")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SetSpecialAsync(int str, int per, int end, int cha, int inte, int agi, int luc)
             {
                 var userInfo = Context.User;

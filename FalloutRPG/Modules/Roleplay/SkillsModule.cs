@@ -12,6 +12,7 @@ namespace FalloutRPG.Modules.Roleplay
 {
     [Group("character")]
     [Alias("char")]
+    [Ratelimit(Globals.RATELIMIT_TIMES, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
     public class SkillsModule : ModuleBase<SocketCommandContext>
     {
         [Group("skills")]
@@ -34,7 +35,6 @@ namespace FalloutRPG.Modules.Roleplay
 
             [Command]
             [Alias("show", "view")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsAsync(IUser targetUser = null)
             {
                 var userInfo = Context.User;
@@ -78,7 +78,6 @@ namespace FalloutRPG.Modules.Roleplay
 
             [Command("help")]
             [Alias("help")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsHelpAsync()
             {
                 await _helpService.ShowSkillsHelpAsync(Context);
@@ -86,7 +85,6 @@ namespace FalloutRPG.Modules.Roleplay
 
             [Command("set")]
             [Alias("tag")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SetSkillsAsync(string tag1, string tag2, string tag3)
             {
                 var userInfo = Context.User;
@@ -117,7 +115,6 @@ namespace FalloutRPG.Modules.Roleplay
 
             [Command("spend")]
             [Alias("put")]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task SpendSkillPointsAsync(string skill, int points)
             {
                 var userInfo = Context.User;

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 namespace FalloutRPG.Modules
 {
     [Group("help")]
+    [Ratelimit(Globals.RATELIMIT_TIMES, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
     public class HelpModule : ModuleBase<SocketCommandContext>
     {
         private readonly HelpService _helpService;
@@ -18,7 +19,6 @@ namespace FalloutRPG.Modules
         }
 
         [Command]
-        [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ShowHelpAsync()
         {
             await _helpService.ShowHelpAsync(Context);
@@ -35,7 +35,6 @@ namespace FalloutRPG.Modules
             }
 
             [Command]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowCharacterHelpAsync()
             {
                 await _helpService.ShowCharacterHelpAsync(Context);
@@ -53,7 +52,6 @@ namespace FalloutRPG.Modules
             }
 
             [Command]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowRollHelpAsync()
             {
                 await _helpService.ShowRollHelpAsync(Context);
@@ -71,7 +69,6 @@ namespace FalloutRPG.Modules
             }
 
             [Command]
-            [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
             public async Task ShowSkillsHelpAsync()
             {
                 await _helpService.ShowSkillsHelpAsync(Context);
