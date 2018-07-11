@@ -116,7 +116,7 @@ namespace FalloutRPG.Modules.Roleplay
                 try
                 {
                     _specService.PutPointsInSpecial(character, special, points);
-                    await ReplyAsync(Messages.SKILLS_SPEND_POINTS_SUCCESS);
+                    await ReplyAsync(string.Format(Messages.SKILLS_SPEND_POINTS_SUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {

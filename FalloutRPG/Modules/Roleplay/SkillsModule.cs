@@ -135,7 +135,7 @@ namespace FalloutRPG.Modules.Roleplay
                 try
                 {
                     _skillsService.PutPointsInSkill(character, skill, points);
-                    await ReplyAsync(Messages.SKILLS_SPEND_POINTS_SUCCESS);
+                    await ReplyAsync(string.Format(Messages.SKILLS_SPEND_POINTS_SUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {
@@ -157,7 +157,7 @@ namespace FalloutRPG.Modules.Roleplay
 
                 if (!character.IsReset)
                 {
-                    await ReplyAsync("You do not have any skill points to claim.");
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_NONE_TO_CLAIM, userInfo.Mention));
                     return;
                 }
 
@@ -172,12 +172,15 @@ namespace FalloutRPG.Modules.Roleplay
 
                 if (totalPoints < 1)
                 {
-                    // none
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_NONE_TO_CLAIM, userInfo.Mention));
                     return;
                 }
 
                 character.SkillPoints += totalPoints;
-                await ReplyAsync($"{totalPoints} skill points claimed.");
+                character.IsReset = false;
+                await _charService.SaveCharacterAsync(character);
+
+                await ReplyAsync(string.Format(Messages.SKILLS_POINTS_CLAIMED, totalPoints, userInfo.Mention));
             }
         }
     }

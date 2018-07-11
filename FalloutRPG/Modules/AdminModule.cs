@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using FalloutRPG.Constants;
 using FalloutRPG.Services.Roleplay;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ namespace FalloutRPG.Modules
 {
     [Group("admin")]
     [Alias("adm")]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    [RequireOwner]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
         private readonly CharacterService _charService;
@@ -42,7 +45,7 @@ namespace FalloutRPG.Modules
             character.Money += money;
 
             await _charService.SaveCharacterAsync(character);
-            await Context.Channel.SendMessageAsync("Gave money successfully");
+            await ReplyAsync(string.Format(Messages.ADM_GAVE_MONEY, Context.User.Mention));
         }
 
         [Command("giveskillpoints")]
@@ -56,7 +59,7 @@ namespace FalloutRPG.Modules
             character.SkillPoints += points;
 
             await _charService.SaveCharacterAsync(character);
-            await Context.Channel.SendMessageAsync("Gave skill points successfully");
+            await ReplyAsync(string.Format(Messages.ADM_GAVE_SKILL_POINTS, Context.User.Mention));
         }
 
         [Command("givespecialpoints")]
@@ -70,7 +73,7 @@ namespace FalloutRPG.Modules
             character.SpecialPoints += points;
 
             await _charService.SaveCharacterAsync(character);
-            await Context.Channel.SendMessageAsync("Gave special points successfully");
+            await ReplyAsync(string.Format(Messages.ADM_GAVE_SPEC_POINTS, Context.User.Mention));
         }
         
         [Command("reset")]
@@ -79,11 +82,8 @@ namespace FalloutRPG.Modules
             var character = await _charService.GetCharacterAsync(user.Id);
             if (character == null) return;
 
-            _skillsService.ResetCharacterSkills(character);
-            _specialService.ResetCharacterSpecial(character);
-
-            await _charService.SaveCharacterAsync(character);
-            await Context.Channel.SendMessageAsync("Character reset successfully");
+            await _charService.ResetCharacterAsync(character);
+            await ReplyAsync(string.Format(Messages.ADM_RESET, Context.User.Mention));
         }
 
         [Command("delete")]
@@ -93,7 +93,7 @@ namespace FalloutRPG.Modules
             if (character == null) return;
 
             await _charService.DeleteCharacterAsync(character);
-            await Context.Channel.SendMessageAsync("Character deleted successfully");
+            await ReplyAsync(string.Format(Messages.ADM_DELETE, Context.User.Mention));
         }
     }
 }
