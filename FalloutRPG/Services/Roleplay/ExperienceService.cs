@@ -19,9 +19,9 @@ namespace FalloutRPG.Services.Roleplay
         private Random random;
 
         private const int DEFAULT_EXP_GAIN = 100;
-        private const int DEFAULT_EXP_RANGE_FROM = 50;
-        private const int DEFAULT_EXP_RANGE_TO = 150;
-        private const int COOLDOWN_INTERVAL = 30000;
+        private const int DEFAULT_EXP_RANGE_FROM = 10;
+        private const int DEFAULT_EXP_RANGE_TO = 50;
+        private const int COOLDOWN_INTERVAL = 60000;
 
         private readonly CharacterService _charService;
         private readonly SkillsService _skillsService;
@@ -178,8 +178,8 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private bool WillLevelUp(Character character, int expToAdd)
         {
+            if (character == null) throw new ArgumentNullException("character");
             int nextLevelExp = CalculateExperienceForLevel(CalculateLevelForExperience(character.Experience) + 1);
-
             return (character.Experience + expToAdd) >= nextLevelExp;
         }
 
@@ -188,10 +188,9 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private async Task OnLevelUpAsync(Character character)
         {
+            if (character == null) throw new ArgumentNullException("character");
             var user = _client.GetUser(character.DiscordId);
-
             _skillsService.GiveSkillPoints(character);
-
             await user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
         }
 

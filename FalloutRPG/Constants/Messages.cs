@@ -2,9 +2,10 @@
 {
     public class Messages
     {
-        public const string FAILURE_EMOJI = "\u274C";
-        public const string SUCCESS_EMOJI = "\uD83D\uDC4D";
-        public const string STAR_EMOJI = "\u2B50";
+        public const string FAILURE_EMOJI = "\u274C ";
+        public const string SUCCESS_EMOJI = "✅ ";
+        public const string STAR_EMOJI = "\u2B50 ";
+        public const string ADM_EMOJI = "👮 ";
 
         // Character Messages
         public const string CHAR_CREATED_SUCCESS = SUCCESS_EMOJI + "Character created successfully. ({0})";
@@ -17,6 +18,15 @@
         public const string SKILLS_SPEND_POINTS_SUCCESS = SUCCESS_EMOJI + "Skill points added successfully. ({0})";
         public const string SKILLS_SET_SUCCESS = SUCCESS_EMOJI + "Character skills set successfully. ({0})";
         public const string SPECIAL_SET_SUCCESS = SUCCESS_EMOJI + "Character SPECIAL set successfully. ({0})";
+        public const string SKILLS_POINTS_CLAIMED = SUCCESS_EMOJI + "{0} skill points were successfully claimed! ({0})";
+
+        // Admin Messages
+        public const string ADM_GAVE_MONEY = ADM_EMOJI + "Money given successfully. ({0})";
+        public const string ADM_GAVE_SKILL_POINTS = ADM_EMOJI + "Skill points given successfully. ({0})";
+        public const string ADM_GAVE_SPEC_POINTS = ADM_EMOJI + "SPECIAL points given successfully. ({0})";
+        public const string ADM_RESET = ADM_EMOJI + "Reset character skills and SPECIAL successfully. ({0})";
+        public const string ADM_DELETE = ADM_EMOJI + "Deleted character successfully. ({0})";
+        public const string ADM_CHANGED_NAME = ADM_EMOJI + "Character name changed successfully. ({0})";
 
         // Character Error Messages
         public const string ERR_CHAR_NOT_FOUND = FAILURE_EMOJI + "Unable to find character. ({0})";
@@ -28,6 +38,7 @@
         public const string ERR_SKILLS_NOT_FOUND = FAILURE_EMOJI + "Unable to find character skills. ({0})";
         public const string ERR_SKILLS_ALREADY_SET = FAILURE_EMOJI + "Character skills are already set. ({0})";
         public const string ERR_SPECIAL_ALREADY_SET = FAILURE_EMOJI + "Character SPECIAL is already set. ({0})";
+        public const string ERR_SKILLS_NONE_TO_CLAIM = FAILURE_EMOJI + "You don't have any skill points that you can claim. ({0})";
 
         // Gambling Messages
         public const string BET_PLACED = SUCCESS_EMOJI + "{0}, bet placed!";

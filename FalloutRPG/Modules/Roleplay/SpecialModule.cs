@@ -58,7 +58,8 @@ namespace FalloutRPG.Modules.Roleplay
                     $"**CHA:** {character.Special.Charisma}\n" +
                     $"**INT:** {character.Special.Intelligence}\n" +
                     $"**AGI:** {character.Special.Agility}\n" +
-                    $"**LUC:** {character.Special.Luck}\n");
+                    $"**LUC:** {character.Special.Luck}\n" +
+                    $"*You have {character.SpecialPoints} left to spend! (!char spec spend)*");
 
                 await ReplyAsync(userInfo.Mention, embed: embed);
             }
@@ -86,6 +87,36 @@ namespace FalloutRPG.Modules.Roleplay
                 {
                     await _specService.SetInitialSpecialAsync(character, special);
                     await ReplyAsync(string.Format(Messages.SPECIAL_SET_SUCCESS, userInfo.Mention));
+                }
+                catch (Exception e)
+                {
+                    await ReplyAsync($"{Messages.FAILURE_EMOJI} {e.Message} ({userInfo.Mention})");
+                }
+            }
+
+            [Command("spend")]
+            [Alias("put")]
+            public async Task SpendSpecialPointsAsync(string special, int points)
+            {
+                var userInfo = Context.User;
+                var character = await _charService.GetCharacterAsync(userInfo.Id);
+
+                if (character == null)
+                {
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                if (!_specService.IsSpecialSet(character))
+                {
+                    await ReplyAsync(string.Format(Messages.ERR_SPECIAL_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                try
+                {
+                    _specService.PutPointsInSpecial(character, special, points);
+                    await ReplyAsync(string.Format(Messages.SKILLS_SPEND_POINTS_SUCCESS, userInfo.Mention));
                 }
                 catch (Exception e)
                 {
