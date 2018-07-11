@@ -59,6 +59,33 @@ namespace FalloutRPG.Modules
             await Context.Channel.SendMessageAsync("Gave skill points successfully");
         }
 
+        [Command("givespecialpoints")]
+        public async Task GiveSpecialPointsAsync(IUser user, int points)
+        {
+            if (points < 1) return;
+
+            var character = await _charService.GetCharacterAsync(user.Id);
+            if (character == null) return;
+
+            character.SpecialPoints += points;
+
+            await _charService.SaveCharacterAsync(character);
+            await Context.Channel.SendMessageAsync("Gave special points successfully");
+        }
+        
+        [Command("reset")]
+        public async Task ResetCharacterAsync(IUser user)
+        {
+            var character = await _charService.GetCharacterAsync(user.Id);
+            if (character == null) return;
+
+            _skillsService.ResetCharacterSkills(character);
+            _specialService.ResetCharacterSpecial(character);
+
+            await _charService.SaveCharacterAsync(character);
+            await Context.Channel.SendMessageAsync("Character reset successfully");
+        }
+
         [Command("delete")]
         public async Task DeleteCharacterAsync(IUser user)
         {

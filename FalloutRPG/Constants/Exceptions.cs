@@ -19,5 +19,9 @@ namespace FalloutRPG.Constants
         public const string CHAR_NOT_ENOUGH_SKILL_POINTS = "Character does not have enough skill points.";
         public const string CHAR_SKILL_POINTS_GOES_OVER_MAX = "Unable to add skill points because it will take the skill above the max level.";
         public const string CHAR_SKILLS_NOT_SET = "Character skills aren't set.";
+        public const string CHAR_SPECIAL_NOT_SET = "Character SPECIAL isn't set.";
+        public const string CHAR_INVALID_SPECIAL_NAME = "SPECIAL name is invalid.";
+        public const string CHAR_NOT_ENOUGH_SPECIAL_POINTS = "Not enough SPECIAL points.";
+        public const string CHAR_SPECIAL_POINTS_GOES_OVER_MAX = "Unable to add SPECIAL points because it will take skill above the max level.";
     }
 }

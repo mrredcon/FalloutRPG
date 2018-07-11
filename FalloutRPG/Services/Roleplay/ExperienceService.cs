@@ -178,8 +178,8 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private bool WillLevelUp(Character character, int expToAdd)
         {
+            if (character == null) throw new ArgumentNullException("character");
             int nextLevelExp = CalculateExperienceForLevel(CalculateLevelForExperience(character.Experience) + 1);
-
             return (character.Experience + expToAdd) >= nextLevelExp;
         }
 
@@ -188,10 +188,9 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private async Task OnLevelUpAsync(Character character)
         {
+            if (character == null) throw new ArgumentNullException("character");
             var user = _client.GetUser(character.DiscordId);
-
             _skillsService.GiveSkillPoints(character);
-
             await user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
         }
 

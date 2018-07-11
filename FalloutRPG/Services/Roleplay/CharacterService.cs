@@ -32,7 +32,6 @@ namespace FalloutRPG.Services.Roleplay
         public async Task<Character> GetCharacterAsync(ulong discordId)
         {
             var character = await _charRepository.Query.Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
-
             if (character == null) return null;
 
             character.Special = await _specialRepository.Query.Where(x => x.CharacterId == character.Id).FirstOrDefaultAsync();
@@ -67,6 +66,7 @@ namespace FalloutRPG.Services.Roleplay
                 Story = "",
                 Experience = 0,
                 SkillPoints = 0,
+                SpecialPoints = 0,
                 Money = 1000,
                 Special = new Special()
                 {
@@ -97,16 +97,7 @@ namespace FalloutRPG.Services.Roleplay
             };
 
             await _charRepository.AddAsync(character);
-
             return character;
-        }
-
-        public async Task DeleteCharacterAsync(Character character)
-        {
-            if (character == null)
-                throw new ArgumentNullException("character");
-
-            await _charRepository.DeleteAsync(character);
         }
 
         /// <summary>
@@ -119,14 +110,29 @@ namespace FalloutRPG.Services.Roleplay
         }
 
         /// <summary>
+        /// Deletes a character.
+        /// </summary>
+        public async Task DeleteCharacterAsync(Character character)
+        {
+            if (character == null) throw new ArgumentNullException("character");
+            await _charRepository.DeleteAsync(character);
+        }
+
+        /// <summary>
         /// Saves a character.
         /// </summary>
         public async Task SaveCharacterAsync(Character character)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
-
+            if (character == null) throw new ArgumentNullException("character");
             await _charRepository.SaveAsync(character);
+        }
+
+        public async Task ResetCharacterAsync(Character character)
+        {
+            await _skillRepository.DeleteAsync(character.Skills);
+            await _specialRepository.DeleteAsync(character.Special);
+            character.IsReset = true;
+            await SaveCharacterAsync(character);
         }
     }
 }

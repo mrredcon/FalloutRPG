@@ -142,6 +142,43 @@ namespace FalloutRPG.Modules.Roleplay
                     await ReplyAsync($"{Messages.FAILURE_EMOJI} {e.Message} ({userInfo.Mention})");
                 }
             }
+
+            [Command("claim")]
+            public async Task ClaimSkillPointsAsync()
+            {
+                var userInfo = Context.User;
+                var character = await _charService.GetCharacterAsync(userInfo.Id);
+
+                if (character == null)
+                {
+                    await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                if (!character.IsReset)
+                {
+                    await ReplyAsync("You do not have any skill points to claim.");
+                    return;
+                }
+
+                if (!_skillsService.AreSkillsSet(character))
+                {
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                int pointsPerLevel = _skillsService.CalculateSkillPoints(character.Special.Intelligence);
+                int totalPoints = pointsPerLevel * (character.Level - 1);
+
+                if (totalPoints < 1)
+                {
+                    // none
+                    return;
+                }
+
+                character.SkillPoints += totalPoints;
+                await ReplyAsync($"{totalPoints} skill points claimed.");
+            }
         }
     }
 }
