@@ -67,6 +67,7 @@ namespace FalloutRPG.Services.Roleplay
                 Story = "",
                 Experience = 0,
                 SkillPoints = 0,
+                Money = 1000,
                 Special = new Special()
                 {
                     Strength = 0,
@@ -98,6 +99,14 @@ namespace FalloutRPG.Services.Roleplay
             await _charRepository.AddAsync(character);
 
             return character;
+        }
+
+        public async Task DeleteCharacterAsync(Character character)
+        {
+            if (character == null)
+                throw new ArgumentNullException("character");
+
+            await _charRepository.DeleteAsync(character);
         }
 
         /// <summary>

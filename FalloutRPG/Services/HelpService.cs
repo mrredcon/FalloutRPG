@@ -110,6 +110,6 @@ namespace FalloutRPG.Services
 
             await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }
-        #region
+        #endregion
     }
 }
