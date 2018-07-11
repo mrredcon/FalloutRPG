@@ -1,10 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 using FalloutRPG.Constants;
+using FalloutRPG.Helpers;
 using FalloutRPG.Services.Roleplay;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules
@@ -26,12 +24,6 @@ namespace FalloutRPG.Modules
             _charService = charService;
             _skillsService = skillsService;
             _specialService = specialService;
-        }
-
-        [Command]
-        public async Task ShowAdminHelpAsync()
-        {
-
         }
 
         [Command("givemoney")]
@@ -74,6 +66,25 @@ namespace FalloutRPG.Modules
 
             await _charService.SaveCharacterAsync(character);
             await ReplyAsync(string.Format(Messages.ADM_GAVE_SPEC_POINTS, Context.User.Mention));
+        }
+
+        [Command("changename")]
+        public async Task ChangeCharacterNameAsync(IUser user, string firstName, string lastName)
+        {
+            var character = await _charService.GetCharacterAsync(user.Id);
+            if (character == null) return;
+
+            if (!StringHelper.IsOnlyLetters(firstName) || !StringHelper.IsOnlyLetters(lastName))
+                return;
+
+            if (firstName.Length > 24 || lastName.Length > 24 || firstName.Length < 2 || lastName.Length < 2)
+                return;
+
+            character.FirstName = StringHelper.ToTitleCase(firstName);
+            character.LastName = StringHelper.ToTitleCase(lastName);
+
+            await _charService.SaveCharacterAsync(character);
+            await ReplyAsync(string.Format(Messages.ADM_CHANGED_NAME, Context.User.Mention));
         }
         
         [Command("reset")]

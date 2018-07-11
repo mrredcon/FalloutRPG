@@ -26,6 +26,7 @@
         public const string ADM_GAVE_SPEC_POINTS = ADM_EMOJI + "SPECIAL points given successfully. ({0})";
         public const string ADM_RESET = ADM_EMOJI + "Reset character skills and SPECIAL successfully. ({0})";
         public const string ADM_DELETE = ADM_EMOJI + "Deleted character successfully. ({0})";
+        public const string ADM_CHANGED_NAME = ADM_EMOJI + "Character name changed successfully. ({0})";
 
         // Character Error Messages
         public const string ERR_CHAR_NOT_FOUND = FAILURE_EMOJI + "Unable to find character. ({0})";

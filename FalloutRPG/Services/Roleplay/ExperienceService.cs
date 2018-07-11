@@ -19,9 +19,9 @@ namespace FalloutRPG.Services.Roleplay
         private Random random;
 
         private const int DEFAULT_EXP_GAIN = 100;
-        private const int DEFAULT_EXP_RANGE_FROM = 50;
-        private const int DEFAULT_EXP_RANGE_TO = 150;
-        private const int COOLDOWN_INTERVAL = 30000;
+        private const int DEFAULT_EXP_RANGE_FROM = 10;
+        private const int DEFAULT_EXP_RANGE_TO = 50;
+        private const int COOLDOWN_INTERVAL = 60000;
 
         private readonly CharacterService _charService;
         private readonly SkillsService _skillsService;
