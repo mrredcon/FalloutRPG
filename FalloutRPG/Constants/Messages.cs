@@ -3,9 +3,9 @@
     public class Messages
     {
         public const string FAILURE_EMOJI = "\u274C ";
-        public const string SUCCESS_EMOJI = "\uD83D\uDC4D ";
+        public const string SUCCESS_EMOJI = "✅ ";
         public const string STAR_EMOJI = "\u2B50 ";
-        public const string WRENCH_EMOJI = "🔧 ";
+        public const string ADM_EMOJI = "👮 ";
 
         // Character Messages
         public const string CHAR_CREATED_SUCCESS = SUCCESS_EMOJI + "Character created successfully. ({0})";
@@ -21,11 +21,11 @@
         public const string SKILLS_POINTS_CLAIMED = SUCCESS_EMOJI + "{0} skill points were successfully claimed! ({0})";
 
         // Admin Messages
-        public const string ADM_GAVE_MONEY = WRENCH_EMOJI + "Money given successfully. ({0})";
-        public const string ADM_GAVE_SKILL_POINTS = WRENCH_EMOJI + "Skill points given successfully. ({0})";
-        public const string ADM_GAVE_SPEC_POINTS = WRENCH_EMOJI + "SPECIAL points given successfully. ({0})";
-        public const string ADM_RESET = WRENCH_EMOJI + "Reset character skills and SPECIAL successfully. ({0})";
-        public const string ADM_DELETE = WRENCH_EMOJI + "Deleted character successfully. ({0})";
+        public const string ADM_GAVE_MONEY = ADM_EMOJI + "Money given successfully. ({0})";
+        public const string ADM_GAVE_SKILL_POINTS = ADM_EMOJI + "Skill points given successfully. ({0})";
+        public const string ADM_GAVE_SPEC_POINTS = ADM_EMOJI + "SPECIAL points given successfully. ({0})";
+        public const string ADM_RESET = ADM_EMOJI + "Reset character skills and SPECIAL successfully. ({0})";
+        public const string ADM_DELETE = ADM_EMOJI + "Deleted character successfully. ({0})";
 
         // Character Error Messages
         public const string ERR_CHAR_NOT_FOUND = FAILURE_EMOJI + "Unable to find character. ({0})";
