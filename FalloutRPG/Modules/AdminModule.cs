@@ -39,8 +39,6 @@ namespace FalloutRPG.Modules
         [Command("givemoney")]
         public async Task GiveMoneyAsync(IUser user, int money)
         {
-            if (money < 1) return;
-
             var character = await _charService.GetCharacterAsync(user.Id);
             if (character == null) return;
 
@@ -53,8 +51,6 @@ namespace FalloutRPG.Modules
         [Command("giveskillpoints")]
         public async Task GiveSkillPointsAsync(IUser user, int points)
         {
-            if (points < 1) return;
-
             var character = await _charService.GetCharacterAsync(user.Id);
             if (character == null) return;
 

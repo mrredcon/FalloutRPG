@@ -1,9 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Helpers;
 using FalloutRPG.Services.Roleplay;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,13 +66,11 @@ namespace FalloutRPG.Modules.Roleplay
             for (var i = 0; i < charList.Count; i++)
             {
                 var level = _expService.CalculateLevelForExperience(charList[i].Experience);
-                var user = Context.Guild.GetUser(charList[i].DiscordId);
 
                 strBuilder.Append(
                     $"**{i + 1}:** {charList[i].FirstName} {charList[i].LastName}" +
                     $" | Level: {level}" +
-                    $" | Experience: {charList[i].Experience}" +
-                    $" | User: {user.Username}\n");
+                    $" | Experience: {charList[i].Experience}");
             }
 
             var embed = EmbedHelper.BuildBasicEmbed("Command: $highscores", strBuilder.ToString());

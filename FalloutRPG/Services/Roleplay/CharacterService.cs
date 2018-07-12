@@ -104,8 +104,7 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         public async Task<List<Character>> GetHighScoresAsync()
         {
-            var characters = await _charRepository.FetchAllAsync();
-            return characters.OrderByDescending(x => x.Experience).Take(10).ToList();
+            return await _charRepository.Query.Take(10).ToListAsync();
         }
 
         /// <summary>
