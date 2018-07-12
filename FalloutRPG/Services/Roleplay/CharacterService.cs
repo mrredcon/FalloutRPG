@@ -66,7 +66,6 @@ namespace FalloutRPG.Services.Roleplay
                 Story = "",
                 Experience = 0,
                 SkillPoints = 0,
-                SpecialPoints = 0,
                 Money = 1000,
                 Special = new Special()
                 {
@@ -127,6 +126,10 @@ namespace FalloutRPG.Services.Roleplay
             await _charRepository.SaveAsync(character);
         }
 
+        /// <summary>
+        /// Removes a character's skills and SPECIAL and marks them
+        /// as reset so they can claim skill points back.
+        /// </summary>
         public async Task ResetCharacterAsync(Character character)
         {
             await _skillRepository.DeleteAsync(character.Skills);

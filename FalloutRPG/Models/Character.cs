@@ -24,8 +24,6 @@ namespace FalloutRPG.Models
         }
 
         public float SkillPoints { get; set; }
-        public int SpecialPoints { get; set; }
-
         public bool IsReset { get; set; }
 
         public Special Special { get; set; }

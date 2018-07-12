@@ -90,7 +90,7 @@ namespace FalloutRPG.Services
             foreach (var skill in Globals.SKILL_NAMES)
                 message.Append($"{skill}\n");
 
-            var embed = EmbedHelper.BuildBasicEmbed("!help skills", message.ToString());
+            var embed = EmbedHelper.BuildBasicEmbed("Command: !help skills", message.ToString());
 
             await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }
@@ -105,8 +105,24 @@ namespace FalloutRPG.Services
             var userInfo = context.User;
             var message = new StringBuilder();
 
-            var embed = EmbedHelper.BuildBasicEmbedWithFields("!help craps", string.Empty,
+            var embed = EmbedHelper.BuildBasicEmbedWithFields("Command: !help craps", string.Empty,
                 Pages.HELP_CRAPS_PAGE1_TITLES, Pages.HELP_CRAPS_PAGE1_CONTENTS);
+
+            await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
+        }
+        #endregion
+
+        #region Admin Help
+        /// <summary>
+        /// Shows the Admin help menu.
+        /// </summary>
+        public async Task ShowAdminHelpAsync(SocketCommandContext context)
+        {
+            var userInfo = context.User;
+            var message = new StringBuilder();
+
+            var embed = EmbedHelper.BuildBasicEmbedWithFields("Command: !help admin", string.Empty,
+                Pages.HELP_ADMIN_PAGE1_TITLES, Pages.HELP_ADMIN_PAGE1_CONTENTS);
 
             await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }

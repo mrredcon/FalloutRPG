@@ -2,6 +2,7 @@
 using Discord.Commands;
 using FalloutRPG.Constants;
 using FalloutRPG.Helpers;
+using FalloutRPG.Services;
 using FalloutRPG.Services.Roleplay;
 using System.Threading.Tasks;
 
@@ -16,14 +17,23 @@ namespace FalloutRPG.Modules
         private readonly CharacterService _charService;
         private readonly SkillsService _skillsService;
         private readonly SpecialService _specialService;
+        private readonly HelpService _helpService;
 
         public AdminModule(CharacterService charService,
             SkillsService skillsService,
-            SpecialService specialService)
+            SpecialService specialService,
+            HelpService helpService)
         {
             _charService = charService;
             _skillsService = skillsService;
             _specialService = specialService;
+            _helpService = helpService;
+        }
+
+        [Command]
+        public async Task ShowAdminHelpAsync()
+        {
+            await _helpService.ShowAdminHelpAsync(Context);
         }
 
         [Command("givemoney")]
@@ -52,20 +62,6 @@ namespace FalloutRPG.Modules
 
             await _charService.SaveCharacterAsync(character);
             await ReplyAsync(string.Format(Messages.ADM_GAVE_SKILL_POINTS, Context.User.Mention));
-        }
-
-        [Command("givespecialpoints")]
-        public async Task GiveSpecialPointsAsync(IUser user, int points)
-        {
-            if (points < 1) return;
-
-            var character = await _charService.GetCharacterAsync(user.Id);
-            if (character == null) return;
-
-            character.SpecialPoints += points;
-
-            await _charService.SaveCharacterAsync(character);
-            await ReplyAsync(string.Format(Messages.ADM_GAVE_SPEC_POINTS, Context.User.Mention));
         }
 
         [Command("changename")]
@@ -98,6 +94,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command("delete")]
+        [RequireOwner]
         public async Task DeleteCharacterAsync(IUser user)
         {
             var character = await _charService.GetCharacterAsync(user.Id);

@@ -1,4 +1,5 @@
-﻿using Discord.Addons.Interactive;
+﻿using Discord;
+using Discord.Addons.Interactive;
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
@@ -89,6 +90,25 @@ namespace FalloutRPG.Modules
             public async Task ShowCrapsHelpAsync()
             {
                 await _helpService.ShowCrapsHelpAsync(Context);
+            }
+        }
+
+        [Group("admin")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        [RequireOwner]
+        public class AdminHelpModule : ModuleBase<SocketCommandContext>
+        {
+            private readonly HelpService _helpService;
+
+            public AdminHelpModule(HelpService helpService)
+            {
+                _helpService = helpService;
+            }
+
+            [Command]
+            public async Task ShowAdminHelpAsync()
+            {
+                await _helpService.ShowAdminHelpAsync(Context);
             }
         }
     }

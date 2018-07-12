@@ -66,28 +66,9 @@ namespace FalloutRPG.Services.Roleplay
             return true;
         }
 
-        public void ResetCharacterSkills(Character character)
-        {
-            if (character == null) throw new ArgumentNullException("character");
-
-            var properties = character.Skills.GetType().GetProperties();
-
-            foreach (var prop in properties)
-            {
-                if (prop.Name.Equals("CharacterId") || prop.Name.Equals("Id"))
-                    continue;
-                prop.SetValue(character.Skills, 0);
-            }
-
-            character.IsReset = true;
-        }
-
         /// <summary>
         /// Gives character their skill points from leveling up.
         /// </summary>
-        /// <remarks>
-        /// Uses the Fallout New Vegas formula. (10 + (INT / 2))
-        /// </remarks>
         public void GiveSkillPoints(Character character)
         {
             if (character == null) throw new ArgumentNullException("character");
@@ -97,6 +78,12 @@ namespace FalloutRPG.Services.Roleplay
             character.SkillPoints += points;
         }
 
+        /// <summary>
+        /// Calculate skill points given on level up.
+        /// </summary>
+        /// <remarks>
+        /// Uses the Fallout New Vegas formula. (10 + (INT / 2))
+        /// </remarks>
         public int CalculateSkillPoints(int intelligence)
         {
             return DEFAULT_SKILL_POINTS + (intelligence / 2);

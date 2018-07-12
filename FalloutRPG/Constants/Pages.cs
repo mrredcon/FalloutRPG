@@ -94,6 +94,24 @@
         };
         #endregion
 
+        #region Admin Help Pages
+        public static string[] HELP_ADMIN_PAGE1_TITLES = new string[]
+        {
+            "!admin givemoney [@user] [amount]",
+            "!admin giveskillpoints [@user] [amount]",
+            "!admin changename [@user] [firstname] [lastname]",
+            "!admin reset [@user]"
+        };
+
+        public static string[] HELP_ADMIN_PAGE1_CONTENTS = new string[]
+        {
+            "Gives a character the specified amount of caps.",
+            "Gives a character the specified amount of skill points.",
+            "Changes a character's name.",
+            "Resets a character's skill points and SPECIAL. They will then be able to use *!char skills claim* to claim their skill points back."
+        };
+        #endregion
+
         #region Tutorial
         public static string[] TUTORIAL_TITLES = new string[]
         {
