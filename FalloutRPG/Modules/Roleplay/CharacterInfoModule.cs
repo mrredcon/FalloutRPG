@@ -44,7 +44,7 @@ namespace FalloutRPG.Modules.Roleplay
                     return;
                 }
 
-                var embed = EmbedHelper.BuildBasicEmbed("Command: !character story",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: $character story",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Story:** {character.Story}");
 
@@ -103,7 +103,7 @@ namespace FalloutRPG.Modules.Roleplay
                     return;
                 }
 
-                var embed = EmbedHelper.BuildBasicEmbed("Command: !character story",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: $character description",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Description:** {character.Description}");
 

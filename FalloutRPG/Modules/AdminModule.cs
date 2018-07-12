@@ -10,8 +10,8 @@ namespace FalloutRPG.Modules
 {
     [Group("admin")]
     [Alias("adm")]
-    [RequireUserPermission(GuildPermission.Administrator)]
-    [RequireOwner]
+    [RequireUserPermission(GuildPermission.Administrator, Group = "Permission")]
+    [RequireOwner(Group = "Permission")]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
         private readonly CharacterService _charService;

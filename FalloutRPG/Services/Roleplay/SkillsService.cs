@@ -130,6 +130,8 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private bool IsValidSkillName(string skill)
         {
+            skill = skill.Trim();
+
             foreach (var name in Globals.SKILL_NAMES)
                 if (skill.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                     return true;

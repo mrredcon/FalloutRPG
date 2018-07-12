@@ -19,11 +19,11 @@ namespace FalloutRPG.Modules
             var userInfo = Context.User;
             var message = new StringBuilder();
 
-            var embed = EmbedHelper.BuildBasicEmbedWithFields("Command: !tutorial", 
+            var embed = EmbedHelper.BuildBasicEmbedWithFields("Command: $tutorial", 
                 "More functionality will be added in future iterations.", Pages.TUTORIAL_TITLES, Pages.TUTORIAL_CONTENTS);
 
             await Context.User.SendMessageAsync(userInfo.Mention, embed: embed);
-            await Context.User.SendMessageAsync("Note: Use !help if you get stuck.");
+            await Context.User.SendMessageAsync("Note: Use $help if you get stuck.");
         }
     }
 }

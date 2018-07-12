@@ -56,7 +56,7 @@ namespace FalloutRPG.Modules.Roleplay
                     return;
                 }
 
-                var embed = EmbedHelper.BuildBasicEmbed("Command: !character skills",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: $character skills",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**Barter:** {character.Skills.Barter}\n" +
                     $"**Energy Weapons:** {character.Skills.EnergyWeapons}\n" +
@@ -71,7 +71,7 @@ namespace FalloutRPG.Modules.Roleplay
                     $"**Speech:** {character.Skills.Speech}\n" +
                     $"**Survival:** {character.Skills.Survival}\n" +
                     $"**Unarmed:** {character.Skills.Unarmed}\n" +
-                    $"*You have {character.SkillPoints} left to spend! (!char skills spend)*");
+                    $"*You have {character.SkillPoints} left to spend! ($char skills spend)*");
 
                 await ReplyAsync(userInfo.Mention, embed: embed);
             }
@@ -129,6 +129,12 @@ namespace FalloutRPG.Modules.Roleplay
                 if (!_skillsService.AreSkillsSet(character))
                 {
                     await ReplyAsync(string.Format(Messages.ERR_SKILLS_NOT_FOUND, userInfo.Mention));
+                    return;
+                }
+
+                if (points < 1)
+                {
+                    await ReplyAsync(string.Format(Messages.ERR_SKILLS_POINTS_BELOW_ONE, userInfo.Mention));
                     return;
                 }
 

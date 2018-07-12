@@ -25,6 +25,23 @@ namespace FalloutRPG.Modules
             await _helpService.ShowHelpAsync(Context);
         }
 
+        [Group("general")]
+        public class GeneralHelpModule : InteractiveBase<SocketCommandContext>
+        {
+            private readonly HelpService _helpService;
+
+            public GeneralHelpModule(HelpService helpService)
+            {
+                _helpService = helpService;
+            }
+
+            [Command]
+            public async Task ShowGeneralHelpAsync()
+            {
+                await _helpService.ShowGeneralHelpAsync(Context);
+            }
+        }
+
         [Group("character")]
         public class CharacterHelpModule : InteractiveBase<SocketCommandContext>
         {

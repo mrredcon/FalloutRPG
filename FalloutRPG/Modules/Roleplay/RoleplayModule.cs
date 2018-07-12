@@ -4,8 +4,6 @@ using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Helpers;
 using FalloutRPG.Services.Roleplay;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -75,7 +73,7 @@ namespace FalloutRPG.Modules.Roleplay
                     $" | User: {user.Username}\n");
             }
 
-            var embed = EmbedHelper.BuildBasicEmbed("Command: !highscores", strBuilder.ToString());
+            var embed = EmbedHelper.BuildBasicEmbed("Command: $highscores", strBuilder.ToString());
 
             await ReplyAsync(userInfo.Mention, embed: embed);
         }
