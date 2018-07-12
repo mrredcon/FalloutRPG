@@ -6,6 +6,7 @@ using FalloutRPG.Constants;
 using FalloutRPG.Helpers;
 using FalloutRPG.Services.Roleplay;
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -63,17 +64,29 @@ namespace FalloutRPG.Modules.Roleplay
             var charList = await _charService.GetHighScoresAsync();
             var strBuilder = new StringBuilder();
 
-            for (var i = 0; i < charList.Count; i++)
+            /*for (var i = 0; i < charList.Count; i++)
             {
                 var level = _expService.CalculateLevelForExperience(charList[i].Experience);
 
                 strBuilder.Append(
                     $"**{i + 1}:** {charList[i].FirstName} {charList[i].LastName}" +
                     $" | Level: {level}" +
-                    $" | Experience: {charList[i].Experience}");
+                    $" | Experience: {charList[i].Experience}\n");
             }
 
-            var embed = EmbedHelper.BuildBasicEmbed("Command: $highscores", strBuilder.ToString());
+            var embed = EmbedHelper.BuildBasicEmbed("Command: $highscores", strBuilder.ToString());*/
+
+            var fieldTitlesList = new List<string>();
+            var fieldContentsList = new List<string>();
+
+            for (var i = 0; i < charList.Count; i++)
+            {
+                var level = _expService.CalculateLevelForExperience(charList[i].Experience);
+                fieldTitlesList.Add($"{i + 1}: {charList[i].FirstName} {charList[i].LastName}");
+                fieldContentsList.Add($"Level {level} / {charList[i].Experience} XP");
+            }
+
+            var embed = EmbedHelper.BuildBasicEmbedWithFields("Command: $hiscores", string.Empty, fieldTitlesList.ToArray(), fieldContentsList.ToArray());
 
             await ReplyAsync(userInfo.Mention, embed: embed);
         }
