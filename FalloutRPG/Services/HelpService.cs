@@ -26,8 +26,9 @@ namespace FalloutRPG.Services
             var embed = EmbedHelper.BuildBasicEmbed("Command: !help",
                 "**!help character** - Displays character help menu.\n" +
                 "**!help roll** - Displays roll help menu.\n" +
-                "**!help skills** - Displays a list of skills.\n\n" +
-                $"*Note: All commands have a {Globals.RATELIMIT_SECONDS} second cooldown.*");
+                "**!help skills** - Displays a list of skills.\n" +
+                "**!help craps** - Displays craps help page.\n\n" +
+                $"*Note: All commands have a cooldown.*");
 
             await context.Channel.SendMessageAsync(userInfo.Mention, embed: embed);
         }
