@@ -50,7 +50,7 @@ namespace FalloutRPG.Modules.Roleplay
                     return;
                 }
 
-                var embed = EmbedHelper.BuildBasicEmbed("Command: !character special",
+                var embed = EmbedHelper.BuildBasicEmbed("Command: $character special",
                     $"**Name:** {character.FirstName} {character.LastName}\n" +
                     $"**STR:** {character.Special.Strength}\n" +
                     $"**PER:** {character.Special.Perception}\n" +
@@ -58,7 +58,7 @@ namespace FalloutRPG.Modules.Roleplay
                     $"**CHA:** {character.Special.Charisma}\n" +
                     $"**INT:** {character.Special.Intelligence}\n" +
                     $"**AGI:** {character.Special.Agility}\n" +
-                    $"**LUC:** {character.Special.Luck}\n");
+                    $"**LUC:** {character.Special.Luck}");
 
                 await ReplyAsync(userInfo.Mention, embed: embed);
             }

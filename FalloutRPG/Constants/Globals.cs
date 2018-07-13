@@ -19,6 +19,17 @@
             "Unarmed"
         };
 
+        public static string[] SPECIAL_NAMES = new string[]
+        {
+            "Strength",
+            "Perception",
+            "Endurance",
+            "Charisma",
+            "Intelligence",
+            "Agility",
+            "Luck"
+        };
+
         public const int RATELIMIT_SECONDS = 2;
         public const int RATELIMIT_TIMES = 3;
     }

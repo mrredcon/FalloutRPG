@@ -9,6 +9,7 @@ namespace FalloutRPG.Services.Roleplay
     public class SpecialService
     {
         private const int DEFAULT_SPECIAL_POINTS = 40;
+        private const int MAX_SPECIAL = 10;
 
         private readonly CharacterService _charService;
 
@@ -22,8 +23,7 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         public async Task SetInitialSpecialAsync(Character character, int[] special)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
+            if (character == null) throw new ArgumentNullException("character");
 
             if (!IsSpecialInRange(special))
                 throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_IN_RANGE);
@@ -34,6 +34,19 @@ namespace FalloutRPG.Services.Roleplay
             InitializeSpecial(character, special);
 
             await _charService.SaveCharacterAsync(character);
+        }
+
+        /// <summary>
+        /// Checks if the special name is valid.
+        /// </summary>
+        private bool IsValidSpecialName(string special)
+        {
+            foreach (var name in Globals.SPECIAL_NAMES)
+                if (special.Equals(name, StringComparison.InvariantCultureIgnoreCase) ||
+                    special.Equals(name.Substring(0, 3), StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+
+            return false;
         }
 
         /// <summary>

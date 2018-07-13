@@ -24,11 +24,10 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         public async Task SetTagSkills(Character character, string tag1, string tag2, string tag3)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
+            if (character == null) throw new ArgumentNullException("character");
 
             if (!_specService.IsSpecialSet(character))
-                throw new ArgumentException(Exceptions.CHAR_SPECIAL_NOT_FOUND);
+                throw new Exception(Exceptions.CHAR_SPECIAL_NOT_FOUND);
 
             if (!IsValidSkillName(tag1) || !IsValidSkillName(tag2) || !IsValidSkillName(tag3))
                 throw new ArgumentException(Exceptions.CHAR_INVALID_TAG_NAMES);
@@ -70,17 +69,24 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Gives character their skill points from leveling up.
         /// </summary>
+        public void GiveSkillPoints(Character character)
+        {
+            if (character == null) throw new ArgumentNullException("character");
+
+            var points = CalculateSkillPoints(character.Special.Intelligence);
+
+            character.SkillPoints += points;
+        }
+
+        /// <summary>
+        /// Calculate skill points given on level up.
+        /// </summary>
         /// <remarks>
         /// Uses the Fallout New Vegas formula. (10 + (INT / 2))
         /// </remarks>
-        public void GiveSkillPoints(Character character)
+        public int CalculateSkillPoints(int intelligence)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
-
-            var points = DEFAULT_SKILL_POINTS + (character.Special.Intelligence / 2);
-
-            character.SkillPoints += points;
+            return DEFAULT_SKILL_POINTS + (intelligence / 2);
         }
 
         /// <summary>
@@ -88,8 +94,7 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         public void PutPointsInSkill(Character character, string skill, int points)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
+            if (character == null) throw new ArgumentNullException("character");
 
             if (!AreSkillsSet(character))
                 throw new Exception(Exceptions.CHAR_SKILLS_NOT_SET);
@@ -115,7 +120,7 @@ namespace FalloutRPG.Services.Roleplay
 
                     prop.SetValue(character.Skills, (propSkill + points));
                     character.SkillPoints -= points;
-                    break;
+                    return;
                 }
             }
         }
@@ -125,6 +130,8 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private bool IsValidSkillName(string skill)
         {
+            skill = skill.Trim();
+
             foreach (var name in Globals.SKILL_NAMES)
                 if (skill.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                     return true;
@@ -150,9 +157,6 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private void SetTagSkill(Character character, string tag)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
-
             var properties = character.Skills.GetType().GetProperties();
 
             foreach (var prop in properties)
@@ -169,9 +173,6 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         private void InitializeSkills(Character character)
         {
-            if (character == null)
-                throw new ArgumentNullException("character");
-
             character.Skills = new SkillSheet()
             {
                 Barter = CalculateSkill(character.Special.Charisma, character.Special.Luck),
