@@ -45,6 +45,31 @@ namespace FalloutRPG.Services.Roleplay
         }
 
         /// <summary>
+        /// Set character's tag skills without saving the character into the database.
+        /// </summary>
+        public SkillSheet GetInitialSkills(Character character, string tag1, string tag2, string tag3)
+        {
+            if (character == null) throw new ArgumentNullException("character");
+
+            if (!_specService.IsSpecialSet(character))
+                throw new Exception(Exceptions.CHAR_SPECIAL_NOT_FOUND);
+
+            if (!IsValidSkillName(tag1) || !IsValidSkillName(tag2) || !IsValidSkillName(tag3))
+                throw new ArgumentException(Exceptions.CHAR_INVALID_TAG_NAMES);
+
+            if (!AreUniqueTags(tag1, tag2, tag3))
+                throw new ArgumentException(Exceptions.CHAR_TAGS_NOT_UNIQUE);
+
+            InitializeSkills(character);
+
+            SetTagSkill(character, tag1);
+            SetTagSkill(character, tag2);
+            SetTagSkill(character, tag3);
+
+            return character.Skills;
+        }
+
+        /// <summary>
         /// Checks if character's skills are set.
         /// </summary>
         public bool AreSkillsSet(Character character)
