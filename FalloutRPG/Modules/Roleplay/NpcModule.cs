@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using FalloutRPG.Constants;
 using FalloutRPG.Services.Roleplay;
 using System;
 using System.Collections.Generic;
@@ -27,11 +28,13 @@ namespace FalloutRPG.Modules.Roleplay
             }
             catch (Exception e)
             {
-                await ReplyAsync(e.Message);
+                await ReplyAsync(Messages.FAILURE_EMOJI + e.Message);
                 return;
             }
-            var dm = await Context.User.GetOrCreateDMChannelAsync();
-            await dm.SendMessageAsync("NPC created with type: " + type + " and name: " + name);
+
+            string prettyType = _npcService.IsValidNpcType(type).ToString();
+
+            await ReplyAsync(String.Format(Messages.NPC_CREATED_SUCCESS, prettyType, name));
         }
 
         #region NPC Roll Commands
