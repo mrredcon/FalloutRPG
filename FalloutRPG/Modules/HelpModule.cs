@@ -59,6 +59,23 @@ namespace FalloutRPG.Modules
             }
         }
 
+        [Group("npc")]
+        public class NpcHelpModule : InteractiveBase<SocketCommandContext>
+        {
+            private readonly HelpService _helpService;
+
+            public NpcHelpModule(HelpService helpService)
+            {
+                _helpService = helpService;
+            }
+
+            [Command]
+            public async Task ShowNpcHelpAsync()
+            {
+                await _helpService.ShowNpcHelpAsync(Context);
+            }
+        }
+
         [Group("roll")]
         public class RollHelpModule : InteractiveBase<SocketCommandContext>
         {

@@ -31,7 +31,7 @@ namespace FalloutRPG.Modules.Roleplay
                 await ReplyAsync(Messages.FAILURE_EMOJI + e.Message);
                 return;
             }
-
+            // used to show "Raider created" vs "raIDeR created" or whatever the user put in
             string prettyType = _npcService.IsValidNpcType(type).ToString();
 
             await ReplyAsync(String.Format(Messages.NPC_CREATED_SUCCESS, prettyType, name));

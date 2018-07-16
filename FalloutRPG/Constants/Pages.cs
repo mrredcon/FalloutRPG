@@ -109,6 +109,22 @@
         };
         #endregion
 
+        #region NPC Help Pages
+        public static string[] HELP_NPC_PAGE1_TITLES = new string[]
+        {
+            "$npc create [NPC type] [First Name]",
+            "$npc roll [Skill/SPECIAL to roll] [First name]"
+        };
+
+        public static string[] HELP_NPC_PAGE1_CONTENTS = new string[]
+        {
+            "Creates a new NPC with slightly random stats influenced by the given NPC type. " +
+            "Valid types are Raider, RaiderVeteran, or Mercenary.",
+
+            "Gets a roll result based on the NPC's skills or S.P.E.C.I.A.L.."
+        };
+        #endregion
+
         #region Craps Help Pages
         public static string[] HELP_CRAPS_PAGE1_TITLES = new string[]
         {
