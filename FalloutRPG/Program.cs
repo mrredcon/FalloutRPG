@@ -19,7 +19,6 @@ namespace FalloutRPG
 {
     public class Program
     {
-        private string connectionString;
         private IConfiguration config;
 
         /// <summary>
@@ -38,7 +37,7 @@ namespace FalloutRPG
         public async Task MainAsync()
         {
             config = BuildConfig();
-            SetConnectionString();
+            CheckConnectionString();
 
             var services = BuildServiceProvider();
 
@@ -87,7 +86,7 @@ namespace FalloutRPG
 
             // Database
             .AddDbContext<RpgContext>(options =>
-                options.UseSqlServer(connectionString))
+                options.UseSqlServer(config["sqlserver-connection-string"]))
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
@@ -104,20 +103,17 @@ namespace FalloutRPG
         /// <summary>
         /// Sets the SQL Server connection string variable if it's valid.
         /// </summary>
-        private void SetConnectionString()
+        private void CheckConnectionString()
         {
             try
             {
-                connectionString = config["sqlserver-connection-string"];
+                var connectionString = config["sqlserver-connection-string"];
+                if (!string.IsNullOrEmpty(connectionString)) return;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.Message);
-            }
-
-            if (!string.IsNullOrEmpty(connectionString)) return;
-
-            Console.WriteLine("You have an invalid SQL Server connection string set in Config.json");
+                Console.WriteLine("You have an invalid SQL Server connection string set in Config.json");
+            }        
         }
     }
 }
