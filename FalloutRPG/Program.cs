@@ -8,6 +8,7 @@ using FalloutRPG.Models;
 using FalloutRPG.Services;
 using FalloutRPG.Services.Casino;
 using FalloutRPG.Services.Roleplay;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,6 +19,8 @@ namespace FalloutRPG
 {
     public class Program
     {
+        private IConfiguration config;
+
         /// <summary>
         /// The entry point of the program.
         /// </summary>
@@ -57,7 +60,7 @@ namespace FalloutRPG
                 CaseSensitiveCommands = false,
                 DefaultRunMode = RunMode.Async
             }))
-            .AddSingleton(BuildConfig())
+            .AddSingleton(config = BuildConfig())
             .AddSingleton<CommandHandler>()
             .AddSingleton<LogService>()
             .AddSingleton<StartupService>()
@@ -75,7 +78,8 @@ namespace FalloutRPG
             // Addons
             .AddSingleton<InteractiveService>()
             // Database
-            .AddDbContext<RpgContext>()
+            .AddDbContext<RpgContext>(options =>
+                options.UseSqlServer(config["sqlserver-connection-string"]))
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
