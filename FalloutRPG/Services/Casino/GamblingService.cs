@@ -3,7 +3,6 @@ using FalloutRPG.Services.Roleplay;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ namespace FalloutRPG.Services.Casino
     public class GamblingService
     {
         private List<ulong> _gamblingChannels;
-        public readonly ObservableDictionary<IUser, long> UserBalances;
+        public readonly Dictionary<IUser, long> UserBalances;
 
         private readonly IConfiguration _config;
         private readonly CharacterService _charService;
@@ -23,9 +22,7 @@ namespace FalloutRPG.Services.Casino
 
         public GamblingService(IConfiguration config, CharacterService charService)
         {
-            UserBalances = new ObservableDictionary<IUser, long>();
-
-            UserBalances.CollectionChangedAsync += UserBalances_CollectionChanged;
+            UserBalances = new Dictionary<IUser, long>();
 
             _config = config;
 
@@ -36,22 +33,18 @@ namespace FalloutRPG.Services.Casino
             LoadGamblingEnabledChannels();
         }
 
-        private async Task UserBalances_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public async Task UpdateBalances()
         {
-            if (e.Action == NotifyCollectionChangedAction.Replace)
+            foreach (var user in UserBalances)
             {
-                // should only be one item in NewItems
-                foreach (var newItem in e.NewItems)
+                var character = await _charService.GetCharacterAsync(user.Key.Id);
+
+                if (character == null)
+                    continue;
+
+                if (character.Money != user.Value)
                 {
-                    var keyValue = (KeyValuePair<IUser, long>)newItem;
-
-                    var user = keyValue.Key;
-                    var newMoney = keyValue.Value;
-
-                    var character = await _charService.GetCharacterAsync(user.Id);
-
-                    character.Money = newMoney;
-
+                    character.Money = user.Value;
                     await _charService.SaveCharacterAsync(character);
                 }
             }

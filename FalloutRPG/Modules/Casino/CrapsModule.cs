@@ -83,7 +83,7 @@ namespace FalloutRPG.Modules.Casino
         {
             if (_gamblingService.IsGamblingEnabledChannel(Context.Channel.Id))
             {
-                string rollResult = _crapsService.Roll(Context.User);
+                string rollResult = await _crapsService.Roll(Context.User);
                 await ReplyAsync(rollResult);
             }
         }

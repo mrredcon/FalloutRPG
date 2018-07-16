@@ -54,7 +54,7 @@ namespace FalloutRPG.Services.Casino
             if (HasBet(Shooter, BetType.Pass)) // shooter bet exists
             {
                 await _channel.SendMessageAsync(String.Format(Messages.CRAPS_INACTIVITY_ROLL, Shooter.Mention));
-                await _channel.SendMessageAsync(Roll(Shooter));
+                await _channel.SendMessageAsync(await Roll(Shooter));
             }
             else
             {
@@ -77,7 +77,7 @@ namespace FalloutRPG.Services.Casino
             }
         }
 
-        public string Roll(IUser user)
+        public async Task<string> Roll(IUser user)
         {
             if (_players.Count == 0)
                 return String.Format(Messages.CRAPS_EMPTY_MATCH, user.Mention);
@@ -95,7 +95,7 @@ namespace FalloutRPG.Services.Casino
             result = DiceToEmoji(dice1) + " " + DiceToEmoji(dice2) + "\n";
             _rollTimer.Stop();
             _rollTimer.Start();
-            return result + AdvanceRound(sum);
+            return result + await AdvanceRound(sum);
         }
 
         public string PlaceBet(IUser user, string betToPlace, int betAmount)
@@ -163,12 +163,12 @@ namespace FalloutRPG.Services.Casino
             }
         }
 
-        private string AdvanceRound(int roll)
+        private async Task<string> AdvanceRound(int roll)
         {
             string result = "";
 
-            result += AwardPassBets(roll);
-            result += AwardComeBets(roll);
+            result += await AwardPassBets(roll);
+            result += await AwardComeBets(roll);
             return result;
         }
 
@@ -284,7 +284,7 @@ namespace FalloutRPG.Services.Casino
             return NextShooter();
         }
 
-        private string AwardPassBets(int roll)
+        private async Task<string> AwardPassBets(int roll)
         {
             string result = "";
             bool sevenOut = false;
@@ -338,9 +338,9 @@ namespace FalloutRPG.Services.Casino
             foreach (var bet in _bets.ToList())
             {
                 if (bet.BetType == winningBet)
-                    AwardBet(bet);
+                    await AwardBet(bet);
                 else if (bet.BetType == losingBet)
-                    AwardBet(bet, false);
+                    await AwardBet(bet, false);
             }
 
             if (sevenOut)
@@ -355,7 +355,7 @@ namespace FalloutRPG.Services.Casino
             return result;
         }
 
-        private string AwardComeBets(int roll)
+        private async Task<string> AwardComeBets(int roll)
         {
             string result = "";
 
@@ -365,24 +365,24 @@ namespace FalloutRPG.Services.Casino
                 {
                     if (roll == bet.Point) // come point achieved (win bet)
                     {
-                        AwardBet(bet);
+                        await AwardBet(bet);
                         result += String.Format(Messages.CRAPS_POINT_ROLL, bet.User.Mention) + "\n";
                     }
                     else if (bet.Point != -1 && roll == 7) // seven out
                     {
-                        AwardBet(bet);
+                        await AwardBet(bet);
                         result += String.Format(Messages.CRAPS_SEVEN_OUT, bet.User.Mention, roll) + "\n";
                     }
                     else if (bet.Point == -1) // "come out" roll for new Come Bet
                     {
                         if (roll == 7 || roll == 11) // natural
                         {
-                            AwardBet(bet);
+                            await AwardBet(bet);
                             result += String.Format(Messages.CRAPS_NATURAL, bet.User.Mention) + "\n";
                         }
                         else if (roll == 2 || roll == 3 || roll == 12) // crap out
                         {
-                            AwardBet(bet, false);
+                            await AwardBet(bet, false);
                             result += String.Format(Messages.CRAPS_CRAPOUT, bet.User.Mention) + "\n";
                         }
                         else // point
@@ -396,29 +396,29 @@ namespace FalloutRPG.Services.Casino
                 {
                     if (roll == bet.Point) // point achieved
                     {
-                        AwardBet(bet, false);
+                        await AwardBet(bet, false);
                         result += String.Format(Messages.CRAPS_POINT_ROLL_NEG, bet.User.Mention, roll) + "\n";
                     }
                     else if (bet.Point != -1 && roll == 7) // seven out
                     {
-                        AwardBet(bet);
+                        await AwardBet(bet);
                         result += String.Format(Messages.CRAPS_SEVEN_OUT_POS, bet.User.Mention, roll) + "\n";
                     }
                     else if (bet.Point == -1) // come out roll
                     {
                         if (roll == 2 || roll == 3) // crap out
                         {
-                            AwardBet(bet);
+                            await AwardBet(bet);
                             result += String.Format(Messages.CRAPS_CRAPOUT_POS, bet.User.Mention, roll) + "\n";
                         }
                         else if (roll == 12) // crap out push (house always wins)
                         {
-                            AwardBet(bet, false, true);
+                            await AwardBet(bet, false, true);
                             result += String.Format(Messages.CRAPS_CRAPOUT_PUSH, bet.User.Mention, roll) + "\n";
                         }
                         else if (roll == 7 || roll == 11) // natural
                         {
-                            AwardBet(bet, false);
+                            await AwardBet(bet, false);
                             result += String.Format(Messages.CRAPS_NATURAL_NEG, bet.User.Mention, roll) + "\n";
                         }
                         else
@@ -433,7 +433,7 @@ namespace FalloutRPG.Services.Casino
             return result;
         }
 
-        private void AwardBet(Bet bet, bool win = true, bool push = false)
+        private async Task AwardBet(Bet bet, bool win = true, bool push = false)
         {
             var balances = _gamblingService.UserBalances;
             if (win)
@@ -446,6 +446,7 @@ namespace FalloutRPG.Services.Casino
                 balances[bet.User] -= bet.BetAmount;
                 _bets.Remove(bet);
             }
+            await _gamblingService.UpdateBalances();
         }
 
         private string DiceToEmoji(int num)
