@@ -19,6 +19,7 @@ namespace FalloutRPG
 {
     public class Program
     {
+        private string connectionString;
         private IConfiguration config;
 
         /// <summary>
@@ -36,6 +37,9 @@ namespace FalloutRPG
         /// </remarks>
         public async Task MainAsync()
         {
+            config = BuildConfig();
+            SetConnectionString();
+
             var services = BuildServiceProvider();
 
             services.GetRequiredService<LogService>();
@@ -60,11 +64,12 @@ namespace FalloutRPG
                 CaseSensitiveCommands = false,
                 DefaultRunMode = RunMode.Async
             }))
-            .AddSingleton(config = BuildConfig())
+            .AddSingleton(config)
             .AddSingleton<CommandHandler>()
             .AddSingleton<LogService>()
             .AddSingleton<StartupService>()
             .AddSingleton<HelpService>()
+
             // Roleplay
             .AddSingleton<RollService>()
             .AddSingleton<SkillsService>()
@@ -72,14 +77,17 @@ namespace FalloutRPG
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
+
             // Casino
             .AddSingleton<GamblingService>()
             .AddSingleton<CrapsService>()
+
             // Addons
             .AddSingleton<InteractiveService>()
+
             // Database
             .AddDbContext<RpgContext>(options =>
-                options.UseSqlServer(config["sqlserver-connection-string"]))
+                options.UseSqlServer(connectionString))
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
@@ -92,5 +100,24 @@ namespace FalloutRPG
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("Config.json")
             .Build();
+
+        /// <summary>
+        /// Sets the SQL Server connection string variable if it's valid.
+        /// </summary>
+        private void SetConnectionString()
+        {
+            try
+            {
+                connectionString = config["sqlserver-connection-string"];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            if (!string.IsNullOrEmpty(connectionString)) return;
+
+            Console.WriteLine("You have an invalid SQL Server connection string set in Config.json");
+        }
     }
 }
