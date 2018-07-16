@@ -1,6 +1,6 @@
 ﻿{
   "prefix": "!",
-  "sqlserver-connection-string": "";
+  "sqlserver-connection-string": "",
   "tokens": {
     "discord": ""
   },
