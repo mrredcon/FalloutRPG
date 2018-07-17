@@ -136,6 +136,15 @@ namespace FalloutRPG.Services.Roleplay
             character.IsReset = true;
             await SaveCharacterAsync(character);
         }
+        
+        /// <summary>
+        /// Get the total number of characters in the database.
+        /// </summary>
+        public async Task<int> GetTotalCharactersAsync()
+        {
+            var characters = await _charRepository.FetchAllAsync();
+            return characters.Count;
+        }
     }
 }
 

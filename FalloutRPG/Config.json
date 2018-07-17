@@ -1,5 +1,6 @@
 ﻿{
   "prefix": "!",
+  "sqlserver-connection-string": "",
   "tokens": {
     "discord": ""
   },
@@ -9,6 +10,8 @@
     "maximum-bet": 1000
   },
   "roleplay": {
-    "exp-channels": [ "" ]
+    "exp-channels": [ "" ],
+    "luck-influenced-rolls": true,
+    "luck-influence-percentage": 5
   }
 }

@@ -8,6 +8,7 @@ using FalloutRPG.Models;
 using FalloutRPG.Services;
 using FalloutRPG.Services.Casino;
 using FalloutRPG.Services.Roleplay;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,6 +19,8 @@ namespace FalloutRPG
 {
     public class Program
     {
+        private IConfiguration config;
+
         /// <summary>
         /// The entry point of the program.
         /// </summary>
@@ -33,6 +36,9 @@ namespace FalloutRPG
         /// </remarks>
         public async Task MainAsync()
         {
+            config = BuildConfig();
+            CheckConnectionString();
+
             var services = BuildServiceProvider();
 
             services.GetRequiredService<LogService>();
@@ -57,11 +63,12 @@ namespace FalloutRPG
                 CaseSensitiveCommands = false,
                 DefaultRunMode = RunMode.Async
             }))
-            .AddSingleton(BuildConfig())
+            .AddSingleton(config)
             .AddSingleton<CommandHandler>()
             .AddSingleton<LogService>()
             .AddSingleton<StartupService>()
             .AddSingleton<HelpService>()
+
             // Roleplay
             .AddSingleton<RollService>()
             .AddSingleton<SkillsService>()
@@ -69,14 +76,17 @@ namespace FalloutRPG
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
-            .AddSingleton<NpcService>()
+
             // Casino
             .AddSingleton<GamblingService>()
             .AddSingleton<CrapsService>()
+
             // Addons
             .AddSingleton<InteractiveService>()
+
             // Database
-            .AddDbContext<RpgContext>()
+            .AddDbContext<RpgContext>(options =>
+                options.UseSqlServer(config["sqlserver-connection-string"]))
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
@@ -89,5 +99,17 @@ namespace FalloutRPG
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("Config.json")
             .Build();
+
+        /// <summary>
+        /// Sets the SQL Server connection string variable if it's valid.
+        /// </summary>
+        private bool CheckConnectionString()
+        {
+            var connectionString = config["sqlserver-connection-string"];
+            if (!string.IsNullOrEmpty(connectionString)) return true;
+
+            Console.WriteLine("You have an invalid SQL Server connection string set in Config.json");
+            return false;
+        }
     }
 }
