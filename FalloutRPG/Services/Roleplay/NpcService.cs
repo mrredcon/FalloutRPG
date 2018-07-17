@@ -2,6 +2,7 @@
 using FalloutRPG.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace FalloutRPG.Services.Roleplay
@@ -23,7 +24,11 @@ namespace FalloutRPG.Services.Roleplay
 
         public void CreateNpc(string npcType, string firstName)
         {
+            if (Npcs.Find(x => x.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase)) != null)
+                throw new Exception(Exceptions.NPC_CHARACTER_EXISTS);
+
             var typeEnum = IsValidNpcType(npcType);
+
             Character character = new Character
             {
                 FirstName = firstName,
@@ -45,7 +50,7 @@ namespace FalloutRPG.Services.Roleplay
             }
             else if (character.Skills == null)
             {
-                return "NPC didn't have skills for some reason bruh";
+                throw new Exception(Exceptions.NPC_NULL_SKILLS);
             }
 
             return _rollService.GetSkillRollResult(skill, character) + " (\uD83D\uDCBBNPC)";
@@ -61,93 +66,10 @@ namespace FalloutRPG.Services.Roleplay
             }
             else if (character.Skills == null)
             {
-                return "NPC didn't have skills for some reason bruh";
+                throw new Exception(Exceptions.NPC_NULL_SPECIAL);
             }
 
             return _rollService.GetSpecialRollResult(special, character) + " (\uD83D\uDCBBNPC)";
-        }
-
-        public Special GenerateNpcSpecial(NpcType npcType)
-        {
-            Random rand = new Random(); // Random upper bound is exclusive!
-
-            switch (npcType)
-            {
-                case NpcType.Raider:
-                    return new Special
-                    {
-                        // lowest special total = 29, highest special total = 44
-
-                        Strength = 5 + rand.Next(0,3), // 5-7
-                        Perception = 4 + rand.Next(0,3), // 4-6
-                        Endurance = 5 + rand.Next(0,3), // 5-7
-                        Charisma = 3 + rand.Next(0,3), // 3-5
-                        Intelligence = 3 + rand.Next(0,4), // 3-6
-                        Agility = 5 + rand.Next(0,3), // 5-7
-                        Luck = 4 + rand.Next(0,3) // 4-6
-                    };
-                case NpcType.RaiderVeteran:
-                    return new Special
-                    {
-                        // lowest SPECIAL total = 36, highest SPECIAL total = 47
-
-                        Strength = 6 + rand.Next(0,3), // 6-8
-                        Perception = 4 + rand.Next(0,3), // 4-6
-                        Endurance = 6 + rand.Next(0,2), // 6-7
-                        Charisma = 4 + rand.Next(0,2), // 4-5
-                        Intelligence = 5 + rand.Next(0,3), // 5-7
-                        Agility = 7 + rand.Next(0,2), // 7-8
-                        Luck = 4 + rand.Next(0,3) // 4-6
-                    };
-                //case NpcType.RaiderSurvivalist:
-                //    return new Special
-                //    {
-                //        Strength = rand.Next(6, 8),
-                //        Perception = rand.Next(5, 7),
-                //        Endurance = rand.Next(8, 11),
-                //        Charisma = rand.Next(3, 6),
-                //        Intelligence = rand.Next(6, 9),
-                //        Agility = rand.Next(6, 8),
-                //        Luck = rand.Next(6, 9)
-                //    };
-                case NpcType.Mercenary:
-                    return new Special
-                    {
-                        // lowest SPECIAL total = 40, highest SPECIAL = 51
-
-                        Strength = 5 + rand.Next(0,3), // 5-7
-                        Perception = 6 + rand.Next(0,2), // 6-7
-                        Endurance = 6 + rand.Next(0,3), // 6-8
-                        Charisma = 6 + rand.Next(0,2), // 6-7
-                        Intelligence = 6 + rand.Next(0,3), // 6-8
-                        Agility = 7 + rand.Next(0,2), // 7-8
-                        Luck = 4 + rand.Next(0,3) // 4-6
-                    };
-                default:
-                    throw new ArgumentException("Given NpcType was invalid.", "npcType");
-            }
-        }
-        public SkillSheet GenerateNpcSkills(NpcType npcType, Character character)
-        {
-            switch (npcType)
-            {
-                case NpcType.Raider:
-                case NpcType.RaiderVeteran:
-                    return _skillsService.GetInitialSkills(character, "explosives", "guns", "meleeweapons");
-                case NpcType.Mercenary:
-                    return _skillsService.GetInitialSkills(character, "guns", "speech", "energyweapons");
-                default:
-                    throw new ArgumentException(Exceptions.NPC_INVALID_TYPE);
-            }
-        }
-
-        public enum NpcType
-        {
-            Error,
-            Raider,
-            RaiderVeteran,
-            RaiderSurvivalist,
-            Mercenary,
         }
 
         public NpcType IsValidNpcType(string typeString)
@@ -159,5 +81,168 @@ namespace FalloutRPG.Services.Roleplay
 
             throw new Exception(Exceptions.NPC_INVALID_TYPE);
         }
+
+        public enum NpcType
+        {
+            Error,
+            Raider,
+            RaiderVeteran,
+            Mercenary,
+            Merchant,
+            Protectron,
+            Assaultron,
+            Eyebot,
+            MisterHandy,
+            MisterGutsy,
+            Robobrain,
+            SentryBot,
+            Securitron,
+            SuperMutant,
+            FeralGhoul,
+        }
+
+        public Special GenerateNpcSpecial(NpcType npcType)
+        {
+            switch (npcType)
+            {
+                case NpcType.Raider:
+                    return SpecialPresets.Raider;
+                case NpcType.RaiderVeteran:
+                    return SpecialPresets.RaiderVeteran;
+                case NpcType.Mercenary:
+                    return SpecialPresets.Mercenary;
+                case NpcType.Merchant:
+                    return SpecialPresets.Merchant;
+                case NpcType.SuperMutant:
+                case NpcType.FeralGhoul:
+                case NpcType.Protectron:
+                case NpcType.Assaultron:
+                case NpcType.Eyebot:
+                case NpcType.MisterHandy:
+                case NpcType.MisterGutsy:
+                case NpcType.Robobrain:
+                case NpcType.SentryBot:
+                case NpcType.Securitron:
+                default:
+                    throw new ArgumentException("Given NpcType was invalid.", "npcType");
+            }
+        }
+
+        public SkillSheet GenerateNpcSkills(NpcType npcType, Character character)
+        {
+            string[] tags = new string[3];
+
+            SkillSheet skills = null;
+            bool tagsAlreadySet = false;
+
+            switch (npcType)
+            {
+                case NpcType.Raider:
+                    {
+                        tags = GetRandomTags(TagType.Violent, TagType.Violent, TagType.Violent);
+                        break;
+                    }
+                case NpcType.RaiderVeteran:
+                    {
+                        tags = GetRandomTags(TagType.Violent, TagType.Violent, TagType.Handy);
+                        break;
+                    }
+                case NpcType.Mercenary:
+                    {
+                        tags = GetRandomTags(TagType.Violent, TagType.Handy, TagType.Diplomatic);
+
+                        skills = _skillsService.GetInitialSkills(character, tags[0], tags[1], tags[2]);
+                        tagsAlreadySet = true;
+                        skills.Barter += 15;
+                        break;
+                    }
+                case NpcType.Merchant:
+                case NpcType.Protectron:
+                case NpcType.Assaultron:
+                case NpcType.Eyebot:
+                case NpcType.MisterHandy:
+                case NpcType.MisterGutsy:
+                case NpcType.Robobrain:
+                case NpcType.SentryBot:
+                case NpcType.Securitron:
+                case NpcType.SuperMutant:
+                case NpcType.FeralGhoul:
+                default:
+                    throw new ArgumentException(Exceptions.NPC_INVALID_TYPE);
+            }
+
+            if (!tagsAlreadySet)
+                skills = _skillsService.GetInitialSkills(character, tags[0], tags[1], tags[2]);
+
+            return skills;
+        }
+
+        private string[] GetRandomTags(TagType skill1, TagType skill2, TagType skill3)
+        {
+            string[] tags = new string[3];
+
+            tags[0] = GetRandomTag(skill1);
+            tags[1] = GetRandomTag(skill2);
+            tags[2] = GetRandomTag(skill3);
+
+            while (tags[0].Equals(tags[1]))
+                tags[1] = GetRandomTag(skill2);
+
+            // tags[0] and tags[1] are definitely different by this point...
+            // ...but tag[2] could equal tag[1] or tag[0]
+            while (tags[2].Equals(tags[0]) || tags[2].Equals(tags[1]))
+                tags[2] = GetRandomTag(skill3);
+
+            return tags;
+        }
+
+        private string GetRandomTag(TagType tagType)
+        {
+            Random rand = new Random();
+
+            switch (tagType)
+            {
+                case TagType.Violent:
+                    return ViolentSkills[rand.Next(0, ViolentSkills.Length)];
+                case TagType.Handy:
+                    return HandySkills[rand.Next(0, HandySkills.Length)];
+                case TagType.Diplomatic:
+                    return DiplomaticSkills[rand.Next(0, DiplomaticSkills.Length)];
+                default:
+                    return null;
+            }
+        }
+
+        enum TagType
+        {
+            Violent,
+            Handy,
+            Diplomatic
+        }
+
+        private static readonly string[] ViolentSkills =
+        {
+            Globals.SKILL_NAMES[1], // Energy Weapons
+            Globals.SKILL_NAMES[2], // Explosives
+            Globals.SKILL_NAMES[3], // Guns
+            Globals.SKILL_NAMES[6], // Melee Weapons
+            Globals.SKILL_NAMES[12], // Unarmed
+        };
+
+        private static readonly string[] HandySkills =
+        {
+            Globals.SKILL_NAMES[4], // Lockpick
+            Globals.SKILL_NAMES[5], // Medicine
+            Globals.SKILL_NAMES[7], // Repair
+            Globals.SKILL_NAMES[11], // Survival
+        };
+
+        private static readonly string[] DiplomaticSkills =
+        {
+            Globals.SKILL_NAMES[0], // Barter
+            Globals.SKILL_NAMES[8], // Science
+            Globals.SKILL_NAMES[10], // Speech
+            Globals.SKILL_NAMES[9], // Sneak
+        };
     }
 }

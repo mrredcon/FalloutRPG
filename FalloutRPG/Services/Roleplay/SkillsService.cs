@@ -45,7 +45,7 @@ namespace FalloutRPG.Services.Roleplay
         }
 
         /// <summary>
-        /// Set character's tag skills without saving the character into the database.
+        /// Get a new character's tag skills without saving the character into the database.
         /// </summary>
         public SkillSheet GetInitialSkills(Character character, string tag1, string tag2, string tag3)
         {
