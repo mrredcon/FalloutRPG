@@ -1,6 +1,7 @@
 ﻿using Discord;
 using FalloutRPG.Constants;
 using FalloutRPG.Models;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,16 +13,51 @@ namespace FalloutRPG.Services.Roleplay
         private readonly CharacterService _charService;
         private readonly SpecialService _specService;
         private readonly SkillsService _skillsService;
+        private readonly IConfiguration _config;
 
         private readonly Random _rand;
 
-        public RollService(CharacterService charService, SpecialService specService, SkillsService skillsService)
+        private int LUCK_INFLUENCE;
+        private bool LUCK_INFLUENCE_ENABLED;
+
+        public RollService(CharacterService charService, SpecialService specService, SkillsService skillsService, IConfiguration config)
         {
             _charService = charService;
             _specService = specService;
             _skillsService = skillsService;
+            _config = config;
+
+            LoadLuckInfluenceConfig();
 
             _rand = new Random();
+        }
+
+        /// <summary>
+        /// Loads the luck influence configuration from the
+        /// configuration file.
+        /// </summary>
+        private void LoadLuckInfluenceConfig()
+        {
+            try
+            {
+                LUCK_INFLUENCE_ENABLED = bool.Parse(_config["roleplay:luck-influenced-rolls"]);
+
+                if (LUCK_INFLUENCE_ENABLED)
+                {
+                    LUCK_INFLUENCE = int.Parse(_config["roleplay:luck-influence-percentage"]);
+                    if (LUCK_INFLUENCE <= 0 || LUCK_INFLUENCE > int.MaxValue)
+                    {
+                        Console.WriteLine("Luck influence settings improperly configured, check Config.json");
+                        LUCK_INFLUENCE = 0;
+                    }
+                }
+                else
+                    LUCK_INFLUENCE = 0;
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Luck influence settings improperly configured, check Config.json");
+            }
         }
 
         public async Task<string> GetSpRollAsync(IUser user, string specialToRoll)
@@ -68,72 +104,92 @@ namespace FalloutRPG.Services.Roleplay
             var charSkills = character.Skills;
             var special = character.Special;
 
+            // if any Skills are 0, then none of them should be set.
             if (charSkills.Barter == 0) return null;
 
-            var skillProp = typeof(SkillSheet).GetProperty(skill);
-            int skillValue = (int)skillProp.GetValue(charSkills);
+            // match given skill string to property in character
+            int skillValue = (int)typeof(SkillSheet).GetProperty(skill).GetValue(charSkills);
 
-            // RNG influenced by character luck except when its 5
-            int rngResult = (int)Math.Round((_rand.Next(1, 101) * (1.0 - (special.Luck / 10.0 - .5))));
+            int rng = _rand.Next(1, 101);
+
+            // affects odds by the percentage of LUCK_INFLUENCE for each point of luck above or below 5.
+            // i.e. if you have 6 luck, and LUCK_INFLUENCE == 5, then now your odds are multiplied by 0.95,
+            // which is a good thing.
+            int luckDifference = special.Luck - 5;
+            double luckMultiplier = 1.0 - (luckDifference * (LUCK_INFLUENCE / 100.0));
+
+            double finalResult;
+
+            if (LUCK_INFLUENCE_ENABLED)
+                finalResult = rng * luckMultiplier;
+            else
+                finalResult = rng;
 
             // compares your roll with your skills, and how much better you did than the bare minimum
-            double resultPercent = (double)(skillValue - rngResult) / skillValue;
-            resultPercent = Math.Round(resultPercent, 2) * 100;
+            double resultPercent = (skillValue - finalResult) / skillValue;
+            // make it pretty for chat
+            resultPercent = Math.Round(resultPercent * 100.0, 2);
 
-            Console.WriteLine("RNG: " + rngResult + " SKILL: " + skillValue + " SP: " + resultPercent);
-
-            if (rngResult <= resultPercent || rngResult <= skillValue)
-                return GetRollMessage(character.Name, skill, true, (int)resultPercent);
+            if (finalResult <= resultPercent || finalResult <= skillValue)
+                return GetRollMessage(character.FirstName, skill, true, resultPercent);
             else
-                return GetRollMessage(character.Name, skill, false, (int)resultPercent * -1);
+                return GetRollMessage(character.FirstName, skill, false, resultPercent * -1.0);
         }
 
         public string GetSpecialRollResult(String rollSpecial, Character character)
         {
-            //var skills = CharacterUtilityService.GetCharacterSkills(user);
             var charSpecial = character.Special;
+
+            // if any SPECIAL stats are 0, then none of them should be set
             if (charSpecial.Strength == 0) return null;
 
+            // match given skill string to property in character
+            int specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
+
             // RNG influenced by character luck except when its 5
-            int rngResult = (int)Math.Round((_rand.Next(1, 11) * (1.0 - (charSpecial.Luck / 10.0 - .5)))),
-                specialValue = (int)typeof(Special).GetProperty(rollSpecial).GetValue(charSpecial);
+            int rng = _rand.Next(1, 11);
 
-            int difference = specialValue - rngResult;
-            // compares your roll with your skills, and how much better you did than the bare minimum
-            double successPercent = (double)difference / specialValue;
-            successPercent = Math.Round(successPercent, 2) * 100;
+            // affects odds by the percentage of LUCK_INFLUENCE for each point of luck above or below 5.
+            // i.e. if you have 6 luck, and LUCK_INFLUENCE == 5, then now your odds are multiplied by 0.95,
+            // which is a good thing.
+            int luckDifference = charSpecial.Luck - 5;
+            double luckMultiplier = 1.0 - (luckDifference * (LUCK_INFLUENCE / 100.0));
 
-            Console.WriteLine("RNG: " + rngResult + " SPECIAL: " + specialValue + " SP: " + successPercent);
+            double finalResult;
 
-            // TODO: maybe tell user what they rolled? (needed specialValue, rolled rngResult)
-            if (rngResult <= successPercent || rngResult <= specialValue)
-                return GetRollMessage(character.Name, rollSpecial, true, (int)successPercent);
+            if (LUCK_INFLUENCE_ENABLED)
+                finalResult = rng * luckMultiplier;
             else
-                return GetRollMessage(character.Name, rollSpecial, false, (int)successPercent * -1);
+                finalResult = rng;
+
+            // compares your roll with your skills, and how much better you did than the bare minimum
+            double resultPercent = (specialValue - finalResult) / specialValue;
+            // make the decimal number pretty for chat
+            resultPercent = Math.Round(resultPercent * 100.0, 2);
+
+            if (finalResult <= resultPercent || finalResult <= specialValue)
+                return GetRollMessage(character.FirstName, rollSpecial, true, resultPercent);
+            else
+                return GetRollMessage(character.FirstName, rollSpecial, false, resultPercent * -1.0);
         }
 
-        private string GetRollMessage(string charName, string roll, bool success, int percent)
+        private string GetRollMessage(string charName, string roll, bool success, double percent)
         {
             var result = new StringBuilder();
 
             if (success)
             {
-                if (percent >= 90)
+                if (percent >= 125)
                 {
                     // criticaler success (holy shit)
                     result.Append($"**CRITICAL {roll.ToUpper()} SUCCESS!!!**");
                 }
                 else if (percent >= 80)
                 {
-                    // critical success
-                    result.Append($"**CRITICAL {roll.ToUpper()} SUCCESS!**");
-                }
-                else if (percent >= 60)
-                {
                     // purty good (great) success
                     result.Append($"__GREAT {roll.ToUpper()} SUCCESS__");
                 }
-                else if (percent >= 40)
+                else if (percent >= 50)
                 {
                     // good success
                     result.Append($"*Very good {roll} success*");
@@ -158,22 +214,17 @@ namespace FalloutRPG.Services.Roleplay
             }
             else
             {
-                if (percent >= 90)
+                if (percent >= 125)
                 {
                     // criticaler failure (holy shit
                     result.Append($"**CRITICAL {roll.ToUpper()} FAILURE!!!**");
                 }
                 else if (percent >= 80)
                 {
-                    // critical failure
-                    result.Append($"**CRITICAL {roll.ToUpper()} FAILURE!**");
-                }
-                else if (percent >= 60)
-                {
                     // purty good (great) failure
                     result.Append($"__TERRIBLE {roll.ToUpper()} FAILURE__");
                 }
-                else if (percent >= 40)
+                else if (percent >= 50)
                 {
                     // good failure
                     result.Append($"*Pretty bad {roll} failure*");
