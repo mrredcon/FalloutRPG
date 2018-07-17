@@ -2,6 +2,7 @@
 using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
+using FalloutRPG.Services.Roleplay;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -14,6 +15,13 @@ namespace FalloutRPG.Modules
 {
     public class InfoModule : ModuleBase<SocketCommandContext>
     {
+        private readonly CharacterService _charService;
+
+        public InfoModule(CharacterService charService)
+        {
+            _charService = charService;
+        }
+
         [Command("info")]
         [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task InfoAsync()
@@ -48,7 +56,8 @@ namespace FalloutRPG.Modules
                 .AddField("Uptime", GetUptime().ToString())
                 .AddField("Heap Size", $"{GetHeapSize()}MiB")
                 .AddField("Servers", Context.Client.Guilds.Count.ToString())
-                .AddField("Users", Context.Client.Guilds.Sum(g => g.Users.Count));
+                .AddField("Users", Context.Client.Guilds.Sum(g => g.Users.Count))
+                .AddField("Characters", await _charService.GetTotalCharactersAsync());
             var embed = builder.Build();
 
             await Context.Channel.SendMessageAsync(string.Empty, embed: embed).ConfigureAwait(false);
