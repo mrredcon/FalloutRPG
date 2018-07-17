@@ -88,6 +88,7 @@ namespace FalloutRPG.Services.Roleplay
             Raider,
             RaiderVeteran,
             Mercenary,
+            Spy,
             Merchant,
             Protectron,
             Assaultron,
@@ -106,23 +107,35 @@ namespace FalloutRPG.Services.Roleplay
             switch (npcType)
             {
                 case NpcType.Raider:
-                    return SpecialPresets.Raider;
+                    return NpcSpecialPresets.Raider;
                 case NpcType.RaiderVeteran:
-                    return SpecialPresets.RaiderVeteran;
+                    return NpcSpecialPresets.RaiderVeteran;
                 case NpcType.Mercenary:
-                    return SpecialPresets.Mercenary;
+                    return NpcSpecialPresets.Mercenary;
                 case NpcType.Merchant:
-                    return SpecialPresets.Merchant;
+                    return NpcSpecialPresets.Merchant;
+                case NpcType.Spy:
+                    return NpcSpecialPresets.Spy;
                 case NpcType.SuperMutant:
+                    return NpcSpecialPresets.SuperMutant
                 case NpcType.FeralGhoul:
+                    return NpcSpecialPresets.FeralGhoul
                 case NpcType.Protectron:
+                    return NpcSpecialPresets.Protectron
                 case NpcType.Assaultron:
+                    return NpcSpecialPresets.Assaultron
                 case NpcType.Eyebot:
+                    return NpcSpecialPresets.Eyebot
                 case NpcType.MisterHandy:
+                    return NpcSpecialPresets.MisterHandy
                 case NpcType.MisterGutsy:
+                    return NpcSpecialPresets.MisterGutsy
                 case NpcType.Robobrain:
+                    return NpcSpecialPresets.Robobrain
                 case NpcType.SentryBot:
+                    return NpcSpecialPresets.SentryBot
                 case NpcType.Securitron:
+                    return NpcSpecialPresets.Securitron
                 default:
                     throw new ArgumentException("Given NpcType was invalid.", "npcType");
             }
