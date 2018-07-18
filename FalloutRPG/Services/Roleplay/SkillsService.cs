@@ -45,13 +45,28 @@ namespace FalloutRPG.Services.Roleplay
         }
 
         /// <summary>
-        /// Get a new character's tag skills without saving the character into the database.
+        /// Get a new character's initial skills (no tags) without saving the character into the database.
         /// </summary>
-        public SkillSheet GetInitialSkills(Character character, string tag1, string tag2, string tag3)
+        public static SkillSheet GetInitialSkills(Character character)
         {
             if (character == null) throw new ArgumentNullException("character");
 
-            if (!_specService.IsSpecialSet(character))
+            if (character.Special.Strength == 0)
+                throw new Exception(Exceptions.CHAR_SPECIAL_NOT_FOUND);
+
+            InitializeSkills(character);
+
+            return character.Skills;
+        }
+
+        /// <summary>
+        /// Get a new character's initial skills without saving the character into the database.
+        /// </summary>
+        public static SkillSheet GetInitialSkills(Character character, string tag1, string tag2, string tag3)
+        {
+            if (character == null) throw new ArgumentNullException("character");
+
+            if (character.Special.Strength == 0)
                 throw new Exception(Exceptions.CHAR_SPECIAL_NOT_FOUND);
 
             if (!IsValidSkillName(tag1) || !IsValidSkillName(tag2) || !IsValidSkillName(tag3))
@@ -153,7 +168,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Checks if the tag name matches any of the skill names.
         /// </summary>
-        private bool IsValidSkillName(string skill)
+        private static bool IsValidSkillName(string skill)
         {
             skill = skill.Trim();
 
@@ -167,7 +182,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Checks if all the tags are unique.
         /// </summary>
-        private bool AreUniqueTags(string tag1, string tag2, string tag3)
+        private static bool AreUniqueTags(string tag1, string tag2, string tag3)
         {
             if (tag1.Equals(tag2, StringComparison.InvariantCultureIgnoreCase) ||
                 tag1.Equals(tag3, StringComparison.InvariantCultureIgnoreCase) ||
@@ -180,7 +195,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Sets a character's tag skill.
         /// </summary>
-        private void SetTagSkill(Character character, string tag)
+        private static void SetTagSkill(Character character, string tag)
         {
             var properties = character.Skills.GetType().GetProperties();
 
@@ -196,7 +211,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Initializes a character's skills.
         /// </summary>
-        private void InitializeSkills(Character character)
+        private static void InitializeSkills(Character character)
         {
             character.Skills = new SkillSheet()
             {
@@ -219,7 +234,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Calculates a skill based on New Vegas formula.
         /// </summary>
-        private int CalculateSkill(int stat, int luck)
+        private static int CalculateSkill(int stat, int luck)
         {
             return (2 + (2 * stat) + (luck / 2));
         }

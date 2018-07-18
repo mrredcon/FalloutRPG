@@ -157,7 +157,7 @@ namespace FalloutRPG.Constants
             Strength     = 4 + RngAdd(1), // 4-5
             Perception   = 7 + RngAdd(1), // 7-8
             Endurance    = 7,
-            Charisma     = 4,
+            Charisma     = 1,
             Intelligence = 9 + RngAdd(1), // 9-10
             Agility      = 3 + RngAdd(2), // 3-5
             Luck         = 5,
