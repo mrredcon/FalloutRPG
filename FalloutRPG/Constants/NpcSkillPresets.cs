@@ -40,6 +40,8 @@ namespace FalloutRPG.Constants
             skills.Guns = 0;
             skills.Lockpick = 0;
 
+            AddPoints(skills, "Sneak", -15);
+
             return skills;
         }
         public static SkillSheet Assaultron(Character character)
