@@ -25,7 +25,7 @@ namespace FalloutRPG.Services.Roleplay
         public void CreateNpc(string npcType, string firstName)
         {
             if (Npcs.Find(x => x.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase)) != null)
-                throw new Exception(Exceptions.NPC_CHARACTER_EXISTS);
+                throw new Exception(Exceptions.NPC_CHAR_EXISTS);
 
             var typeEnum = IsValidNpcType(npcType);
 
@@ -43,26 +43,27 @@ namespace FalloutRPG.Services.Roleplay
             Npcs.Add(character);
         }
 
+        public Character FindNpc(string name) => Npcs.Find(x => x.FirstName.Equals(name, StringComparison.OrdinalIgnoreCase));
+
         public string RollNpcSkill(string firstName, string skill)
         {
             var character = Npcs.Find(x => x.FirstName.Equals(firstName, StringComparison.OrdinalIgnoreCase));
 
             if (character == null)
             {
-                return Messages.FAILURE_EMOJI + "NPC name not found.";
+                return String.Format(Messages.ERR_NPC_CHAR_NOT_FOUND, firstName);
             }
             else if (character.Skills == null)
             {
                 throw new Exception(Exceptions.NPC_NULL_SKILLS);
             }
 
-            string result = _rollService.GetSkillRollResult(skill, character);
+            int skillAmount = (int)typeof(SkillSheet).GetProperty(skill).GetValue(character.Skills);
 
-            // Check for null, since GetSkillRollResult will return null if any Skills are 0
-            if (result != null)
-                return result + " (\uD83D\uDCBBNPC)";
-            else
-                return $"{Messages.FAILURE_EMOJI} {firstName} can't use this Skill!";
+            if (skillAmount == 0)
+                return $"{Messages.FAILURE_EMOJI} {firstName} can't use this skill!" + " (\uD83D\uDCBBNPC)";
+
+            return _rollService.GetSkillRollResult(skill, character) + " (\uD83D\uDCBBNPC)";
         }
 
         public string RollNpcSpecial(string firstName, string special)

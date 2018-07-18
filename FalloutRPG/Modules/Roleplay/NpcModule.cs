@@ -1,9 +1,9 @@
 ﻿using Discord.Commands;
 using FalloutRPG.Constants;
+using FalloutRPG.Helpers;
+using FalloutRPG.Services;
 using FalloutRPG.Services.Roleplay;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules.Roleplay
@@ -12,10 +12,12 @@ namespace FalloutRPG.Modules.Roleplay
     public class NpcModule : ModuleBase<SocketCommandContext>
     {
         private readonly NpcService _npcService;
+        private readonly HelpService _helpService;
 
-        public NpcModule(NpcService npcService)
+        public NpcModule(NpcService npcService, HelpService helpService)
         {
             _npcService = npcService;
+            _helpService = helpService;
         }
 
         [Command("create")]
@@ -35,6 +37,73 @@ namespace FalloutRPG.Modules.Roleplay
             string prettyType = _npcService.IsValidNpcType(type).ToString();
 
             await ReplyAsync(String.Format(Messages.NPC_CREATED_SUCCESS, prettyType, name));
+        }
+
+        [Command("skills")]
+        [Alias("skill")]
+        public async Task ShowSkillsAsync(string name)
+        {
+            var userInfo = Context.User;
+            var character = _npcService.FindNpc(name);
+
+            if (character == null)
+            {
+                await ReplyAsync(
+                    string.Format(Messages.ERR_NPC_CHAR_NOT_FOUND, name) + $" {Context.User.Mention}");
+                return;
+            }
+
+            var embed = EmbedHelper.BuildBasicEmbed("NPC Skills",
+                $"**Name:** {character.FirstName}\n" +
+                $"**Barter:** {character.Skills.Barter}\n" +
+                $"**Energy Weapons:** {character.Skills.EnergyWeapons}\n" +
+                $"**Explosives:** {character.Skills.Explosives}\n" +
+                $"**Guns:** {character.Skills.Guns}\n" +
+                $"**Lockpick:** {character.Skills.Lockpick}\n" +
+                $"**Medicine:** {character.Skills.Medicine}\n" +
+                $"**Melee Weapons:** {character.Skills.MeleeWeapons}\n" +
+                $"**Repair:** {character.Skills.Repair}\n" +
+                $"**Science:** {character.Skills.Science}\n" +
+                $"**Sneak:** {character.Skills.Sneak}\n" +
+                $"**Speech:** {character.Skills.Speech}\n" +
+                $"**Survival:** {character.Skills.Survival}\n" +
+                $"**Unarmed:** {character.Skills.Unarmed}");
+
+            await ReplyAsync(userInfo.Mention, embed: embed);
+        }
+
+        [Command("special")]
+        [Alias("specials")]
+        public async Task ShowSpecialAsync(string name)
+        {
+            var userInfo = Context.User;
+            var character = _npcService.FindNpc(name);
+
+            if (character == null)
+            {
+                await ReplyAsync(
+                    string.Format(Messages.ERR_NPC_CHAR_NOT_FOUND, name) + $" {Context.User.Mention}");
+                return;
+            }
+
+            var embed = EmbedHelper.BuildBasicEmbed("NPC S.P.E.C.I.A.L.:",
+                $"**Name:** {character.FirstName}\n" +
+                $"**STR:** {character.Special.Strength}\n" +
+                $"**PER:** {character.Special.Perception}\n" +
+                $"**END:** {character.Special.Endurance}\n" +
+                $"**CHA:** {character.Special.Charisma}\n" +
+                $"**INT:** {character.Special.Intelligence}\n" +
+                $"**AGI:** {character.Special.Agility}\n" +
+                $"**LUC:** {character.Special.Luck}");
+
+            await ReplyAsync(userInfo.Mention, embed: embed);
+        }
+
+        [Command]
+        [Alias("help")]
+        public async Task ShowCharacterHelpAsync()
+        {
+            await _helpService.ShowNpcHelpAsync(Context);
         }
 
         #region NPC Roll Commands
