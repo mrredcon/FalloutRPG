@@ -62,7 +62,7 @@ namespace FalloutRPG.Services.Roleplay
             if (result != null)
                 return result + " (\uD83D\uDCBBNPC)";
             else
-                return $"{firstName} can't roll this Skill!";
+                return $"{Messages.FAILURE_EMOJI} {firstName} can't use this Skill!";
         }
 
         public string RollNpcSpecial(string firstName, string special)
