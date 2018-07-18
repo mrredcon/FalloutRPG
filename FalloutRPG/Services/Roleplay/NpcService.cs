@@ -117,25 +117,25 @@ namespace FalloutRPG.Services.Roleplay
                 case NpcType.Spy:
                     return NpcSpecialPresets.Spy;
                 case NpcType.SuperMutant:
-                    return NpcSpecialPresets.SuperMutant
+                    return NpcSpecialPresets.SuperMutant;
                 case NpcType.FeralGhoul:
-                    return NpcSpecialPresets.FeralGhoul
+                    return NpcSpecialPresets.FeralGhoul;
                 case NpcType.Protectron:
-                    return NpcSpecialPresets.Protectron
+                    return NpcSpecialPresets.Protectron;
                 case NpcType.Assaultron:
-                    return NpcSpecialPresets.Assaultron
+                    return NpcSpecialPresets.Assaultron;
                 case NpcType.Eyebot:
-                    return NpcSpecialPresets.Eyebot
+                    return NpcSpecialPresets.Eyebot;
                 case NpcType.MisterHandy:
-                    return NpcSpecialPresets.MisterHandy
+                    return NpcSpecialPresets.MisterHandy;
                 case NpcType.MisterGutsy:
-                    return NpcSpecialPresets.MisterGutsy
+                    return NpcSpecialPresets.MisterGutsy;
                 case NpcType.Robobrain:
-                    return NpcSpecialPresets.Robobrain
+                    return NpcSpecialPresets.Robobrain;
                 case NpcType.SentryBot:
-                    return NpcSpecialPresets.SentryBot
+                    return NpcSpecialPresets.SentryBot;
                 case NpcType.Securitron:
-                    return NpcSpecialPresets.Securitron
+                    return NpcSpecialPresets.Securitron;
                 default:
                     throw new ArgumentException("Given NpcType was invalid.", "npcType");
             }
