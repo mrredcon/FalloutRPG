@@ -45,6 +45,12 @@
         public const string ERR_SKILLS_NONE_TO_CLAIM = FAILURE_EMOJI + "You don't have any skill points that you can claim. ({0})";
         public const string ERR_SKILLS_POINTS_BELOW_ONE = FAILURE_EMOJI + "You cannot put less than one point in a skill. ({0})";
 
+        // NPC Messages
+        public const string NPC_CREATED_SUCCESS = SUCCESS_EMOJI + "NPC created with type: {0} and name: {1}";
+
+        // NPC Error Messages
+        public const string ERR_NPC_CHAR_NOT_FOUND = FAILURE_EMOJI + "An NPC with the name {0} could not be found.";
+
         // Gambling Messages
         public const string BET_PLACED = SUCCESS_EMOJI + "{0}, bet placed!";
 
