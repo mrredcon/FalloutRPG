@@ -83,9 +83,9 @@ namespace FalloutRPG.Services.Roleplay
             Console.WriteLine("RNG: " + rngResult + " SKILL: " + skillValue + " SP: " + resultPercent);
 
             if (rngResult <= resultPercent || rngResult <= skillValue)
-                return GetRollMessage(character.FirstName, skill, true, (int)resultPercent);
+                return GetRollMessage(character.Name, skill, true, (int)resultPercent);
             else
-                return GetRollMessage(character.FirstName, skill, false, (int)resultPercent * -1);
+                return GetRollMessage(character.Name, skill, false, (int)resultPercent * -1);
         }
 
         public string GetSpecialRollResult(String rollSpecial, Character character)
@@ -107,9 +107,9 @@ namespace FalloutRPG.Services.Roleplay
 
             // TODO: maybe tell user what they rolled? (needed specialValue, rolled rngResult)
             if (rngResult <= successPercent || rngResult <= specialValue)
-                return GetRollMessage(character.FirstName, rollSpecial, true, (int)successPercent);
+                return GetRollMessage(character.Name, rollSpecial, true, (int)successPercent);
             else
-                return GetRollMessage(character.FirstName, rollSpecial, false, (int)successPercent * -1);
+                return GetRollMessage(character.Name, rollSpecial, false, (int)successPercent * -1);
         }
 
         private string GetRollMessage(string charName, string roll, bool success, int percent)

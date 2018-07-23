@@ -44,7 +44,7 @@
         {
             "$char show",
             "$char show [@user]",
-            "$char create [forename] [surname]",
+            "$char create [name]",
             "$char story",
             "$char story [@user]",
             "$char story update [story]",
@@ -136,7 +136,7 @@
         {
             "$admin givemoney [@user] [amount]",
             "$admin giveskillpoints [@user] [amount]",
-            "$admin changename [@user] [firstname] [lastname]",
+            "$admin changename [@user] [name]",
             "$admin reset [@user]"
         };
 

@@ -62,19 +62,18 @@ namespace FalloutRPG.Modules
         }
 
         [Command("changename")]
-        public async Task ChangeCharacterNameAsync(IUser user, string firstName, string lastName)
+        public async Task ChangeCharacterNameAsync(IUser user, string name)
         {
             var character = await _charService.GetCharacterAsync(user.Id);
             if (character == null) return;
 
-            if (!StringHelper.IsOnlyLetters(firstName) || !StringHelper.IsOnlyLetters(lastName))
+            if (!StringHelper.IsOnlyLetters(name))
                 return;
 
-            if (firstName.Length > 24 || lastName.Length > 24 || firstName.Length < 2 || lastName.Length < 2)
+            if (name.Length > 24 || name.Length < 2)
                 return;
 
-            character.FirstName = StringHelper.ToTitleCase(firstName);
-            character.LastName = StringHelper.ToTitleCase(lastName);
+            character.Name = StringHelper.ToTitleCase(name);
 
             await _charService.SaveCharacterAsync(character);
             await ReplyAsync(string.Format(Messages.ADM_CHANGED_NAME, Context.User.Mention));
