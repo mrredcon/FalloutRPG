@@ -10,7 +10,7 @@ namespace FalloutRPG.Modules
 {
     [Group("admin")]
     [Alias("adm")]
-    [RequireUserPermission(GuildPermission.Administrator, Group = "Permission")]
+    [RequireUserPermission(GuildPermission.BanMembers, Group = "Permission")]
     [RequireOwner(Group = "Permission")]
     public class AdminModule : ModuleBase<SocketCommandContext>
     {
@@ -49,6 +49,7 @@ namespace FalloutRPG.Modules
         }
 
         [Command("giveskillpoints")]
+        [RequireOwner]
         public async Task GiveSkillPointsAsync(IUser user, int points)
         {
             var character = await _charService.GetCharacterAsync(user.Id);
