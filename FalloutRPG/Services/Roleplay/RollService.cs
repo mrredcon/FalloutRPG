@@ -177,7 +177,7 @@ namespace FalloutRPG.Services.Roleplay
                 else
                     result.Append($"__***Heartbreaking {roll} failure***__");
 
-                result.Append($" for {charName}: did **{percent}%** worse than needed!");
+                result.Append($" for {charName}: did **{percent*-1}%** worse than needed!");
             }
 
             return result.ToString();
