@@ -57,7 +57,7 @@ namespace FalloutRPG.Services.Roleplay
 
             if (characters != null)
             {
-                if (!CheckDuplicateNames(characters, name))
+                if (CheckDuplicateNames(characters, name))
                     throw new Exception(Exceptions.CHAR_NAMES_NOT_UNIQUE);
 
                 if (characters.Count >= MAX_CHARACTERS)
@@ -157,12 +157,18 @@ namespace FalloutRPG.Services.Roleplay
             return characters.Count;
         }
 
+        public async Task<bool> CheckDuplicateNames(ulong discordId, string name) =>
+            CheckDuplicateNames(await GetAllCharactersAsync(discordId), name);
+
         private bool CheckDuplicateNames(List<Character> characters, string name)
         {
+            if (characters == null) return true;
+
             foreach (var character in characters)
                 if (character.Name == name)
-                    return false;
-            return true;
+                    return true;
+
+            return false;
         }
     }
 }
