@@ -148,5 +148,44 @@ namespace FalloutRPG.Modules.Roleplay
 
             await ReplyAsync(Context.User.Mention, embed: embed);
         }
+
+        [Command("remove")]
+        [Alias("delete")]
+        public async Task RemoveCharacterAsync([Remainder]string name)
+        {
+            var chars = await _charService.GetAllCharactersAsync(Context.User.Id);
+
+            if (chars == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
+                return;
+            }
+
+            var charMatch = chars.Find(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (charMatch == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
+                return;
+            }
+
+            if (charMatch.Active)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_CANT_REMOVE_ACTIVE, charMatch.Name, Context.User.Mention));
+                return;
+            }
+
+            await ReplyAsync(String.Format(Messages.CHAR_REMOVE_CONFIRM, charMatch.Name, charMatch.Level, Context.User.Mention));
+            var response = await NextMessageAsync();
+            if (response != null && response.Content.Equals(charMatch.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                await _charService.DeleteCharacterAsync(charMatch);
+                await ReplyAsync(String.Format(Messages.CHAR_REMOVE_SUCCESS, charMatch.Name, Context.User.Mention));
+            }
+            else
+            {
+                await ReplyAsync(String.Format(Messages.CHAR_NOT_REMOVED, charMatch.Name, Context.User.Mention));
+            }
+        }
     }
 }
