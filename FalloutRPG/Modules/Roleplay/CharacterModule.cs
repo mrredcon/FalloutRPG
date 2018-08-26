@@ -7,6 +7,7 @@ using FalloutRPG.Helpers;
 using FalloutRPG.Services;
 using FalloutRPG.Services.Roleplay;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules.Roleplay
@@ -123,6 +124,29 @@ namespace FalloutRPG.Modules.Roleplay
             await _charService.SaveCharacterAsync(charMatch);
 
             await ReplyAsync(String.Format(Messages.CHAR_ACTIVATED, charMatch.Name, Context.User.Mention));
+        }
+
+        [Command("list")]
+        public async Task ListCharactersAsync()
+        {
+            var characters = await _charService.GetAllCharactersAsync(Context.User.Id);
+
+            if (characters == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
+                return;
+            }
+
+            var message = new StringBuilder();
+
+            for (var i = 0; i < characters.Count; i++)
+            {
+                message.Append($"{i + 1}: {characters[i].Name}\n");
+            }
+
+            var embed = EmbedHelper.BuildBasicEmbed("Command: $character list", message.ToString());
+
+            await ReplyAsync(Context.User.Mention, embed: embed);
         }
     }
 }
