@@ -86,5 +86,43 @@ namespace FalloutRPG.Modules.Roleplay
                 return;
             }
         }
+
+        [Command("activate")]
+        [Alias("active")]
+        public async Task ActivateCharacterAsync([Remainder]string name)
+        {
+            var chars = await _charService.GetAllCharactersAsync(Context.User.Id);
+
+            if (chars == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
+                return;
+            }
+
+            var charMatch = chars.Find(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (charMatch == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));
+                return;
+            }
+
+            if (charMatch.Active)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_ALREADY_ACTIVE, charMatch.Name, Context.User.Mention));
+                return;
+            }
+
+            foreach (var character in chars.FindAll(x => x.Active))
+            {
+                character.Active = false;
+                await _charService.SaveCharacterAsync(character);
+            }
+
+            charMatch.Active = true;
+            await _charService.SaveCharacterAsync(charMatch);
+
+            await ReplyAsync(String.Format(Messages.CHAR_ACTIVATED, charMatch.Name, Context.User.Mention));
+        }
     }
 }
