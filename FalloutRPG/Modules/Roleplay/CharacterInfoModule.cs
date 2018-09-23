@@ -3,7 +3,11 @@ using Discord.Commands;
 using FalloutRPG.Addons;
 using FalloutRPG.Constants;
 using FalloutRPG.Helpers;
+using FalloutRPG.Models;
 using FalloutRPG.Services.Roleplay;
+using System;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules.Roleplay
@@ -160,6 +164,45 @@ namespace FalloutRPG.Modules.Roleplay
                 await _charService.SaveCharacterAsync(character);
                 await ReplyAsync(string.Format(Messages.CHAR_DESC_SUCCESS, userInfo.Mention));
             }
+        }
+
+        [Command("inventory")]
+        [Alias("inv", "items", "item")]
+        public async Task ShowCharacterInventoryAsync()
+        {
+            var userInfo = Context.User;
+            var character = await _charService.GetCharacterAsync(userInfo.Id);
+
+            if (character == null)
+            {
+                await ReplyAsync(String.Format(Messages.ERR_CHAR_NOT_FOUND, userInfo.Mention));
+                return;
+            }
+
+            var inv = character.Inventory;
+
+            StringBuilder sb = new StringBuilder("**Weapons:**\n");
+
+            foreach (var item in inv.OfType<ItemWeapon>())
+                sb.Append($"{item.Name}: DAM {item.Damage} SKILL {item.SkillMinimum} AMMO {item.Ammo.Name} CAPACITY {item.AmmoCapacity} ON ATK {item.AmmoOnAttack}\n");
+
+            sb.Append("**Apparel:**\n");
+            foreach (var item in inv.OfType<ItemApparel>())
+                sb.Append($"{item.Name}: DT {item.DamageThreshold}\n");
+
+            sb.Append("**Consumables:**\n");
+            foreach (var item in inv.OfType<ItemConsumable>().ToHashSet())
+                sb.Append($"{item.Name} {inv.Count(x => x.Equals(item))}\n");
+
+            sb.Append("**Miscellaneous:**\n");
+            foreach (var item in inv.OfType<ItemMisc>())
+                sb.Append($"{item.Name}\n");
+
+            sb.Append("**Ammunition:**\n");
+            foreach (var item in inv.OfType<ItemAmmo>().ToHashSet())
+                sb.Append($"{item.Name}: {inv.Count(x => x.Equals(item))} DT MULT {item.DTMultiplier} DT REDUCE {item.DTReduction}\n");
+            
+            await ReplyAsync(userInfo.Mention, embed: EmbedHelper.BuildBasicEmbed($"{character.Name}'s Inventory:", sb.ToString()));
         }
     }
 }

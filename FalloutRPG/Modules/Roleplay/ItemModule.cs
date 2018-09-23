@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FalloutRPG.Modules.Roleplay
 {
-    [Group("item"), Alias("item")]
+    [Group("item"), Alias("items")]
     public class ItemModule : ModuleBase<SocketCommandContext>
     {
         [Group("create")]

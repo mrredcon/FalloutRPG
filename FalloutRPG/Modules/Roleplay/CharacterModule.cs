@@ -55,6 +55,7 @@ namespace FalloutRPG.Modules.Roleplay
             var embed = EmbedHelper.BuildBasicEmbed($"{character.Name}",
                 $"**Description:** {description}\n" +
                 $"**Story:** ($char story)\n" +
+                $"**Inventory:** ($char inventory)\n" +
                 $"**Level:** {level}\n" +
                 $"**Experience:** {character.Experience}\n" +
                 $"**To Next Level:** {expToNextLevel}\n" +
