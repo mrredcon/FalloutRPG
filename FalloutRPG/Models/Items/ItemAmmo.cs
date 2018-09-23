@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FalloutRPG.Models
+﻿namespace FalloutRPG.Models
 {
     public class ItemAmmo : Item
     {

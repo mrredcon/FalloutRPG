@@ -76,6 +76,7 @@ namespace FalloutRPG
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
+            .AddSingleton<ItemService>()
 
             // Casino
             .AddSingleton<GamblingService>()
@@ -90,11 +91,7 @@ namespace FalloutRPG
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
-            .AddTransient<IRepository<ItemAmmo>, EfRepository<ItemAmmo>>()
-            .AddTransient<IRepository<ItemApparel>, EfRepository<ItemApparel>>()
-            .AddTransient<IRepository<ItemConsumable>, EfRepository<ItemConsumable>>()
-            .AddTransient<IRepository<ItemMisc>, EfRepository<ItemMisc>>()
-            .AddTransient<IRepository<ItemWeapon>, EfRepository<ItemWeapon>>()
+            .AddTransient<IRepository<Item>, EfRepository<Item>>()
             .BuildServiceProvider();
 
         /// <summary>

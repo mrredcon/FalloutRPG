@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FalloutRPG.Data.Repositories
 {
-    public class EfRepository<T> : IRepository<T> where T : BaseModel, new()
+    public class EfRepository<T> : IRepository<T> where T : BaseModel
     {
         private readonly RpgContext _context;
 

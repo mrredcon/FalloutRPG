@@ -1,5 +1,4 @@
 ﻿using FalloutRPG.Constants;
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FalloutRPG.Models
@@ -14,5 +13,6 @@ namespace FalloutRPG.Models
         [NotMapped]
         public int AmmoRemaining { get; set; }
         public int AmmoCapacity { get; set; }
+        public int AmmoOnAttack { get; set; }
     }
 }
