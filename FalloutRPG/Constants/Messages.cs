@@ -59,6 +59,12 @@
         public const string ERR_SKILLS_NONE_TO_CLAIM = FAILURE_EMOJI + "You don't have any skill points that you can claim. ({0})";
         public const string ERR_SKILLS_POINTS_BELOW_ONE = FAILURE_EMOJI + "You cannot put less than one point in a skill. ({0})";
 
+        // Item Messages
+        public const string ITEM_GIVE_SUCCESS = SUCCESS_EMOJI + "Gave item {0} to {1}. {2}";
+
+        // Item Error Messages
+        public const string ERR_ITEM_NOT_FOUND = FAILURE_EMOJI + "That item was unable to be found. ({0})";
+
         // Gambling Messages
         public const string BET_PLACED = SUCCESS_EMOJI + "{0}, bet placed!";
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace FalloutRPG.Models
 {
@@ -31,5 +32,7 @@ namespace FalloutRPG.Models
         public SkillSheet Skills { get; set; }
 
         public long Money { get; set; }
+
+        public List<Item> Inventory { get; set; }
     }
 }
