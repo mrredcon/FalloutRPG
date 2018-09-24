@@ -60,10 +60,13 @@
         public const string ERR_SKILLS_POINTS_BELOW_ONE = FAILURE_EMOJI + "You cannot put less than one point in a skill. ({0})";
 
         // Item Messages
-        public const string ITEM_GIVE_SUCCESS = SUCCESS_EMOJI + "Gave item {0} to {1}. {2}";
+        public const string ITEM_GIVE_SUCCESS = SUCCESS_EMOJI + "Gave item {0} to {1}. ({2})";
+        public const string ITEM_CREATE_SUCCESS = SUCCESS_EMOJI + "Created new item with name {0} and type {1}. ({2})";
 
         // Item Error Messages
         public const string ERR_ITEM_NOT_FOUND = FAILURE_EMOJI + "That item was unable to be found. ({0})";
+        public const string ERR_ITEM_INVALID_SLOT = FAILURE_EMOJI + "The given apparel slot was invalid. ({0})";
+        public const string ERR_ITEM_INVALID_AMMO = FAILURE_EMOJI + "The given ammo was unable to be found; does it exist yet? ({0})";
 
         // Gambling Messages
         public const string BET_PLACED = SUCCESS_EMOJI + "{0}, bet placed!";

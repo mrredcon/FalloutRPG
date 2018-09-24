@@ -1,4 +1,5 @@
-﻿using FalloutRPG.Data.Repositories;
+﻿using FalloutRPG.Constants;
+using FalloutRPG.Data.Repositories;
 using FalloutRPG.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,20 +17,7 @@ namespace FalloutRPG.Services.Roleplay
         public ItemService(IRepository<Item> itemRepo)
         {
             _itemRepo = itemRepo;
-        }
-
-        public async Task CreateMiscItemAsync(string name, string desc, int value, double weight)
-        {
-            var newItem = new ItemMisc
-            {
-                Name = name,
-                Description = desc,
-                Value = value,
-                Weight = weight
-            };
-
-            await _itemRepo.AddAsync(newItem);
-        }
+        }   
 
         public async Task<Item> GetItemAsync(string name) =>
             await _itemRepo.Query.Where(x => x.Name.Equals(name)).FirstOrDefaultAsync();

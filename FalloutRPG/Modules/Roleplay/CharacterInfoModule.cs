@@ -184,7 +184,7 @@ namespace FalloutRPG.Modules.Roleplay
             StringBuilder sb = new StringBuilder("**Weapons:**\n");
 
             foreach (var item in inv.OfType<ItemWeapon>())
-                sb.Append($"{item.Name}: DAM {item.Damage} SKILL {item.SkillMinimum} AMMO {item.Ammo.Name} CAPACITY {item.AmmoCapacity} ON ATK {item.AmmoOnAttack}\n");
+                sb.Append($"{item.Name}:\nDAM: {item.Damage}\nSKILL: {item.SkillMinimum}\nAMMO {item.Ammo.Name}\nCAPACITY {item.AmmoCapacity}\nON ATK {item.AmmoOnAttack}\n");
 
             sb.Append("**Apparel:**\n");
             foreach (var item in inv.OfType<ItemApparel>())

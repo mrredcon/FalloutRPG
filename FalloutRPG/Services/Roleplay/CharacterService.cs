@@ -33,7 +33,11 @@ namespace FalloutRPG.Services.Roleplay
         /// </summary>
         public async Task<Character> GetCharacterAsync(ulong discordId) =>
             await _charRepository.Query.Where(c => c.DiscordId == discordId && c.Active == true)
-            .Include(c => c.Special).Include(c => c.Skills).Include(c => c.Inventory).FirstOrDefaultAsync();
+            .Include(c => c.Special)
+            .Include(c => c.Skills)
+            .Include(c => c.Inventory)
+                .ThenInclude(weapons => ((ItemWeapon)weapons).Ammo)
+            .FirstOrDefaultAsync();
 
         /// <summary>
         /// Gets all characters from the repository by Discord ID.
@@ -41,8 +45,12 @@ namespace FalloutRPG.Services.Roleplay
         /// <param name="discordId"></param>
         /// <returns></returns>
         public async Task<List<Character>> GetAllCharactersAsync(ulong discordId) =>
-            await _charRepository.Query.Where(c => c.DiscordId == discordId).Include(c => c.Special)
-            .Include(c => c.Skills).Include(c => c.Inventory).ToListAsync();
+            await _charRepository.Query.Where(c => c.DiscordId == discordId)
+            .Include(c => c.Special)
+            .Include(c => c.Skills)
+            .Include(c => c.Inventory)
+                .ThenInclude(weapons => ((ItemWeapon)weapons).Ammo)
+            .ToListAsync();
 
         /// <summary>
         /// Creates a new character.
