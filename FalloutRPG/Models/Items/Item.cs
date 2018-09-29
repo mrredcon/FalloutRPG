@@ -10,5 +10,7 @@ namespace FalloutRPG.Models
         public int Value { get; set; }
 
         public double Weight { get; set; }
+
+        public bool Equipped { get; set; }
     }
 }

@@ -23,6 +23,10 @@ namespace FalloutRPG.Modules.Roleplay
         }
 
         [Command("ammo")]
+        public async Task CreateItemAmmoAsync(string name, string desc, int value, double weight) =>
+            await CreateItemAmmoAsync(name, desc, value, weight, 1, 0);
+
+        [Command("ammo")]
         public async Task CreateItemAmmoAsync(string name, string desc, int value, double weight, double dtMult, int dtReduction)
         {
             await _itemRepo.AddAsync(

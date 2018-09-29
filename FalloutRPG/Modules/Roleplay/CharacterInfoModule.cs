@@ -184,15 +184,21 @@ namespace FalloutRPG.Modules.Roleplay
             StringBuilder sb = new StringBuilder("**Weapons:**\n");
 
             foreach (var item in inv.OfType<ItemWeapon>())
-                sb.Append($"{item.Name}:\nDAM: {item.Damage}\nSKILL: {item.SkillMinimum}\nAMMO {item.Ammo.Name}\nCAPACITY {item.AmmoCapacity}\nON ATK {item.AmmoOnAttack}\n");
+                sb.Append($"*{item.Name}*:\n" +
+                    $"Damage: {item.Damage}\n" +
+                    $"Skill: {item.SkillMinimum}\n" +
+                    $"Ammo Type: {item.Ammo.Name}\n" +
+                    $"Ammo Capacity: {item.AmmoCapacity}\n" +
+                    $"Ammo usage on attack: {item.AmmoOnAttack}\n");
 
             sb.Append("**Apparel:**\n");
             foreach (var item in inv.OfType<ItemApparel>())
-                sb.Append($"{item.Name}: DT {item.DamageThreshold}\n");
+                sb.Append($"{item.Name}:\n" +
+                    $"DT {item.DamageThreshold}\n");
 
             sb.Append("**Consumables:**\n");
             foreach (var item in inv.OfType<ItemConsumable>().ToHashSet())
-                sb.Append($"{item.Name} {inv.Count(x => x.Equals(item))}\n");
+                sb.Append($"{item.Name} x{inv.Count(x => x.Equals(item))}\n");
 
             sb.Append("**Miscellaneous:**\n");
             foreach (var item in inv.OfType<ItemMisc>())
@@ -200,7 +206,9 @@ namespace FalloutRPG.Modules.Roleplay
 
             sb.Append("**Ammunition:**\n");
             foreach (var item in inv.OfType<ItemAmmo>().ToHashSet())
-                sb.Append($"{item.Name}: {inv.Count(x => x.Equals(item))} DT MULT {item.DTMultiplier} DT REDUCE {item.DTReduction}\n");
+                sb.Append($"{item.Name}: x{inv.Count(x => x.Equals(item))}\n" +
+                    $"DT Multiplier: {item.DTMultiplier}\n" +
+                    $"DT Reduction: {item.DTReduction}\n");
             
             await ReplyAsync(userInfo.Mention, embed: EmbedHelper.BuildBasicEmbed($"{character.Name}'s Inventory:", sb.ToString()));
         }

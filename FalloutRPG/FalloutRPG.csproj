@@ -13,8 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Migrations\20180720140220_Reset.cs" />
-    <Compile Include="Migrations\20180720140220_Reset.Designer.cs" />
+    <Compile Include="Migrations\20180923183314_Items.cs" />
+    <Compile Include="Migrations\20180923183314_Items.Designer.cs" />
+    <Compile Include="Migrations\20180923184658_Inventory.cs" />
+    <Compile Include="Migrations\20180923184658_Inventory.Designer.cs" />
+    <Compile Include="Migrations\20180927232615_Equips.cs" />
+    <Compile Include="Migrations\20180927232615_Equips.Designer.cs" />
     <Compile Include="Migrations\RpgContextModelSnapshot.cs" />
   </ItemGroup>
 

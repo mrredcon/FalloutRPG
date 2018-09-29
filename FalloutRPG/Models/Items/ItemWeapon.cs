@@ -6,7 +6,7 @@ namespace FalloutRPG.Models
     public class ItemWeapon : Item
     {
         public int Damage { get; set; }
-        public virtual Globals.SkillType Skill { get; set; }
+        public Globals.SkillType Skill { get; set; }
         public int SkillMinimum { get; set; }
 
         public ItemAmmo Ammo { get; set; }

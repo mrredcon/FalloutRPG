@@ -1,16 +1,16 @@
 ﻿{
   "prefix": "!",
-  "sqlserver-connection-string": "",
+  "sqlserver-connection-string": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=rpdb;Integrated Security=True",
   "tokens": {
-    "discord": ""
+    "discord": "NDYyNzAzMzU1NTA5MDgwMDY1.DiK5vA.paFrB-7DQ5QeDiGgv5avc_iDwsI"
   },
   "gambling": {
-    "enabled-channels": [ "" ],
+    "enabled-channels": [ "462432825539297280" ],
     "minimum-bet": 30,
     "maximum-bet": 1000
   },
   "roleplay": {
-    "exp-channels": [ "" ],
+    "exp-channels": [ "462432825539297280" ],
     "luck-influenced-rolls": true,
     "luck-influence-percentage": 5
   }
