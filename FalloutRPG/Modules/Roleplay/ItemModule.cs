@@ -47,7 +47,7 @@ namespace FalloutRPG.Modules.Roleplay
             }
             else if (item is ItemAmmo)
             {
-                if (((ItemAmmo)item).DTMultiplier != 0)
+                if (((ItemAmmo)item).DTMultiplier != 1)
                     sb.Append($"**DT Multiplier:** {((ItemAmmo)item).DTMultiplier}");
                 if (((ItemAmmo)item).DTReduction != 0)
                     sb.Append($"**DT Reduction:** {((ItemAmmo)item).DTReduction}");
@@ -57,6 +57,8 @@ namespace FalloutRPG.Modules.Roleplay
                 sb.Append($"**Damage Threshold:**{((ItemApparel)item).DamageThreshold}");
                 sb.Append($"**Apparel Slot:** {((ItemApparel)item).ApparelSlot}");
             }
+
+            await ReplyAsync($"{sb.ToString()} ({Context.User.Mention})");
         }
     }
 }
