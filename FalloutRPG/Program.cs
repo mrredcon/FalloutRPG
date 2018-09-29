@@ -6,7 +6,6 @@ using FalloutRPG.Data;
 using FalloutRPG.Data.Repositories;
 using FalloutRPG.Models;
 using FalloutRPG.Services;
-using FalloutRPG.Services.Casino;
 using FalloutRPG.Services.Roleplay;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -70,16 +69,11 @@ namespace FalloutRPG
             .AddSingleton<HelpService>()
 
             // Roleplay
-            .AddSingleton<RollService>()
             .AddSingleton<SkillsService>()
             .AddSingleton<SpecialService>()
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
-
-            // Casino
-            .AddSingleton<GamblingService>()
-            .AddSingleton<CrapsService>()
 
             // Addons
             .AddSingleton<InteractiveService>()
