@@ -53,7 +53,7 @@ namespace FalloutRPG.Services.Roleplay
             if (!IsInExperienceEnabledChannel(context.Channel.Id)) return;
 
             var userInfo = context.User;
-            var character = await _charService.GetCharacterAsync(userInfo.Id);
+            var character = await _charService.GetPlayerCharacterAsync(userInfo.Id);
 
             if (character == null || context.Message.ToString().StartsWith("(")) return;
 
@@ -68,12 +68,12 @@ namespace FalloutRPG.Services.Roleplay
         }
 
         /// <summary>
-        /// Gives experience to a character.
+        /// Gives experience to a player character.
         /// </summary>
-        public async Task<bool> GiveExperienceAsync(Character character, int experience = DEFAULT_EXP_GAIN)
+        public async Task<bool> GiveExperienceAsync(PlayerCharacter character, int experience = DEFAULT_EXP_GAIN)
         {
             if (character == null) return false;
-            if (cooldownTimers.ContainsKey(character.DiscordId)) return false;
+            if (cooldownTimers.ContainsKey(character.Player.DiscordId)) return false;
 
             var levelUp = false;
 
@@ -86,7 +86,7 @@ namespace FalloutRPG.Services.Roleplay
             character.Experience += experience;
             await _charService.SaveCharacterAsync(character);
 
-            AddToCooldown(character.DiscordId);
+            AddToCooldown(character.Player.DiscordId);
             return levelUp;
         }
 
@@ -186,10 +186,10 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Called when a character levels up.
         /// </summary>
-        private async Task OnLevelUpAsync(Character character)
+        private async Task OnLevelUpAsync(PlayerCharacter character)
         {
             if (character == null) throw new ArgumentNullException("character");
-            var user = _client.GetUser(character.DiscordId);
+            var user = _client.GetUser(character.Player.DiscordId);
             _skillsService.GiveSkillPoints(character);
             await user.SendMessageAsync(string.Format(Messages.SKILLS_LEVEL_UP, user.Mention, character.SkillPoints));
         }

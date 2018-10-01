@@ -37,8 +37,8 @@ namespace FalloutRPG.Modules.Roleplay
         {
             var userInfo = Context.User;
             var character = targetUser == null
-                ? await _charService.GetCharacterAsync(userInfo.Id)
-                : await _charService.GetCharacterAsync(targetUser.Id);
+                ? await _charService.GetPlayerCharacterAsync(userInfo.Id)
+                : await _charService.GetPlayerCharacterAsync(targetUser.Id);
 
             if (character == null)
             {
@@ -78,7 +78,7 @@ namespace FalloutRPG.Modules.Roleplay
 
             try
             {
-                await _charService.CreateCharacterAsync(userInfo.Id, name);
+                await _charService.CreatePlayerCharacterAsync(userInfo.Id, name);
                 await ReplyAsync(string.Format(Messages.CHAR_CREATED_SUCCESS, userInfo.Mention));
             }
             catch (Exception e)
@@ -92,7 +92,7 @@ namespace FalloutRPG.Modules.Roleplay
         [Alias("active")]
         public async Task ActivateCharacterAsync([Remainder]string name)
         {
-            var chars = await _charService.GetAllCharactersAsync(Context.User.Id);
+            var chars = await _charService.GetAllPlayerCharactersAsync(Context.User.Id);
 
             if (chars == null)
             {
@@ -129,7 +129,7 @@ namespace FalloutRPG.Modules.Roleplay
         [Command("list")]
         public async Task ListCharactersAsync()
         {
-            var characters = await _charService.GetAllCharactersAsync(Context.User.Id);
+            var characters = await _charService.GetAllPlayerCharactersAsync(Context.User.Id);
 
             if (characters == null)
             {
@@ -153,7 +153,7 @@ namespace FalloutRPG.Modules.Roleplay
         [Alias("delete")]
         public async Task RemoveCharacterAsync([Remainder]string name)
         {
-            var chars = await _charService.GetAllCharactersAsync(Context.User.Id);
+            var chars = await _charService.GetAllPlayerCharactersAsync(Context.User.Id);
 
             if (chars == null)
             {

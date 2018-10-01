@@ -38,7 +38,7 @@ namespace FalloutRPG.Modules.Roleplay
         [Command]
         public async Task CheckSkill(IUser user, Globals.SkillType skill, int minimum)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
 
             if (character == null)
             {
@@ -59,7 +59,7 @@ namespace FalloutRPG.Modules.Roleplay
         [Command]
         public async Task CheckSpecial(IUser user, Globals.SpecialType special, int minimum)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
 
             if (character == null)
             {

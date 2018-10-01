@@ -23,7 +23,7 @@ namespace FalloutRPG.Modules.Roleplay
         [Ratelimit(1, Globals.RATELIMIT_SECONDS, Measure.Seconds)]
         public async Task ChangeCharacterNameAsync([Remainder]string name)
         {
-            var character = await _charService.GetCharacterAsync(Context.User.Id);
+            var character = await _charService.GetPlayerCharacterAsync(Context.User.Id);
             
             if (character == null) return;
 
@@ -61,8 +61,8 @@ namespace FalloutRPG.Modules.Roleplay
             {
                 var userInfo = Context.User;
                 var character = targetUser == null
-                    ? await _charService.GetCharacterAsync(userInfo.Id)
-                    : await _charService.GetCharacterAsync(targetUser.Id);
+                    ? await _charService.GetPlayerCharacterAsync(userInfo.Id)
+                    : await _charService.GetPlayerCharacterAsync(targetUser.Id);
 
                 if (character == null)
                 {
@@ -88,7 +88,7 @@ namespace FalloutRPG.Modules.Roleplay
             public async Task UpdateCharacterStoryAsync([Remainder]string story)
             {
                 var userInfo = Context.User;
-                var character = await _charService.GetCharacterAsync(userInfo.Id);
+                var character = await _charService.GetPlayerCharacterAsync(userInfo.Id);
 
                 if (character == null)
                 {
@@ -120,8 +120,8 @@ namespace FalloutRPG.Modules.Roleplay
             {
                 var userInfo = Context.User;
                 var character = targetUser == null
-                    ? await _charService.GetCharacterAsync(userInfo.Id)
-                    : await _charService.GetCharacterAsync(targetUser.Id);
+                    ? await _charService.GetPlayerCharacterAsync(userInfo.Id)
+                    : await _charService.GetPlayerCharacterAsync(targetUser.Id);
 
                 if (character == null)
                 {
@@ -147,7 +147,7 @@ namespace FalloutRPG.Modules.Roleplay
             public async Task UpdateCharacterDescriptionAsync([Remainder]string description)
             {
                 var userInfo = Context.User;
-                var character = await _charService.GetCharacterAsync(userInfo.Id);
+                var character = await _charService.GetPlayerCharacterAsync(userInfo.Id);
 
                 if (character == null)
                 {

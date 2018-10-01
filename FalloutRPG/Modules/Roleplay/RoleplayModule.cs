@@ -30,10 +30,10 @@ namespace FalloutRPG.Modules.Roleplay
         {
             if (amount < 1) return;
 
-            var sourceChar = await _charService.GetCharacterAsync(Context.User.Id);
+            var sourceChar = await _charService.GetPlayerCharacterAsync(Context.User.Id);
             if (sourceChar == null) return;
 
-            var targetChar = await _charService.GetCharacterAsync(user.Id);
+            var targetChar = await _charService.GetPlayerCharacterAsync(user.Id);
             if (targetChar == null)
             {
                 await ReplyAsync(string.Format(Messages.ERR_CHAR_NOT_FOUND, Context.User.Mention));

@@ -18,34 +18,43 @@ namespace FalloutRPG.Services.Roleplay
         private readonly IRepository<SkillSheet> _skillRepository;
         private readonly IRepository<Special> _specialRepository;
 
+        private readonly PlayerService _playerService;
+
         public CharacterService(
             IRepository<Character> charRepository,
             IRepository<SkillSheet> skillRepository,
-            IRepository<Special> specialRepository)
+            IRepository<Special> specialRepository,
+            PlayerService playerService)
         {
             _charRepository = charRepository;
             _skillRepository = skillRepository;
             _specialRepository = specialRepository;
+
+            _playerService = playerService;
         }
 
         /// <summary>
         /// Gets the active character from the repository by Discord ID.
         /// </summary>
-        public async Task<Character> GetCharacterAsync(ulong discordId) =>
-            await _charRepository.Query.Where(c => c.DiscordId == discordId && c.Active == true).Include(c => c.Special).Include(c => c.Skills).FirstOrDefaultAsync();
+        public async Task<PlayerCharacter> GetPlayerCharacterAsync(ulong discordId) =>
+            await _charRepository.Query.OfType<PlayerCharacter>().Where(c => c.Player.DiscordId == discordId && c.Active == true).Include(c => c.Special).Include(c => c.Skills).FirstOrDefaultAsync();
+        public async Task<PlayerCharacter> GetPlayerCharacterAsync(Player player) =>
+            await GetPlayerCharacterAsync(player.DiscordId);
 
         /// <summary>
         /// Gets all characters from the repository by Discord ID.
         /// </summary>
         /// <param name="discordId"></param>
         /// <returns></returns>
-        public async Task<List<Character>> GetAllCharactersAsync(ulong discordId) =>
-            await _charRepository.Query.Where(c => c.DiscordId == discordId).Include(c => c.Special).Include(c => c.Skills).ToListAsync();
+        public async Task<List<PlayerCharacter>> GetAllPlayerCharactersAsync(ulong discordId) =>
+            await _charRepository.Query.OfType<PlayerCharacter>().Where(c => c.Player.DiscordId == discordId).Include(c => c.Special).Include(c => c.Skills).ToListAsync();
+        public async Task<List<PlayerCharacter>> GetAllPlayerCharactersAsync(Player player) =>
+            await GetAllPlayerCharactersAsync(player.DiscordId);
 
         /// <summary>
         /// Creates a new character.
         /// </summary>
-        public async Task<Character> CreateCharacterAsync(ulong discordId, string name)
+        public async Task<PlayerCharacter> CreatePlayerCharacterAsync(Player player, string name)
         {
             if (!StringHelper.IsOnlyLetters(name))
                 throw new Exception(Exceptions.CHAR_NAMES_NOT_LETTERS);
@@ -53,7 +62,7 @@ namespace FalloutRPG.Services.Roleplay
             if (name.Length > 24 || name.Length < 2)
                 throw new Exception(Exceptions.CHAR_NAMES_LENGTH);
 
-            var characters = await GetAllCharactersAsync(discordId);
+            var characters = await GetAllPlayerCharactersAsync(player.DiscordId);
 
             if (characters.Count > 0)
             {
@@ -65,9 +74,9 @@ namespace FalloutRPG.Services.Roleplay
             }
 
             name = StringHelper.ToTitleCase(name);
-            var character = new Character()
+            var character = new PlayerCharacter(player)
             {
-                DiscordId = discordId,
+                //DiscordId = discordId,
                 Active = false,
                 Name = name,
                 Description = "",
@@ -110,13 +119,18 @@ namespace FalloutRPG.Services.Roleplay
             return character;
         }
 
+        public async Task<PlayerCharacter> CreatePlayerCharacterAsync(ulong discordId, string name)
+        {
+            var player = await _playerService.GetPlayerAsync(discordId);
+
+            return await CreatePlayerCharacterAsync(player, name);
+        }
+
         /// <summary>
         /// Gets the top 10 characters with the most experience.
         /// </summary>
-        public async Task<List<Character>> GetHighScoresAsync()
-        {
-            return await _charRepository.Query.Take(10).OrderByDescending(x => x.Experience).ToListAsync();
-        }
+        public async Task<List<Character>> GetHighScoresAsync() =>
+            await _charRepository.Query.Take(10).OrderByDescending(x => x.Experience).ToListAsync();
 
         /// <summary>
         /// Deletes a character.
@@ -140,7 +154,7 @@ namespace FalloutRPG.Services.Roleplay
         /// Removes a character's skills and SPECIAL and marks them
         /// as reset so they can claim skill points back.
         /// </summary>
-        public async Task ResetCharacterAsync(Character character)
+        public async Task ResetCharacterAsync(PlayerCharacter character)
         {
             await _skillRepository.DeleteAsync(character.Skills);
             await _specialRepository.DeleteAsync(character.Special);
@@ -158,9 +172,9 @@ namespace FalloutRPG.Services.Roleplay
         }
 
         public async Task<bool> CheckDuplicateNames(ulong discordId, string name) =>
-            CheckDuplicateNames(await GetAllCharactersAsync(discordId), name);
+            CheckDuplicateNames(await GetAllPlayerCharactersAsync(discordId), name);
 
-        private bool CheckDuplicateNames(List<Character> characters, string name)
+        private bool CheckDuplicateNames(List<PlayerCharacter> characters, string name)
         {
             if (characters == null) return true;
 

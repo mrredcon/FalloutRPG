@@ -100,5 +100,20 @@
         public const string ERR_CRAPS_JOIN_FAIL = FAILURE_EMOJI + "Failed to join {0} into the match!";
         public const string ERR_CRAPS_LEAVE_FAIL = FAILURE_EMOJI + "Failed to remove {0} match, are they the shooter?";
         public const string ERR_CRAPS_PASS_FAIL = FAILURE_EMOJI + "Couldn't pass the dice for {0}. (Do you have a bet placed, or the only one playing?)";
+
+        // Campaign Messages
+        public const string CAMP_CREATED_SUCCESS = SUCCESS_EMOJI + "Campaign created successfully. ({0})";
+        public const string CAMP_REMOVE_CONFIRM = QUESTION_EMOJI + "**Are you sure you want to delete `{0}` (members: {1})? This action CANNOT be undone!**" +
+            " To confirm this action, reply with the name of the campaign. ({2})";
+        public const string CAMP_REMOVE_SUCCESS = SUCCESS_EMOJI + "The campaign was deleted successfully. ({0})";
+        public const string CAMP_NOT_REMOVED = FAILURE_EMOJI + "The campaign `{0}` was **NOT** deleted. ({1})";
+        public const string CAMP_INVITATION = QUESTION_EMOJI + "{0} invites you to join the campaign `{1}`. Reply back with the campaign name to join. ({2})";
+        public const string CAMP_JOIN_SUCCESS = SUCCESS_EMOJI + "{0} has joined the campaign: {1}.";
+        public const string CAMP_JOIN_FAILURE = FAILURE_EMOJI + "{0} has not joined the campaign: {1}.";
+
+        // Campaign Error Messages
+        public const string ERR_CAMP_NOT_FOUND = FAILURE_EMOJI + "Campaign not found. ({0})";
+        public const string ERR_CAMP_NOT_OWNER = FAILURE_EMOJI + "This command can only be ran by the campaign owner. ({0})";
+        public const string ERR_CAMP_ALREADY_IN = FAILURE_EMOJI + "The user trying to be added is already in a campaign. ({0})";
     }
 }

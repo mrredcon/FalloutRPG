@@ -39,7 +39,7 @@ namespace FalloutRPG.Modules
         [Command("givemoney")]
         public async Task GiveMoneyAsync(IUser user, int money)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
             if (character == null) return;
 
             character.Money += money;
@@ -52,7 +52,7 @@ namespace FalloutRPG.Modules
         [RequireOwner]
         public async Task GiveSkillPointsAsync(IUser user, int points)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
             if (character == null) return;
 
             character.SkillPoints += points;
@@ -64,7 +64,7 @@ namespace FalloutRPG.Modules
         [Command("changename")]
         public async Task ChangeCharacterNameAsync(IUser user, [Remainder]string name)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
             if (character == null) return;
 
             if (!StringHelper.IsOnlyLetters(name))
@@ -82,7 +82,7 @@ namespace FalloutRPG.Modules
         [Command("reset")]
         public async Task ResetCharacterAsync(IUser user)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
             if (character == null) return;
 
             await _charService.ResetCharacterAsync(character);
@@ -93,7 +93,7 @@ namespace FalloutRPG.Modules
         [RequireOwner]
         public async Task DeleteCharacterAsync(IUser user)
         {
-            var character = await _charService.GetCharacterAsync(user.Id);
+            var character = await _charService.GetPlayerCharacterAsync(user.Id);
             if (character == null) return;
 
             await _charService.DeleteCharacterAsync(character);

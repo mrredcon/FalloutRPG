@@ -25,5 +25,9 @@ namespace FalloutRPG.Constants
         public const string CHAR_NOT_ENOUGH_SPECIAL_POINTS = "Not enough SPECIAL points.";
         public const string CHAR_SPECIAL_POINTS_GOES_OVER_MAX = "Unable to add SPECIAL points because it will take skill above the max level.";
         public const string CHAR_TOO_MANY = "You have reached the limit of characters per account.";
+
+        // Campaign Exceptions
+        public const string CAMP_TOO_MANY = "You have reached the limit of campaigns per account.";
+        public const string CAMP_NAME_NOT_UNIQUE = "Campaign name was not unique for your server.";
     }
 }

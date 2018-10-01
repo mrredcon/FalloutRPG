@@ -67,6 +67,7 @@ namespace FalloutRPG
             .AddSingleton<LogService>()
             .AddSingleton<StartupService>()
             .AddSingleton<HelpService>()
+            .AddSingleton<PlayerService>()
 
             // Roleplay
             .AddSingleton<SkillsService>()
@@ -74,6 +75,7 @@ namespace FalloutRPG
             .AddSingleton<StartupService>()
             .AddSingleton<CharacterService>()
             .AddSingleton<ExperienceService>()
+            .AddSingleton<CampaignService>()
 
             // Addons
             .AddSingleton<InteractiveService>()
@@ -81,6 +83,7 @@ namespace FalloutRPG
             // Database
             .AddDbContext<RpgContext>(options =>
                 options.UseSqlServer(config["sqlserver-connection-string"]))
+            .AddTransient<IRepository<Player>, EfRepository<Player>>()
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()

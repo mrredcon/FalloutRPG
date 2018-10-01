@@ -82,7 +82,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Gives character their skill points from leveling up.
         /// </summary>
-        public void GiveSkillPoints(Character character)
+        public void GiveSkillPoints(PlayerCharacter character)
         {
             if (character == null) throw new ArgumentNullException("character");
 
@@ -105,7 +105,7 @@ namespace FalloutRPG.Services.Roleplay
         /// <summary>
         /// Puts an amount of points in a specified skill.
         /// </summary>
-        public void PutPointsInSkill(Character character, string skill, int points)
+        public void PutPointsInSkill(PlayerCharacter character, string skill, int points)
         {
             if (character == null) throw new ArgumentNullException("character");
 
