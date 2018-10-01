@@ -45,44 +45,42 @@ namespace FalloutRPG.Modules.Roleplay
         }
 
         [Command("add")]
-        public async Task AddMemberAsync(IUser userToAdd)
+        public async Task AddMemberAsync(IUser userToAdd, string campName)
         {
-            var ownerInfo = Context.User;
-            var campOwner = await _playerService.GetPlayerAsync(ownerInfo.Id);
+            var modInfo = Context.User;
+            var campMod = await _playerService.GetPlayerAsync(modInfo.Id);
+
+            var campaign = await _campaignService.GetCampaignAsync(campName);
+
             var playerToAdd = await _playerService.GetPlayerAsync(userToAdd.Id);
 
-            if (campOwner.Campaign == null)
+            if (campaign == null)
             {
-                await ReplyAsync(String.Format(Messages.ERR_CAMP_NOT_FOUND, ownerInfo.Mention));
+                await ReplyAsync(String.Format(Messages.ERR_CAMP_NOT_FOUND, modInfo.Mention));
                 return;
             }
-            if (campOwner.Campaign.OwnerId != campOwner.DiscordId)
+            if (!campaign.Moderators.Contains(campMod))
             {
-                await ReplyAsync(String.Format(Messages.ERR_CAMP_NOT_OWNER, ownerInfo.Mention));
-                return;
-            }
-            if (playerToAdd.Campaign != null)
-            {
-                await ReplyAsync(String.Format(Messages.ERR_CAMP_ALREADY_IN, userToAdd.Mention));
+                await ReplyAsync(String.Format(Messages.ERR_CAMP_NOT_MODERATOR, modInfo.Mention));
                 return;
             }
 
-            await userToAdd.SendMessageAsync(String.Format(Messages.CAMP_INVITATION, ownerInfo.Username, campOwner.Campaign.Name, userToAdd.Mention));
+            await userToAdd.SendMessageAsync(String.Format(Messages.CAMP_INVITATION, modInfo.Username, campaign.Name, userToAdd.Mention));
 
             var response = await NextMessageAsync(new EnsureFromUserCriterion(userToAdd.Id));
 
-            if (response != null && response.Content.Equals(campOwner.Campaign.Name, StringComparison.OrdinalIgnoreCase))
+            if (response != null && response.Content.Equals(campaign.Name, StringComparison.OrdinalIgnoreCase))
             {
-                playerToAdd.Campaign = campOwner.Campaign;
-                var role = Context.Guild.GetRole(playerToAdd.Campaign.RoleId);
-                await Context.Guild.GetUser(playerToAdd.DiscordId).AddRoleAsync(role);
-                await _playerService.SavePlayerAsync(playerToAdd);
+                campaign.Players.Add(playerToAdd);
 
-                await ReplyAsync(String.Format(Messages.CAMP_JOIN_SUCCESS, userToAdd.Mention, playerToAdd.Campaign.Name));
+                var role = Context.Guild.GetRole(campaign.RoleId);
+                await Context.Guild.GetUser(playerToAdd.DiscordId).AddRoleAsync(role);
+
+                await ReplyAsync(String.Format(Messages.CAMP_JOIN_SUCCESS, userToAdd.Mention, campaign.Name));
             }
             else
             {
-                await ReplyAsync(String.Format(Messages.CAMP_JOIN_FAILURE, userToAdd.Mention, playerToAdd.Campaign.Name));
+                await ReplyAsync(String.Format(Messages.CAMP_JOIN_FAILURE, userToAdd.Mention, campaign.Name));
             }
         }
 
@@ -91,28 +89,29 @@ namespace FalloutRPG.Modules.Roleplay
         public async Task DeleteCampaignAsync()
         {
             var player = await _playerService.GetPlayerAsync(Context.User.Id);
+            var campaign = await _campaignService.GetOwnedCampaign(player);
 
-            if (player.Campaign == null)
+            if (campaign == null)
             {
                 await ReplyAsync(String.Format(Messages.ERR_CAMP_NOT_FOUND, Context.User.Mention));
                 return;
             }
 
-            if (player.Campaign.OwnerId == player.DiscordId)
+            if (campaign.Owner.Equals(player))
             {
-                int memberCount = await _campaignService.CountAllMembersAsync(player.Campaign);
+                int memberCount = campaign.Players.Count;
 
-                await ReplyAsync(String.Format(Messages.CAMP_REMOVE_CONFIRM, player.Campaign.Name, memberCount, Context.User.Mention));
+                await ReplyAsync(String.Format(Messages.CAMP_REMOVE_CONFIRM, campaign.Name, memberCount, Context.User.Mention));
                 var response = await NextMessageAsync();
 
-                if (response != null && response.Content.Equals(player.Campaign.Name, StringComparison.OrdinalIgnoreCase))
+                if (response != null && response.Content.Equals(campaign.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    await _campaignService.DeleteCampaignAsync(player.Campaign, Context.Guild);
+                    await _campaignService.DeleteCampaignAsync(campaign, Context.Guild);
                     await ReplyAsync(String.Format(Messages.CAMP_REMOVE_SUCCESS, Context.User.Mention));
                 }
                 else
                 {
-                    await ReplyAsync(String.Format(Messages.CAMP_NOT_REMOVED, player.Campaign.Name, Context.User.Mention));
+                    await ReplyAsync(String.Format(Messages.CAMP_NOT_REMOVED, campaign.Name, Context.User.Mention));
                 }
             }
             else

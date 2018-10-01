@@ -8,17 +8,22 @@ namespace FalloutRPG.Models
     {
         private Campaign() { }
 
-        public Campaign(string name, ulong owner, ulong roleId, ulong textChannelId)
+        public Campaign(string name, Player owner, ulong roleId, ulong textChannelId)
         {
             Name = name;
-            OwnerId = owner;
+            Owner = owner;
             RoleId = roleId;
             TextChannelId = textChannelId;
+            Players = new List<Player>();
+            Moderators = new List<Player>();
         }
 
         public string Name { get; private set; }
 
-        public ulong OwnerId { get; private set; }
+        public ICollection<Player> Players { get; set; }
+        public ICollection<Player> Moderators { get; set; }
+
+        public Player Owner { get; private set; }
         public ulong RoleId { get; private set; }
         public ulong TextChannelId { get; private set; }
     }

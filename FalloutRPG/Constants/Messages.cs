@@ -114,6 +114,7 @@
         // Campaign Error Messages
         public const string ERR_CAMP_NOT_FOUND = FAILURE_EMOJI + "Campaign not found. ({0})";
         public const string ERR_CAMP_NOT_OWNER = FAILURE_EMOJI + "This command can only be ran by the campaign owner. ({0})";
+        public const string ERR_CAMP_NOT_MODERATOR = FAILURE_EMOJI + "This command can only be ran by a campaign moderator. ({0})";
         public const string ERR_CAMP_ALREADY_IN = FAILURE_EMOJI + "The user trying to be added is already in a campaign. ({0})";
     }
 }

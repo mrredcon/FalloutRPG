@@ -15,7 +15,5 @@ namespace FalloutRPG.Models
         }
 
         public ulong DiscordId { get; private set; }
-
-        public Campaign Campaign { get; set; }
     }
 }

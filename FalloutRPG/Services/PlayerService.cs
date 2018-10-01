@@ -26,7 +26,7 @@ namespace FalloutRPG.Services
 
         public async Task<Player> GetPlayerAsync(ulong discordId)
         {
-            var player = await _playerRepository.Query.Where(x => x.DiscordId == discordId).Include(x => x.Campaign).FirstOrDefaultAsync();
+            var player = await _playerRepository.Query.Where(x => x.DiscordId == discordId).FirstOrDefaultAsync();
             if (player == null) player = await AddPlayerAsync(discordId);
             return player;
         }

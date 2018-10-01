@@ -87,6 +87,7 @@ namespace FalloutRPG
             .AddTransient<IRepository<Character>, EfRepository<Character>>()
             .AddTransient<IRepository<SkillSheet>, EfRepository<SkillSheet>>()
             .AddTransient<IRepository<Special>, EfRepository<Special>>()
+            .AddTransient<IRepository<Campaign>, EfRepository<Campaign>>()
             .BuildServiceProvider();
 
         /// <summary>
